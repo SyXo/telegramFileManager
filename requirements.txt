@@ -1,0 +1,2 @@
+https://github.com/pyrogram/pyrogram/archive/develop.zip
+tgcrypto
