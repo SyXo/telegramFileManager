@@ -39,6 +39,8 @@ You can obtain these by following the guide below.
 * Additionally, you can give the `test_filesize=<size>` argument to specify size
 * and/or `test_args=resume(1|2)` argument to check soft|force cancelling
 * Example: `make test test_filesize=10G test_args=resume1`
+* Your phone number and confirmation code will only be asked the first time
+you run the tests, after that they will be saved as `a1.session`
 
 ### Getting app_id and api_hash
 * Log in to your [Telegram core](https://my.telegram.org)
@@ -48,7 +50,7 @@ authorization
 * Enter your api_id and api_hash in your config file
 
 
-## Installing telegramFileManager
+## Installing telegramFileManager (WIP)
 * Do `make install` to compile the dependencies and install the program in
 `/usr/local/bin` (if you don't have root permissions, give `install_path=<dir>`
 argument where `<dir>` is a path you can write to and is in your `$PATH`
