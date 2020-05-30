@@ -2,7 +2,7 @@ test_filesize = 3G
 test_args = "noResume" # could also be "resume(1|2)", for testing resuming capability
 
 # this also needs to be modified inside tests.py
-tmp_path = /home/nicu/.tmp
+tmp_path = ~/.tmp
 
 pyrCaller_extern: pyrCaller_extern.c
 	$(CC) -std=c99 -fPIC -shared -o $@.so $?

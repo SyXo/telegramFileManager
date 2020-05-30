@@ -3,13 +3,13 @@
 # !!! dont run this on a channel that you have other files on, it will delete
 # them !!!
 
-from os.path import getsize
+from os import path
 import pyrCaller
 import sys
 import config as cfg
 
 data_path = "."
-tmp_path = "/home/nicu/.tmp"
+tmp_path = path.expanduser("~/.tmp")
 telegram_channel_id = "me"
 resumeTest = 0
 toResume = True
@@ -51,7 +51,7 @@ print("Starting uploading of file")
 
 # Do first time uploading and resuming upload in same function
 
-inputFileData = [["temp/tfilemk_rand".split("/"), getsize(tmp_file), []],
+inputFileData = [["temp/tfilemk_rand".split("/"), path.getsize(tmp_file), []],
                  tmp_file, 0, 1]
 
 fileData = tg.uploadFiles(inputFileData)
