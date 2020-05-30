@@ -20,11 +20,32 @@ benefit)
 ```pip3 install -r requirements.txt -U```
 
 ### Or if you want to install them manually:
-
 * Pyrogram ~~(pip3 install -U pyrogram)~~ The stable release will probably not
 work, you need to use the development branch instead
 (`pip3 install -U https://github.com/pyrogram/pyrogram/archive/develop.zip`)
 * TgCrypto (`pip3 install -U tgcrypto`) (Recommended: used by `pyrogram`)
+
+
+## Testing (currently only for GNU/Linux)
+* The test generates a random file, uploads it to telegram, downloads it and
+then checks if the 2 files are the same
+* Create a file in the script folder named `config.py` with the contents:
+```
+api_id = <app_id>
+api_hash = <api_hash>
+```
+You can obtain these by following the guide below.
+* Do `make test` to transfer a 3G file
+* Additionally, you can give the `test_filesize=<size>` argument to specify size
+* and/or `test_args=resume(1|2)` argument to check soft|force cancelling
+* Example: `make test test_filesize=10G test_args=resume1`
+
+### Getting app_id and api_hash
+* Log in to your [Telegram core](https://my.telegram.org)
+* Go to 'API development tools' and fill out the form
+* You will get the api_id and api_hash parameters required for user
+authorization
+* Enter your api_id and api_hash in your config file
 
 
 ## Installing telegramFileManager
@@ -32,16 +53,6 @@ work, you need to use the development branch instead
 `/usr/local/bin` (if you don't have root permissions, give `install_path=<dir>`
 argument where `<dir>` is a path you can write to and is in your `$PATH`
 variable) 
-
-### In order to get app_id and api_hash
-* Log in to your Telegram core: https://my.telegram.org
-* Go to 'API development tools' and fill out the form
-* You will get the api_id and api_hash parameters required for user
-authorization
-* Enter your api_id and api_hash in your config file
-* Optional: Obtain the channel_id in which to store the files (you can use
-"me" instead to store them in Your Saved Messages)
-
 
 ## Donation
 This project takes a lot of my time and donations would really motivate me to
