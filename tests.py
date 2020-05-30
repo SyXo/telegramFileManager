@@ -6,7 +6,6 @@
 from os import path
 import pyrCaller
 import sys
-import config as cfg
 
 data_path = "."
 tmp_path = path.expanduser("~/.tmp")
