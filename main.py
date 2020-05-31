@@ -1,7 +1,7 @@
-import curses
-import pyrCaller
-import configparser
 import os
+import curses
+import configparser
+import pyrCaller
 
 cfg = configparser.ConfigParser()
 cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
@@ -18,24 +18,31 @@ print("{}\n{}\n{}\n{}\n{}".format(
 
 MAX_SESSIONS = int(cfg['telegram']['max_sessions'])
 usedSessions = [1] # list of which sessions are used
+i = 0
 
 # initialize the screen
 scr = curses.initscr()
 
 curses.noecho()
 curses.cbreak()
-curses.curs_set(0)
-scr.keypad(1)
+curses.curs_set(False)
+scr.keypad(True)
+scr.nodelay(True)
+scr.timeout(5000)
+# wait for 5 seconds or a key to be pressed to refresh the screen
 
 try:
     while True:
-        scr.clear()
+        scr.erase()
         tlX, tlY = os.get_terminal_size(0)
 
         usedSessionStr = "[ {} of {} ]".format(len(usedSessions), MAX_SESSIONS)
 
         scr.addstr(1, max(tlX-len(usedSessionStr), 0),
                    usedSessionStr, curses.A_NORMAL)
+
+        scr.addstr(2, 0, str(i), curses.A_NORMAL)
+        i+=1
 
         ch = scr.getch()
         if ch == 17: # Ctrl+Q
@@ -44,7 +51,4 @@ except KeyboardInterrupt:
     pass
 
 # exit
-scr.keypad(0)
-curses.echo()
-curses.nocbreak()
 curses.endwin()
