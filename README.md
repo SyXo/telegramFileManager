@@ -33,7 +33,7 @@ work, you need to use the development branch instead
 api_id = <app_id>
 api_hash = <api_hash>
 ```
-You can obtain these by following `Getting app_id and api_hash` below.
+You can obtain these by following [Getting app_id and api_hash](https://github.com/BouncyMaster/telegramFileManager#getting-app_id-and-api_hash)
 * Do `make test` to transfer a 3G file
 * Additionally, you can give the `test_filesize=<size>` argument to specify size
 * and/or `test_args=resume(1|2)` argument to check soft|force cancelling
