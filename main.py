@@ -8,21 +8,22 @@ class transferHandler:
     def __init__(self, telegram_channel_id, api_id, api_hash, data_path,
                  tmp_path, max_sessions):
 
-        self.transferProgress = {}
-        for i in range(1, max_sessions+1):
-            self.transferProgress[str(i)] = 0
-
-        self.freeSessions = []
-        for i in range(1, max_sessions+1):
-            self.freeSessions.append(str(i))
-
-        self.telegram_channel_id = telegram_channel_id
         self.api_id = api_id
         self.api_hash = api_hash
         self.data_path = data_path
         self.tmp_path = tmp_path
         self.max_sessions = max_sessions
+        self.transferProgress = {}
+        self.freeSessions = []
+        self.tgObject = {}
 
+        # initialize all the pyrCaller sessions that will be used
+        for i in range(1, max_sessions+1):
+            self.transferProgress[str(i)] = 0
+            self.freeSessions.append(str(i))
+            self.tgObject.append[str(i)] = pyrCaller.pyrogramFuncs(
+                telegram_channel_id, api_id, api_hash, data_path, tmp_path,
+                str(i), saveProgress, saveFileData)
 
     def useSession(self):
         if not len(self.freeSessions):
@@ -53,20 +54,20 @@ class transferHandler:
         return self.transferProgress[sessionStr]
 
 
-    def progressToStr(self, current, total, current_chunk, total_chunks, sFile):
+    def saveProgress(self, current, total, current_chunk, total_chunks, sFile):
         prg=int(((current/total/total_chunks)+(current_chunk/total_chunks))*100)
-        return "{}%".format(prg)
+        self.transferProgress[sFile] = "{}%".format(prg)
 
 
-    def upload(self)
+    def upload(self, )
 
 
 cfg = configparser.ConfigParser()
 cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
 
-tg = transferHandler(cfg['telegram']['channel_id'], cfg['telegram']['api_id'],
-                     cfg['telegram']['api_hash'], cfg['paths']['data_path'],
-                     cfg['paths']['tmp_path'], int(cfg['telegram']['max_sessions']))
+tHand = transferHandler(cfg['telegram']['channel_id'],cfg['telegram']['api_id'],
+    cfg['telegram']['api_hash'], cfg['paths']['data_path'],
+    cfg['paths']['tmp_path'], int(cfg['telegram']['max_sessions']))
 
 # initialize the screen
 scr = curses.initscr()
@@ -84,8 +85,8 @@ try:
         scr.erase()
         tlX, tlY = os.get_terminal_size(0)
 
-        usedSessionStr="[ {} of {} ]".format(tg.max_sessions-len(tg.freeSessions),
-                                             tg.max_sessions)
+        usedSessionStr = "[ {} of {} ]".format(
+            tHand.max_sessions - len(tHand.freeSessions), tHand.max_sessions)
 
         scr.addstr(1, max(tlX-len(usedSessionStr), 0),
                    usedSessionStr, curses.A_NORMAL)
