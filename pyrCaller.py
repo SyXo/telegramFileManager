@@ -17,7 +17,7 @@ because the string is transmitted to a C function
 from ctypes import *
 from pyrogram import Client
 from shutil import copyfile
-from os import remove
+from os import remove, path
 from time import sleep
 
 class pyrogramFuncs:
@@ -32,7 +32,7 @@ class pyrogramFuncs:
         self.extern.concatFiles.restype = c_char
         self.extern.concatFiles.argtypes = [c_char_p, c_char_p, c_size_t] 
 
-        self.telegram = Client("{}/a{}".format(data_path, s_file),
+        self.telegram = Client(path.join(data_path, s_file),
                                api_id, api_hash)
 
         self.telegram_channel_id = telegram_channel_id
@@ -51,8 +51,8 @@ class pyrogramFuncs:
 
         if fileData[0][1] <= 1572864000: # less than 1500M don't split file
             # Single chunk upload doesn't call data_fun
-            copiedFilePath = "{}/tfilemgr/{}_{}".format(self.tmp_path,
-                self.s_file, fileData[3])
+            copiedFilePath = path.join(self.tmp_path, "tfilemgr",
+                "{}_{}".format(self.s_file, fileData[3]))
 
             copyfile(fileData[1], copiedFilePath)
 
@@ -97,8 +97,8 @@ class pyrogramFuncs:
         self.now_transmitting = 2
         self.telegram.start()
         while True: # not end of file
-            copiedFilePath = "{}/tfilemgr/{}_{}".format(
-                self.tmp_path, self.s_file, localIndex)
+            copiedFilePath = path.join(self.tmp_path, "tfilemgr",
+                "{}_{}".format(self.s_file, localIndex))
 
             chunkIndex = self.extern.splitFile(chunkIndex,
                 in_file.encode('ascii'),
@@ -147,8 +147,7 @@ class pyrogramFuncs:
         if len(fileData[2]) == 1 and not isResuming: # no chunks
             # Single chunk download doesn't call data_fun
 
-            copiedFilePath = "{}/downloads/{}".format(self.data_path,
-                                                      fileData[0][-1])
+            copiedFilePath=path.join(self.data_path,"downloads",fileData[0][-1])
 
             self.now_transmitting = 1
             self.telegram.start()
@@ -172,8 +171,8 @@ class pyrogramFuncs:
         # else has chunks
         i = 0
 
-        copiedFilePath = "{}/tfilemgr/{}_chunk".format(self.tmp_path,
-                                                       fileData[0][-1])
+        copiedFilePath = path.join(self.tmp_path, "tfilemgr",
+                                   "{}_chunk".format(fileData[0][-1]))
 
         self.now_transmitting = 2
         self.telegram.start()
@@ -192,8 +191,8 @@ class pyrogramFuncs:
 
             self.extern.concatFiles(
                 copiedFilePath.encode('ascii'),
-                "{}/downloads/{}".format(
-                    self.data_path, fileData[0][-1]).encode('ascii'),
+                path.join(self.data_path, "downloads",
+                          fileData[0][-1]).encode('ascii')
                 1000
             )
 

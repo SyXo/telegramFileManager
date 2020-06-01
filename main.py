@@ -62,7 +62,7 @@ class transferHandler:
 
 
     def saveFileData(self, fileData, sFile):
-        with open("{}/resume_{}".format(self.data_path, sFile), 'w') as f:
+        with open(os.path.join(self.data_path,"resume_{}".format(sFile)),'w') as f:
             f.write(str(fileData))
 
 

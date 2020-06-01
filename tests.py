@@ -22,7 +22,7 @@ if len(sys.argv) > 1:
     elif sys.argv[1] == "resume2":
         resumeTest = 2
 
-tmp_file = "{}/tfilemgr/rand".format(tmp_path)
+tmp_file = path.join(tmp_path, "tfilemgr", "rand")
 
 def printProgress(current, total, current_chunk, total_chunks, sFile):
     global toResume
