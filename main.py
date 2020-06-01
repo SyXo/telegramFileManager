@@ -4,12 +4,13 @@ import configparser
 import pyrCaller
 import threading
 
-cfg = configparser.ConfigParser()
-cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
-
 class transferHandler:
     def __init__(self, telegram_channel_id, api_id, api_hash, data_path,
                  tmp_path, max_sessions):
+
+        self.transferProgress = {}
+        for i in range(1, max_sessions+1):
+            self.transferProgress[str(i)] = 0
 
         self.freeSessions = []
         for i in range(1, max_sessions+1):
@@ -36,13 +37,32 @@ class transferHandler:
         if (not sessionStr) or not (type(sessionStr) is str):
             raise TypeError("Bad or empty value given.")
         if not int(sessionStr) in range(1, self.max_sessions+1):
-            raise IndexError("sessionStr should be between 1 and {}.".format(max_sessions))
+            raise IndexError("sessionStr should be between 1 and {}.".format(self.max_sessions))
+        if sessionStr in self.freeSession:
+            raise IndexError("Can't free a session that is already free.")
 
         self.freeSessions.append(sessionStr)
 
 
-    def upload()
+    def getProgress(self, sessionStr=''):
+        if (not sessionStr) or not (type(sessionStr) is str):
+            raise TypeError("Bad or empty value given.")
+        if not int(sessionStr) in range(1, self.max_sessions+1):
+            raise IndexError("sessionStr should be between 1 and {}.".format(self.max_sessions))
 
+        return self.transferProgress[sessionStr]
+
+
+    def progressToStr(self, current, total, current_chunk, total_chunks, sFile):
+        prg=int(((current/total/total_chunks)+(current_chunk/total_chunks))*100)
+        return "{}%".format(prg)
+
+
+    def upload(self)
+
+
+cfg = configparser.ConfigParser()
+cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
 
 tg = transferHandler(cfg['telegram']['channel_id'], cfg['telegram']['api_id'],
                      cfg['telegram']['api_hash'], cfg['paths']['data_path'],
