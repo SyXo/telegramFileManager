@@ -38,7 +38,8 @@ class transferHandler:
         if (not sessionStr) or not (type(sessionStr) is str):
             raise TypeError("Bad or empty value given.")
         if not int(sessionStr) in range(1, self.max_sessions+1):
-            raise IndexError("sessionStr should be between 1 and {}.".format(self.max_sessions))
+            raise IndexError("sessionStr should be between 1 and {}.".format(
+                self.max_sessions))
         if sessionStr in self.freeSession:
             raise IndexError("Can't free a session that is already free.")
 
@@ -49,7 +50,8 @@ class transferHandler:
         if (not sessionStr) or not (type(sessionStr) is str):
             raise TypeError("Bad or empty value given.")
         if not int(sessionStr) in range(1, self.max_sessions+1):
-            raise IndexError("sessionStr should be between 1 and {}.".format(self.max_sessions))
+            raise IndexError("sessionStr should be between 1 and {}.".format(
+                self.max_sessions))
 
         return self.transferProgress[sessionStr]
 
@@ -57,6 +59,11 @@ class transferHandler:
     def saveProgress(self, current, total, current_chunk, total_chunks, sFile):
         prg=int(((current/total/total_chunks)+(current_chunk/total_chunks))*100)
         self.transferProgress[sFile] = "{}%".format(prg)
+
+
+    def saveFileData(self, fileData, sFile):
+        with open("{}/resume_{}".format(self.data_path, sFile), 'w') as f:
+            f.write(str(fileData))
 
 
     def upload(self, )

@@ -126,7 +126,7 @@ class pyrogramFuncs:
             i += 1
 
             self.data_fun([[fileData[0][0], fileData[0][1], fileID],
-                           1, localIndex, in_file, chunkIndex])
+                           1, localIndex, in_file, chunkIndex], self.s_file)
 
             if self.should_stop == 1:
                 break
@@ -206,7 +206,8 @@ class pyrogramFuncs:
 
             # stores only ids of files that haven't yet been downloaded
             remainingID = fileData[2][i-len(fileData[2]):]
-            self.data_fun([[fileData[0], fileData[1], remainingID], 2])
+            self.data_fun([[fileData[0], fileData[1], remainingID], 2],
+                          self.s_file)
 
             if self.should_stop == 1:
                 # issued normal cancel

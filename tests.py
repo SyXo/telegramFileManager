@@ -34,7 +34,7 @@ def printProgress(current, total, current_chunk, total_chunks, sFile):
         tg.stop(resumeTest)
 
 
-def fileDataFun(fileData):
+def fileDataFun(fileData, sFile):
     global progressDownload
     global progressUpload
 
