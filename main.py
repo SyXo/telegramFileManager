@@ -62,12 +62,31 @@ class transferHandler:
 
 
     def saveFileData(self, fileData, sFile):
-        with open(os.path.join(self.data_path,"resume_{}".format(sFile)),'w') as f:
+        with open(os.path.join(self.data_path, "resume_{}".format(sFile)),
+                  'w') as f:
             f.write(str(fileData))
 
 
-    def upload(self, )
+    def transfer(self, fileData=[], action=0)
+        # use same function for uploading and downloading as they are similar
+        # action is 1 for uploading and 2 for downloading
+        if (not fileData) or not (type(fileData) is list):
+            raise TypeError("Bad or empty value given.")
+        if (not sFile) or not (type(sFile) is str):
+            raise TypeError("Bad or empty value given.")
 
+        sFile = useSession() # Use a free session
+
+        if action == 1:
+            transferJob = threading.Thread(self.tgObject[sFile].uploadFiles,
+                                         args=(fileData))
+        else:
+            transferJob = threading.Thread(self.tgObject[sFile].downloadFiles,
+                                         args=(fileData))
+
+        transferJob.start()
+
+        freeSession(sFile)
 
 cfg = configparser.ConfigParser()
 cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
