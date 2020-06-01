@@ -27,8 +27,7 @@ work, you need to use the development branch instead
 
 
 ## Testing (currently only for GNU/Linux)
-### The test generates a random file, uploads it to telegram, downloads it and
-then checks if the 2 files are the same
+### The test generates a random file, uploads it to telegram, downloads it and then checks if the 2 files are the same
 * Create a file in the script folder named `config.py` with the contents:
 ```
 api_id = <app_id>
