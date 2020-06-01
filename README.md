@@ -8,13 +8,13 @@ larger than 1.5G and more!
 
 ## Features
 * Ability to show downloading and uploading progress
-* Ability to transfer files larger than 1.5G (telegram's limit) 
-* Intuitive and fast scrolling when selecting uploaded files
+* Ability to transfer files larger than 1.5G (telegram's limit)
+* Intuitive and fast scrolling when selecting uploaded files (WIP)
 * Fast downloading and uploading of files (10Mbit UP | 15Mbit DOWN)
 * Ability to upload/download multiple files at once (after 4 there if no speed
-benefit)
-* Canceling and resuming file transfer progress
-* Interface that is similar to `rtorrent`
+benefit) (WIP)
+* Canceling and resuming file transfer progress (WIP)
+* Interface that is similar to `rtorrent` (WIP)
 
 ## Installing requirements
 ```pip3 install -r requirements.txt -U```
@@ -27,20 +27,21 @@ work, you need to use the development branch instead
 
 
 ## Testing (currently only for GNU/Linux)
-* The test generates a random file, uploads it to telegram, downloads it and
+### The test generates a random file, uploads it to telegram, downloads it and
 then checks if the 2 files are the same
 * Create a file in the script folder named `config.py` with the contents:
 ```
 api_id = <app_id>
 api_hash = <api_hash>
 ```
-You can obtain these by following the guide below.
+You can obtain these by following `Getting app_id and api_hash` below.
 * Do `make test` to transfer a 3G file
 * Additionally, you can give the `test_filesize=<size>` argument to specify size
 * and/or `test_args=resume(1|2)` argument to check soft|force cancelling
 * Example: `make test test_filesize=10G test_args=resume1`
 * Your phone number and confirmation code will only be asked the first time
-you run the tests, after that they will be saved as `a1.session`
+you run the tests, after that they will be saved as `a1.session` in the script
+directory
 
 ### Getting app_id and api_hash
 * Log in to your [Telegram core](https://my.telegram.org)
