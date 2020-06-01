@@ -24,7 +24,7 @@ class pyrogramFuncs:
     def __init__(self, telegram_channel_id, api_id, api_hash, data_path,
                  tmp_path, s_file, progress_fun, data_fun):
 
-        self.extern = CDLL('./pyrCaller_extern.so')
+        self.extern = CDLL(path.join(data_path, "pyrCaller_extern.so"))
         self.extern.splitFile.restype = c_size_t
         self.extern.splitFile.argtypes = [c_size_t, c_char_p, c_char_p,
                                           c_size_t, c_size_t]
@@ -32,7 +32,7 @@ class pyrogramFuncs:
         self.extern.concatFiles.restype = c_char
         self.extern.concatFiles.argtypes = [c_char_p, c_char_p, c_size_t] 
 
-        self.telegram = Client(path.join(data_path, s_file),
+        self.telegram = Client(path.join(data_path, "a{}".format(s_file)),
                                api_id, api_hash)
 
         self.telegram_channel_id = telegram_channel_id
