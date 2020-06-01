@@ -42,19 +42,19 @@ You can obtain these by following [Getting app_id and api_hash](https://github.c
 you run the tests, after that they will be saved as `a1.session` in the script
 directory
 
-### Getting app_id and api_hash
-* Log in to your [Telegram core](https://my.telegram.org)
-* Go to 'API development tools' and fill out the form
-* You will get the api_id and api_hash parameters required for user
-authorization
-* Enter your api_id and api_hash in your config file
-
 
 ## Installing telegramFileManager (WIP)
 * Do `make install` to compile the dependencies and install the program in
 `/usr/local/bin` (if you don't have root permissions, give `install_path=<dir>`
 argument where `<dir>` is a path you can write to and is in your `$PATH`
 variable) 
+
+## Getting app_id and api_hash
+* Log in to your [Telegram core](https://my.telegram.org)
+* Go to 'API development tools' and fill out the form
+* You will get the api_id and api_hash parameters required for user
+authorization
+* Enter your api_id and api_hash in your config file
 
 ## Donation
 This project takes a lot of my time and donations would really motivate me to
