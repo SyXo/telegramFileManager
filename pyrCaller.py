@@ -192,7 +192,7 @@ class pyrogramFuncs:
             self.extern.concatFiles(
                 copiedFilePath.encode('ascii'),
                 path.join(self.data_path, "downloads",
-                          fileData[0][-1]).encode('ascii')
+                          fileData[0][-1]).encode('ascii'),
                 1000
             )
 
