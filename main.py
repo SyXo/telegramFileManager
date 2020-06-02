@@ -22,8 +22,9 @@ class transferHandler:
             self.transferProgress[str(i)] = 0
             self.freeSessions.append(str(i))
             self.tgObject.append[str(i)] = pyrCaller.pyrogramFuncs(
-                telegram_channel_id, api_id, api_hash, data_path, tmp_path,
-                str(i), saveProgress, saveFileData)
+                    telegram_channel_id, api_id, api_hash, data_path,
+                    tmp_path, str(i), saveProgress, saveFileData
+            )
 
     def useSession(self):
         if not len(self.freeSessions):
@@ -38,8 +39,7 @@ class transferHandler:
         if (not sessionStr) or not (type(sessionStr) is str):
             raise TypeError("Bad or empty value given.")
         if not int(sessionStr) in range(1, self.max_sessions+1):
-            raise IndexError("sessionStr should be between 1 and {}.".format(
-                self.max_sessions))
+            raise IndexError("sessionStr should be between 1 and {}.".format(self.max_sessions))
         if sessionStr in self.freeSession:
             raise IndexError("Can't free a session that is already free.")
 
@@ -50,8 +50,7 @@ class transferHandler:
         if (not sessionStr) or not (type(sessionStr) is str):
             raise TypeError("Bad or empty value given.")
         if not int(sessionStr) in range(1, self.max_sessions+1):
-            raise IndexError("sessionStr should be between 1 and {}.".format(
-                self.max_sessions))
+            raise IndexError("sessionStr should be between 1 and {}.".format(self.max_sessions))
 
         return self.transferProgress[sessionStr]
 
@@ -62,8 +61,7 @@ class transferHandler:
 
 
     def saveFileData(self, fileData, sFile):
-        with open(os.path.join(self.data_path, "resume_{}".format(sFile)),
-                  'w') as f:
+        with open(os.path.join(self.data_path, "resume_{}".format(sFile)), 'w') as f:
             f.write(str(fileData))
 
 
@@ -79,10 +77,10 @@ class transferHandler:
 
         if action == 1:
             transferJob = threading.Thread(self.tgObject[sFile].uploadFiles,
-                                         args=(fileData))
+                                           args=(fileData))
         else:
             transferJob = threading.Thread(self.tgObject[sFile].downloadFiles,
-                                         args=(fileData))
+                                           args=(fileData))
 
         transferJob.start()
 
@@ -91,9 +89,9 @@ class transferHandler:
 cfg = configparser.ConfigParser()
 cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
 
-tHand = transferHandler(cfg['telegram']['channel_id'],cfg['telegram']['api_id'],
-    cfg['telegram']['api_hash'], cfg['paths']['data_path'],
-    cfg['paths']['tmp_path'], int(cfg['telegram']['max_sessions']))
+tHand = transferHandler(cfg['telegram']['channel_id'], cfg['telegram']['api_id'],
+                        cfg['telegram']['api_hash'], cfg['paths']['data_path'],
+                        cfg['paths']['tmp_path'], int(cfg['telegram']['max_sessions']))
 
 # initialize the screen
 scr = curses.initscr()
@@ -114,8 +112,7 @@ try:
         usedSessionStr = "[ {} of {} ]".format(
             tHand.max_sessions - len(tHand.freeSessions), tHand.max_sessions)
 
-        scr.addstr(1, max(tlX-len(usedSessionStr), 0),
-                   usedSessionStr, curses.A_NORMAL)
+        scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr, curses.A_NORMAL)
 
         ch = scr.getch()
         if ch == 17: # Ctrl+Q
