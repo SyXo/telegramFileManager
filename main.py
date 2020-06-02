@@ -21,9 +21,9 @@ class transferHandler:
         for i in range(1, max_sessions+1):
             self.transferProgress[str(i)] = 0
             self.freeSessions.append(str(i))
-            self.tgObject.append[str(i)] = pyrCaller.pyrogramFuncs(
+            self.tgObject[str(i)] = pyrCaller.pyrogramFuncs(
                     telegram_channel_id, api_id, api_hash, data_path,
-                    tmp_path, str(i), saveProgress, saveFileData
+                    tmp_path, str(i), self.saveProgress, self.saveFileData
             )
 
     def useSession(self):
@@ -65,7 +65,7 @@ class transferHandler:
             f.write(str(fileData))
 
 
-    def transfer(self, fileData=[], action=0)
+    def transfer(self, fileData=[], action=0):
         # use same function for uploading and downloading as they are similar
         # action is 1 for uploading and 2 for downloading
         if (not fileData) or not (type(fileData) is list):
