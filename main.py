@@ -5,6 +5,19 @@ import pyrCaller
 import threading
 
 NAME = "Telegram File Manager"
+T_STR = ["Uploading:", "Downloading:"]
+
+def bytesConvert(rawBytes):
+    if   rawBytes >= 16**10: # tbyte
+        return "{} TBytes".format(round(rawBytes/16**10, 2))
+    elif rawBytes >= 8**10: # gbyte
+        return "{} GBytes".format(round(rawBytes/8**10, 2))
+    elif rawBytes >= 4**10: # mbyte
+        return "{} MBytes".format(round(rawBytes/4**10, 2))
+    elif rawBytes >= 2**10: # kbyte
+        return "{} KBytes".format(round(rawBytes/2**10, 2))
+    else: return "{} Bytes".format(rawBytes)
+
 
 class transferHandler:
     def __init__(self, telegram_channel_id, api_id, api_hash,
@@ -20,7 +33,12 @@ class transferHandler:
 
         # initialize all the pyrCaller sessions that will be used
         for i in range(1, max_sessions+1):
-            self.transferInfo[str(i)] = []
+            if i == 1:
+                self.transferInfo[str(i)] = [["aa", "bb.txt"], 19212, "40%", 1]
+            elif i == 2:
+                self.transferInfo[str(i)] = [["Linux", "Alpine.iso"], 99999999, "10%", 2]
+            else:
+                self.transferInfo[str(i)] = []
             self.freeSessions.append(str(i))
 
             self.tgObject[str(i)] = pyrCaller.pyrogramFuncs(
@@ -52,15 +70,6 @@ class transferHandler:
     def saveProgress(self, current, total, current_chunk, total_chunks, sFile):
         prg=int(((current/total/total_chunks)+(current_chunk/total_chunks))*100)
         self.transferInfo[sFile][2] = "{}%".format(prg)
-
-
-    def getInfo(self, sessionStr=''):
-        if (not sessionStr) or not (type(sessionStr) is str):
-            raise TypeError("Bad or empty value given.")
-        if not int(sessionStr) in range(1, self.max_sessions+1):
-            raise IndexError("sessionStr should be between 1 and {}.".format(self.max_sessions))
-
-        return self.transferInfo[sessionStr]
 
 
     def saveFileData(self, fileData, sFile):
@@ -121,6 +130,16 @@ try:
         scr.addstr(0, max(round((tlX-len(NAME))/2), 0), NAME, curses.A_NORMAL)
         # used sessions
         scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr, curses.A_NORMAL)
+        # transfer info
+        i = 2
+        for sessionStr, info in tHand.transferInfo.items():
+            if not len(info):
+                continue
+
+            scr.addstr(i, 2, T_STR[info[3]-1], curses.A_NORMAL)
+            scr.addstr(i+1, 2, "/".join(info[0]), curses.A_NORMAL)
+            scr.addstr(i+2, 2, "{} - {}".format(info[2], bytesConvert(info[1])))
+            i+=4
 
         ch = scr.getch()
         if ch == 17: # Ctrl+Q
