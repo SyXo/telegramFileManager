@@ -4,6 +4,8 @@ import configparser
 import pyrCaller
 import threading
 
+NAME = "Telegram File Manager"
+
 class transferHandler:
     def __init__(self, telegram_channel_id, api_id, api_hash,
                  data_path, tmp_path, max_sessions):
@@ -11,7 +13,6 @@ class transferHandler:
         self.api_id = api_id
         self.api_hash = api_hash
         self.data_path = data_path
-        self.tmp_path = tmp_path
         self.max_sessions = max_sessions
         self.transferProgress = {}
         self.freeSessions = []
@@ -48,6 +49,11 @@ class transferHandler:
         self.freeSessions.append(sessionStr)
 
 
+    def saveProgress(self, current, total, current_chunk, total_chunks, sFile):
+        prg=int(((current/total/total_chunks)+(current_chunk/total_chunks))*100)
+        self.transferProgress[sFile] = "{}%".format(prg)
+
+
     def getProgress(self, sessionStr=''):
         if (not sessionStr) or not (type(sessionStr) is str):
             raise TypeError("Bad or empty value given.")
@@ -55,11 +61,6 @@ class transferHandler:
             raise IndexError("sessionStr should be between 1 and {}.".format(self.max_sessions))
 
         return self.transferProgress[sessionStr]
-
-
-    def saveProgress(self, current, total, current_chunk, total_chunks, sFile):
-        prg=int(((current/total/total_chunks)+(current_chunk/total_chunks))*100)
-        self.transferProgress[sFile] = "{}%".format(prg)
 
 
     def saveFileData(self, fileData, sFile):
@@ -115,6 +116,9 @@ try:
         usedSessionStr = "[ {} of {} ]".format(
             tHand.max_sessions - len(tHand.freeSessions), tHand.max_sessions)
 
+        # program name
+        scr.addstr(0, max(round((tlX-len(NAME))/2), 0), NAME, curses.A_NORMAL)
+        # used sessions
         scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr, curses.A_NORMAL)
 
         ch = scr.getch()
