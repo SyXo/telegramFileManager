@@ -5,8 +5,8 @@ import pyrCaller
 import threading
 
 class transferHandler:
-    def __init__(self, telegram_channel_id, api_id, api_hash, data_path,
-                 tmp_path, max_sessions):
+    def __init__(self, telegram_channel_id, api_id, api_hash,
+                 data_path, tmp_path, max_sessions):
 
         self.api_id = api_id
         self.api_hash = api_hash
@@ -19,16 +19,18 @@ class transferHandler:
 
         # initialize all the pyrCaller sessions that will be used
         for i in range(1, max_sessions+1):
-            self.transferProgress[str(i)] = 0
+            self.transferProgress[str(i)] = ''
             self.freeSessions.append(str(i))
+
             self.tgObject[str(i)] = pyrCaller.pyrogramFuncs(
                     telegram_channel_id, api_id, api_hash, data_path,
                     tmp_path, str(i), self.saveProgress, self.saveFileData
             )
 
+
     def useSession(self):
         if not len(self.freeSessions):
-            return '' # no free sessions
+            raise IndexError("No free sessions.")
 
         retSession = self.freeSessions[0]
         self.freeSessions.pop(0)
@@ -41,7 +43,7 @@ class transferHandler:
         if not int(sessionStr) in range(1, self.max_sessions+1):
             raise IndexError("sessionStr should be between 1 and {}.".format(self.max_sessions))
         if sessionStr in self.freeSession:
-            raise IndexError("Can't free a session that is already free.")
+            raise ValueError("Can't free a session that is already free.")
 
         self.freeSessions.append(sessionStr)
 
@@ -85,6 +87,7 @@ class transferHandler:
         transferJob.start()
 
         freeSession(sFile)
+
 
 cfg = configparser.ConfigParser()
 cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
