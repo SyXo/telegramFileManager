@@ -14,13 +14,13 @@ class transferHandler:
         self.api_hash = api_hash
         self.data_path = data_path
         self.max_sessions = max_sessions
-        self.transferProgress = {}
+        self.transferInfo = {}
         self.freeSessions = []
         self.tgObject = {}
 
         # initialize all the pyrCaller sessions that will be used
         for i in range(1, max_sessions+1):
-            self.transferProgress[str(i)] = ''
+            self.transferInfo[str(i)] = []
             self.freeSessions.append(str(i))
 
             self.tgObject[str(i)] = pyrCaller.pyrogramFuncs(
@@ -51,16 +51,16 @@ class transferHandler:
 
     def saveProgress(self, current, total, current_chunk, total_chunks, sFile):
         prg=int(((current/total/total_chunks)+(current_chunk/total_chunks))*100)
-        self.transferProgress[sFile] = "{}%".format(prg)
+        self.transferInfo[sFile][2] = "{}%".format(prg)
 
 
-    def getProgress(self, sessionStr=''):
+    def getInfo(self, sessionStr=''):
         if (not sessionStr) or not (type(sessionStr) is str):
             raise TypeError("Bad or empty value given.")
         if not int(sessionStr) in range(1, self.max_sessions+1):
             raise IndexError("sessionStr should be between 1 and {}.".format(self.max_sessions))
 
-        return self.transferProgress[sessionStr]
+        return self.transferInfo[sessionStr]
 
 
     def saveFileData(self, fileData, sFile):
@@ -78,6 +78,7 @@ class transferHandler:
 
         sFile = useSession() # Use a free session
 
+        self.transferInfo[sFile] = [fileData[0][0], fileData[0][1], "0%", action]
         if action == 1:
             transferJob = threading.Thread(self.tgObject[sFile].uploadFiles,
                                            args=(fileData))
