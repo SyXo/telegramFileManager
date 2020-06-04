@@ -39,7 +39,7 @@ class transferHandler:
                 self.transferInfo[str(i)] = [["Linux", "Alpine.iso"], 99999999, "10%", 2]
             else:
                 self.transferInfo[str(i)] = []
-            self.freeSessions.append(str(i))
+                self.freeSessions.append(str(i))
 
             self.tgObject[str(i)] = pyrCaller.pyrogramFuncs(
                     telegram_channel_id, api_id, api_hash, data_path,
@@ -118,6 +118,7 @@ scr.nodelay(True)
 scr.timeout(5000)
 # wait for 5 seconds or a key to be pressed to refresh the screen
 
+selected = 0
 try:
     while True:
         scr.erase()
@@ -128,21 +129,30 @@ try:
 
         # program name
         scr.addstr(0, max(round((tlX-len(NAME))/2), 0), NAME, curses.A_NORMAL)
-        # used sessions
+        # Nr of used sessions
         scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr, curses.A_NORMAL)
         # transfer info
+
         i = 2
         for sessionStr, info in tHand.transferInfo.items():
-            if not len(info):
+            if not info: # empty
                 continue
+
+            if str(selected) == sessionStr:
+                for j in range(i, i+3):
+                    scr.addch(j, 0, '*')
 
             scr.addstr(i, 2, T_STR[info[3]-1], curses.A_NORMAL)
             scr.addstr(i+1, 2, "/".join(info[0]), curses.A_NORMAL)
-            scr.addstr(i+2, 2, "{} - {}".format(info[2], bytesConvert(info[1])))
+            scr.addstr(i+2, 2, "{} - {}".format(info[2], bytesConvert(info[1])), curses.A_NORMAL)
             i+=4
 
         ch = scr.getch()
-        if ch == 17: # Ctrl+Q
+        if ch == curses.KEY_UP and selected > 1:
+            selected -= 1
+        elif ch == curses.KEY_DOWN and selected < tHand.max_sessions - len(tHand.freeSessions):
+            selected += 1
+        elif ch == 17: # Ctrl+Q
             break
 except KeyboardInterrupt:
     pass
