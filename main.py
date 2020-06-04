@@ -33,13 +33,8 @@ class transferHandler:
 
         # initialize all the pyrCaller sessions that will be used
         for i in range(1, max_sessions+1):
-            if i == 1:
-                self.transferInfo[str(i)] = [["aa", "bb.txt"], 19212, "40%", 1]
-            elif i == 2:
-                self.transferInfo[str(i)] = [["Linux", "Alpine.iso"], 99999999, "10%", 2]
-            else:
-                self.transferInfo[str(i)] = []
-                self.freeSessions.append(str(i))
+            self.transferInfo[str(i)] = []
+            self.freeSessions.append(str(i))
 
             self.tgObject[str(i)] = pyrCaller.pyrogramFuncs(
                     telegram_channel_id, api_id, api_hash, data_path,
@@ -131,8 +126,8 @@ try:
         scr.addstr(0, max(round((tlX-len(NAME))/2), 0), NAME, curses.A_NORMAL)
         # Nr of used sessions
         scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr, curses.A_NORMAL)
-        # transfer info
 
+        # transfer info
         i = 2
         for sessionStr, info in tHand.transferInfo.items():
             if not info: # empty
@@ -150,11 +145,16 @@ try:
         ch = scr.getch()
         if ch == curses.KEY_UP and selected > 1:
             selected -= 1
+
         elif ch == curses.KEY_DOWN and selected < tHand.max_sessions - len(tHand.freeSessions):
             selected += 1
+
+        elif ch == ord(cfg['keybinds']['upload']):
+            break
+
         elif ch == 17: # Ctrl+Q
             break
-except KeyboardInterrupt:
+except KeyboardInterrupt: # dont crash the terminal when quitting with Ctrl+c
     pass
 
 # exit
