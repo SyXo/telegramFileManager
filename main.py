@@ -95,67 +95,88 @@ class transferHandler:
         freeSession(sFile)
 
 
-cfg = configparser.ConfigParser()
-cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
+def getInput(scr, r, c, promptString):
+    curses.echo()
+    stdscr.addstr(r, c, promptString)
+    stdscr.refresh()
+    input = scr.getstr(r + 1, c, 20)
+    return input
 
-tHand = transferHandler(cfg['telegram']['channel_id'], cfg['telegram']['api_id'],
-                        cfg['telegram']['api_hash'], cfg['paths']['data_path'],
-                        cfg['paths']['tmp_path'], int(cfg['telegram']['max_sessions']))
 
-# initialize the screen
-scr = curses.initscr()
+def main():
+    cfg = configparser.ConfigParser()
+    cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
 
-curses.noecho()
-curses.cbreak()
-curses.curs_set(False)
-scr.keypad(True)
-scr.nodelay(True)
-scr.timeout(5000)
-# wait for 5 seconds or a key to be pressed to refresh the screen
+    tHand = transferHandler(cfg['telegram']['channel_id'], cfg['telegram']['api_id'],
+                            cfg['telegram']['api_hash'], cfg['paths']['data_path'],
+                            cfg['paths']['tmp_path'], int(cfg['telegram']['max_sessions']))
 
-selected = 0
-try:
-    while True:
-        scr.erase()
-        tlX, tlY = os.get_terminal_size(0)
+    # initialize the screen
+    scr = curses.initscr()
 
-        usedSessionStr = "[ {} of {} ]".format(
-            tHand.max_sessions - len(tHand.freeSessions), tHand.max_sessions)
+    curses.noecho()
+    curses.cbreak()
+    curses.curs_set(False)
+    scr.keypad(True)
+    scr.nodelay(True)
+    scr.timeout(5000)
+    # wait for 5 seconds or a key to be pressed to refresh the screen
 
-        # program name
-        scr.addstr(0, max(round((tlX-len(NAME))/2), 0), NAME, curses.A_NORMAL)
-        # Nr of used sessions
-        scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr, curses.A_NORMAL)
+    downloadMenu = uploadMenu = selected = 0
+    try:
+        while True:
+            scr.erase()
+            tlX, tlY = os.get_terminal_size(0)
 
-        # transfer info
-        i = 2
-        for sessionStr, info in tHand.transferInfo.items():
-            if not info: # empty
-                continue
+            usedSessionStr = "[ {} of {} ]".format(
+                tHand.max_sessions - len(tHand.freeSessions), tHand.max_sessions)
 
-            if str(selected) == sessionStr:
-                for j in range(i, i+3):
-                    scr.addch(j, 0, '*')
+            # program name
+            scr.addstr(0, max(round((tlX-len(NAME))/2), 0), NAME, curses.A_NORMAL)
+            # Nr of used sessions
+            scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr, curses.A_NORMAL)
 
-            scr.addstr(i, 2, T_STR[info[3]-1], curses.A_NORMAL)
-            scr.addstr(i+1, 2, "/".join(info[0]), curses.A_NORMAL)
-            scr.addstr(i+2, 2, "{} - {}".format(info[2], bytesConvert(info[1])), curses.A_NORMAL)
-            i+=4
+            # transfer info
+            i = 2
+            for sessionStr, info in tHand.transferInfo.items():
+                if not info: # empty
+                    continue
 
-        ch = scr.getch()
-        if ch == curses.KEY_UP and selected > 1:
-            selected -= 1
+                if str(selected) == sessionStr:
+                    for j in range(i, i+3):
+                        scr.addch(j, 0, '*')
 
-        elif ch == curses.KEY_DOWN and selected < tHand.max_sessions - len(tHand.freeSessions):
-            selected += 1
+                scr.addstr(i, 2, T_STR[info[3]-1], curses.A_NORMAL)
+                scr.addstr(i+1, 2, "/".join(info[0]), curses.A_NORMAL)
+                scr.addstr(i+2, 2, "{} - {}".format(info[2], bytesConvert(info[1])),
+                           curses.A_NORMAL)
+                i+=4
 
-        elif ch == ord(cfg['keybinds']['upload']):
-            break
+            if uploadMenu:
+                choice = getInput(scr, 5, 5, "File Path")
+                uploadMenu = 0
 
-        elif ch == 17: # Ctrl+Q
-            break
-except KeyboardInterrupt: # dont crash the terminal when quitting with Ctrl+c
-    pass
+            ch = scr.getch()
+            if ch == curses.KEY_UP and selected > 1:
+                selected -= 1
 
-# exit
-curses.endwin()
+            elif ch == curses.KEY_DOWN and selected < tHand.max_sessions - len(tHand.freeSessions):
+                selected += 1
+
+            elif ch == ord(cfg['keybinds']['upload']):
+                uploadMenu = 1
+
+            elif ch == ord(cfg['keybinds']['download']):
+                downloadMenu = 1
+
+            elif ch == 17: # Ctrl+Q
+                break
+    except KeyboardInterrupt: # dont crash the terminal when quitting with Ctrl+c
+        pass
+
+    # exit
+    curses.endwin()
+
+
+if __name__ == "__main__":
+    main()
