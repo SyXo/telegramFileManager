@@ -63,7 +63,7 @@ print(fileData)
 print("Starting downloading of file")
 tg.downloadFiles(fileData[0])
 if resumeTest:
-    tg.downloadFiles(progressDownload[0], 1)
+    tg.downloadFiles(progressDownload[0], progressDownload[2])
 
 print("Deleting temp files from telegram")
 if input("this is very dangerous to run, make sure the telegram channel doesn't contain any other files, if you are sure type yes: ") == 'yes':

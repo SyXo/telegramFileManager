@@ -140,13 +140,16 @@ class pyrogramFuncs:
             # return file information
 
 
-    def downloadFiles(self, fileData=[], isResuming=0):
-        if (not fileData) or not (type(fileData) is list):
+    def downloadFiles(self, fileData=[], IDindex=0):
+        if ((not fileData) or not (type(fileData) is list) or
+                              not (type(IDindex)  is  int)
+           ):
             raise TypeError("Bad or empty value given.")
+        if IDindex < 0:
+            raise IndexError("IDindex should not be negative")
 
-        if len(fileData[2]) == 1 and not isResuming: # no chunks
+        if len(fileData[2]) == 1: # no chunks
             # Single chunk download doesn't call data_fun
-
             copiedFilePath=path.join(self.data_path,"downloads",fileData[0][-1])
 
             self.now_transmitting = 1
@@ -169,7 +172,7 @@ class pyrogramFuncs:
             return 1
 
         # else has chunks
-        i = 0
+        i = IDindex
 
         copiedFilePath = path.join(self.tmp_path, "tfilemgr",
                                    "{}_chunk".format(fileData[0][-1]))
@@ -200,13 +203,11 @@ class pyrogramFuncs:
 
             if i == len(fileData[2]):
                 # finished or canceled with 1 but it was last chunk
-                self.should_stop = 0 # modify this here so we return 1
+                self.should_stop = 0 # modify this so we return 1
                 break
 
             # stores only ids of files that haven't yet been downloaded
-            remainingID = fileData[2][i-len(fileData[2]):]
-            self.data_fun([[fileData[0], fileData[1], remainingID], 2],
-                          self.s_file)
+            self.data_fun([fileData, 2, i], self.s_file)
 
             if self.should_stop == 1:
                 # issued normal cancel
@@ -216,7 +217,7 @@ class pyrogramFuncs:
         self.now_transmitting = 0
 
         if self.should_stop:
-            self.should_stop = 0
+            self.should_stop = 0 # don't confuse future transfers
             return 0
 
         return 1
@@ -225,7 +226,6 @@ class pyrogramFuncs:
     def deleteUseless(self, IDList=[]):
         if (not IDList) or not (type(IDList) is list):
             raise TypeError("Bad or empty value given.")
-
 
         deletedList = []
         self.telegram.start()
@@ -247,7 +247,6 @@ class pyrogramFuncs:
         #Values of stop_type:
         #1 - Wait until the current chunk download ended and appended
         #2 - Cancel downloading, will still wait for appending to finish
-
         if (not stop_type) or not (type(stop_type) is int):
             raise TypeError("Bad or empty value given.")
         if not stop_type in [1, 2]:
