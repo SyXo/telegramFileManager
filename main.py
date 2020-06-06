@@ -100,17 +100,24 @@ class transferHandler:
 
         sFile = useSession() # Use a free session
 
+        with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'r') as f:
+            index = int(f.read())
+
         self.transferInfo[sFile] = [fileData[0][0], fileData[0][1], "0%", action]
         if action == 1:
             transferJob = threading.Thread(self.tgObject[sFile].uploadFiles,
-                                           args=(fileData))
+                                           args=(fileData, index))
         else:
             transferJob = threading.Thread(self.tgObject[sFile].downloadFiles,
-                                           args=(fileData))
+                                           args=(fileData, index))
 
-        transferJob.start()
+        finalData, index = transferJob.start()
+
+        with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'w') as f:
+            f.write(str(index))
 
         freeSession(sFile)
+        return finalData
 
 
 def main():
@@ -140,8 +147,9 @@ def main():
 
             if uploadMenu:
                 strData = getInputs(scr, ["File Path:", "Relative Path:"])
+                fileData = [[strData[1].split('/'), os.path.getsize(strData[0]), []], strData[0], 0]
 
-                #tHand.transfer(fileData, 1)
+                tHand.transfer(fileData, 1)
                 uploadMenu = 0
                 scr.erase()
 
