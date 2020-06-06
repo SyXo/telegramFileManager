@@ -45,8 +45,10 @@ class pyrogramFuncs:
         self.should_stop = 0
 
 
-    def uploadFiles(self, fileData=[]):
-        if (not fileData) or not (type(fileData) is list):
+    def uploadFiles(self, fileData=[], index=0):
+        if ((not fileData) or not (type(fileData) is list) or
+            (not index)    or not (type(index)    is  int)
+           ):
             raise TypeError("Bad or empty value given.")
 
         if fileData[0][1] <= 1572864000: # less than 1500M don't split file
@@ -76,7 +78,7 @@ class pyrogramFuncs:
             remove(copiedFilePath)
             # finished uploading, delete file
 
-            return [[fileData[0][0], fileData[0][1], [fileID]], fileData[3]+1]
+            return [fileData[0][0], fileData[0][1], [fileID]], index+1
             # return file information
 
 
