@@ -84,7 +84,7 @@ class pyrogramFuncs:
         fileID = fileData[0][2].copy()
         nrChunks = (fileData[0][1] // 1572864000) + 1 # Used by progress fun
 
-        if len(fileID) == 0: # if not resuming upload
+        if not fileID: # if not resuming upload
             localIndex = fileData[3]
             chunkIndex = i = 0
             in_file = fileData[1]
