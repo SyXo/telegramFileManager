@@ -19,6 +19,24 @@ def bytesConvert(rawBytes):
     else: return "{} Bytes".format(rawBytes)
 
 
+def getInputs(scr, prompts):
+    scr.nodelay(False)
+    curses.echo()
+    curses.curs_set(True)
+
+    i = 0
+    inputs = []
+    for prompt in prompts:
+        scr.addstr(i, 0, prompt)
+        inputs.append(scr.getstr(i + 1, 0, 255))
+        i+=3
+
+    curses.curs_set(False)
+    curses.noecho()
+    scr.nodelay(True)
+    return inputs
+
+
 class transferHandler:
     def __init__(self, telegram_channel_id, api_id, api_hash,
                  data_path, tmp_path, max_sessions):
@@ -95,14 +113,6 @@ class transferHandler:
         freeSession(sFile)
 
 
-def getInput(scr, r, c, promptString):
-    curses.echo()
-    stdscr.addstr(r, c, promptString)
-    stdscr.refresh()
-    input = scr.getstr(r + 1, c, 20)
-    return input
-
-
 def main():
     cfg = configparser.ConfigParser()
     cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
@@ -128,6 +138,13 @@ def main():
             scr.erase()
             tlX, tlY = os.get_terminal_size(0)
 
+            if uploadMenu:
+                strData = getInputs(scr, ["File Path:", "Relative Path:"])
+
+                #tHand.transfer(fileData, 1)
+                uploadMenu = 0
+                scr.erase()
+
             usedSessionStr = "[ {} of {} ]".format(
                 tHand.max_sessions - len(tHand.freeSessions), tHand.max_sessions)
 
@@ -151,10 +168,6 @@ def main():
                 scr.addstr(i+2, 2, "{} - {}".format(info[2], bytesConvert(info[1])),
                            curses.A_NORMAL)
                 i+=4
-
-            if uploadMenu:
-                choice = getInput(scr, 5, 5, "File Path")
-                uploadMenu = 0
 
             ch = scr.getch()
             if ch == curses.KEY_UP and selected > 1:
