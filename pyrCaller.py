@@ -54,7 +54,7 @@ class pyrogramFuncs:
         if fileData[0][1] <= 1572864000: # less than 1500M don't split file
             # Single chunk upload doesn't call data_fun
             copiedFilePath = path.join(self.tmp_path, "tfilemgr",
-                "{}_{}".format(self.s_file, fileData[3]))
+                "{}_{}".format(self.s_file, index))
 
             copyfile(fileData[1], copiedFilePath)
 
@@ -87,20 +87,18 @@ class pyrogramFuncs:
         nrChunks = (fileData[0][1] // 1572864000) + 1 # Used by progress fun
 
         if not fileID: # if not resuming upload
-            localIndex = fileData[3]
             chunkIndex = i = 0
             in_file = fileData[1]
         else: # resuming upload
-            localIndex = fileData[2]
-            chunkIndex = fileData[4]
+            chunkIndex = fileData[3]
             i = len(fileID) # Used by progress fun
-            in_file = fileData[3]
+            in_file = fileData[2]
 
         self.now_transmitting = 2
         self.telegram.start()
         while True: # not end of file
             copiedFilePath = path.join(self.tmp_path, "tfilemgr",
-                "{}_{}".format(self.s_file, localIndex))
+                "{}_{}".format(self.s_file, index))
 
             chunkIndex = self.extern.splitFile(chunkIndex,
                 in_file.encode('ascii'),
@@ -124,11 +122,11 @@ class pyrogramFuncs:
             if not chunkIndex:
                 break
 
-            localIndex += 1
+            index += 1
             i += 1
 
             self.data_fun([[fileData[0][0], fileData[0][1], fileID],
-                           1, localIndex, in_file, chunkIndex], self.s_file)
+                           1, in_file, chunkIndex], index, self.s_file)
 
             if self.should_stop == 1:
                 break
@@ -138,7 +136,7 @@ class pyrogramFuncs:
         self.should_stop = 0 # Set this to 0 no matter what
 
         if not chunkIndex: # finished uploading
-            return [[fileData[0][0], fileData[0][1], fileID], localIndex]
+            return [[fileData[0][0], fileData[0][1], fileID], index]
             # return file information
 
 
@@ -209,7 +207,7 @@ class pyrogramFuncs:
                 break
 
             # stores only ids of files that haven't yet been downloaded
-            self.data_fun([fileData, 2, i], self.s_file)
+            self.data_fun([fileData, 2, i], sFile=self.s_file)
 
             if self.should_stop == 1:
                 # issued normal cancel
