@@ -78,7 +78,7 @@ class pyrogramFuncs:
             remove(copiedFilePath)
             # finished uploading, delete file
 
-            return [fileData[0][0], fileData[0][1], [fileID]], index+1
+            return [[fileData[0][0], fileData[0][1], [fileID]], index+1]
             # return file information
 
 
