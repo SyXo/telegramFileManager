@@ -146,7 +146,8 @@ class pyrogramFuncs:
 
         if len(fileData[0][2]) == 1: # no chunks
             # Single chunk download doesn't call data_fun
-            copiedFilePath=path.join(self.data_path,"downloads",fileData[0][-1])
+            copiedFilePath=path.join(self.data_path,"downloads",
+                                     fileData[0][0][-1])
 
             self.now_transmitting = 1
             self.telegram.start()
@@ -203,7 +204,7 @@ class pyrogramFuncs:
                 break
 
             # stores only ids of files that haven't yet been downloaded
-            self.data_fun([fileData, 2], sFile=self.s_file)
+            self.data_fun([fileData[0], i, 2], sFile=self.s_file)
 
             if self.should_stop == 1:
                 # issued normal cancel
