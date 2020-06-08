@@ -94,33 +94,44 @@ class transferHandler:
                 f.write(str(index))
 
 
-    def transfer(self, fileData=[], action=0):
-        # use same function for uploading and downloading as they are similar
-        # action is 1 for uploading and 2 for downloading
+    def upload(self, fileData=[]):
         if (not fileData) or not (type(fileData) is list):
-            raise TypeError("Bad or empty value given.")
-        if (not sFile) or not (type(sFile) is str):
             raise TypeError("Bad or empty value given.")
 
         sFile = useSession() # Use a free session
+        self.transferInfo[sFile] = [fileData[0][0], fileData[0][1], "0%", 1]
 
         with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'r') as f:
             index = int(f.read())
 
-        self.transferInfo[sFile] = [fileData[0][0], fileData[0][1], "0%", action]
-        if action == 1:
-            transferJob = threading.Thread(self.tgObject[sFile].uploadFiles,
-                                           args=(fileData, index))
-        else:
-            transferJob = threading.Thread(self.tgObject[sFile].downloadFiles,
-                                           args=(fileData, index))
+        transferJob = threading.Thread(self.tgObject[sFile].uploadFiles,
+                                       args=(fileData, index))
+        finalData = transferJob.start()
 
-        finalData, index = transferJob.start()
+        os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
 
         with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'w') as f:
-            f.write(str(index))
+            f.write(str(finalData[1]))
 
         freeSession(sFile)
+
+        return finalData[0]
+
+
+    def download(self, fileData=[]):
+        if (not fileData) or not (type(fileData) is list):
+            raise TypeError("Bad or empty value given.")
+
+        sFile = useSession() # Use a free session
+        self.transferInfo[sFile] = [fileData[0][0], fileData[0][1], "0%", 2]
+
+        transferJob = threading.Thread(self.tgObject[sFile].downloadFiles,
+                                       args=(fileData))
+        finalData = transferJob.start()
+
+        os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
+        freeSession(sFile)
+
         return finalData
 
 
