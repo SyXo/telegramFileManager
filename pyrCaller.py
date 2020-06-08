@@ -140,7 +140,7 @@ class pyrogramFuncs:
             # return file information
 
 
-    def downloadFiles(self, fileData=[], IDindex=0):
+    def downloadFiles(self, fileData=[]):
         if ((not fileData) or not (type(fileData) is list) or
                               not (type(IDindex)  is  int)
            ):
@@ -172,7 +172,7 @@ class pyrogramFuncs:
             return 1
 
         # else has chunks
-        i = IDindex
+        i = fileData[1] # this is the total number of chunks
 
         copiedFilePath = path.join(self.tmp_path, "tfilemgr",
                                    "{}_chunk".format(fileData[0][-1]))
