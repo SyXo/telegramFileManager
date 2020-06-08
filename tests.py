@@ -45,7 +45,7 @@ def fileDataFun(fileData=[], recvIndex=0, sFile=''):
         index = recvIndex
         print("{} {}".format(fileData, index))
     elif fileData[1] == 2:
-        progressDownload = fileData.copy()
+        progressDownload = fileData[0].copy()
         print(fileData)
 
 tg = pyrCaller.pyrogramFuncs(telegram_channel_id, cfg.api_id, cfg.api_hash,
@@ -67,7 +67,7 @@ print(fileData)
 print("Starting downloading of file")
 tg.downloadFiles([fileData[0], 0])
 if resumeTest:
-    tg.downloadFiles([progressDownload[0], progressDownload[2]])
+    tg.downloadFiles(progressDownload)
 
 print("Deleting temp files from telegram")
 if input("this is very dangerous to run, make sure the telegram channel doesn't contain any other files, if you are sure type yes: ") == 'yes':

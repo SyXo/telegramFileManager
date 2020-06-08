@@ -144,7 +144,7 @@ class pyrogramFuncs:
         if (not fileData) or not (type(fileData) is list):
             raise TypeError("Bad or empty value given.")
 
-        if len(fileData[2]) == 1: # no chunks
+        if len(fileData[0][2]) == 1: # no chunks
             # Single chunk download doesn't call data_fun
             copiedFilePath=path.join(self.data_path,"downloads",fileData[0][-1])
 
@@ -152,7 +152,7 @@ class pyrogramFuncs:
             self.telegram.start()
 
             self.telegram.get_messages(self.telegram_channel_id,
-                                       fileData[2][0]).download(
+                                       fileData[0][2][0]).download(
                 file_name=copiedFilePath,
                 progress=self.progress_fun,
                 progress_args=(0, 1, self.s_file)
@@ -175,12 +175,12 @@ class pyrogramFuncs:
 
         self.now_transmitting = 2
         self.telegram.start()
-        while i < len(fileData[2]):
+        while i < len(fileData[0][2]):
             self.telegram.get_messages(self.telegram_channel_id,
-                                       fileData[2][i]).download(
+                                       fileData[0][2][i]).download(
                     file_name=copiedFilePath,
                     progress=self.progress_fun,
-                    progress_args=(i, len(fileData[2]), self.s_file)
+                    progress_args=(i, len(fileData[0][2]), self.s_file)
             )
 
             if self.should_stop == 2:
@@ -191,19 +191,19 @@ class pyrogramFuncs:
             self.extern.concatFiles(
                 copiedFilePath.encode('ascii'),
                 path.join(self.data_path, "downloads",
-                          fileData[0][-1]).encode('ascii'),
+                          fileData[0][0][-1]).encode('ascii'),
                 1000
             )
 
             remove(copiedFilePath)
 
-            if i == len(fileData[2]):
+            if i == len(fileData[0][2]):
                 # finished or canceled with 1 but it was last chunk
                 self.should_stop = 0 # modify this so we return 1
                 break
 
             # stores only ids of files that haven't yet been downloaded
-            self.data_fun([fileData, 2, i], sFile=self.s_file)
+            self.data_fun([fileData, 2], sFile=self.s_file)
 
             if self.should_stop == 1:
                 # issued normal cancel
