@@ -141,12 +141,8 @@ class pyrogramFuncs:
 
 
     def downloadFiles(self, fileData=[]):
-        if ((not fileData) or not (type(fileData) is list) or
-                              not (type(IDindex)  is  int)
-           ):
+        if (not fileData) or not (type(fileData) is list):
             raise TypeError("Bad or empty value given.")
-        if IDindex < 0:
-            raise IndexError("IDindex should not be negative")
 
         if len(fileData[2]) == 1: # no chunks
             # Single chunk download doesn't call data_fun
