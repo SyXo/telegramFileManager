@@ -85,9 +85,13 @@ class transferHandler:
         self.transferInfo[sFile][2] = "{}%".format(prg)
 
 
-    def saveFileData(self, fileData, sFile):
+    def saveFileData(self, fileData, index, sFile):
         with open(os.path.join(self.data_path, "resume_{}".format(sFile)), 'w') as f:
             f.write(str(fileData))
+
+        if fileData[1] == 1: # uploading
+            with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'w') as f:
+                f.write(str(index))
 
 
     def transfer(self, fileData=[], action=0):
