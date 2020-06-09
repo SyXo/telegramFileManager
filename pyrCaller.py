@@ -105,7 +105,7 @@ class pyrogramFuncs:
 
             msg_obj = self.telegram.send_document(
                     self.telegram_channel_id,
-                    copiedFilePath,
+                    copied_file_path,
                     progress=self.progress_fun,
                     progress_args=(len(fileData['fileID']), tot_chunk,
                                    self.s_file)
