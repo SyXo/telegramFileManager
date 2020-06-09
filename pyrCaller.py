@@ -107,7 +107,7 @@ class pyrogramFuncs:
                     self.telegram_channel_id,
                     copied_file_path,
                     progress=self.progress_fun,
-                    progress_args=(len(fileData['fileID']), tot_chunk,
+                    progress_args=(len(fileData['fileID']), tot_chunks,
                                    self.s_file)
             )
 
