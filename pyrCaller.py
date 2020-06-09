@@ -41,30 +41,28 @@ class pyrogramFuncs:
         self.s_file = s_file # we need this for the naming when uploading
         self.progress_fun = progress_fun
         self.data_fun = data_fun
-        self.now_transmitting = 0 # no, single chunk, multi chunk up (0-2)
+        self.now_transmitting = 0 # no, single chunk, multi chunk (0-2)
         self.should_stop = 0
 
 
-    def uploadFiles(self, fileData=[], index=0):
-        if ((not fileData) or not (type(fileData) is list) or
-            (not index)    or not (type(index)    is  int)
-           ):
+    def uploadFiles(self, fileData={}):
+        if (not fileData) or not (type(fileData) is dict):
             raise TypeError("Bad or empty value given.")
 
-        if fileData[0][1] <= 1572864000: # less than 1500M don't split file
+        if fileData['size'] <= 1572864000: # less than 1500M don't split file
             # Single chunk upload doesn't call data_fun
-            copiedFilePath = path.join(self.tmp_path, "tfilemgr",
-                "{}_{}".format(self.s_file, index))
+            copied_file_path = path.join(self.tmp_path, "tfilemgr",
+                "{}_{}".format(self.s_file, fileData['index']))
 
-            copyfile(fileData[1], copiedFilePath)
+            copyfile(fileData['path'], copied_file_path)
 
             self.now_transmitting = 1
             self.telegram.start()
 
-            fileID = self.telegram.send_document(
-                    self.telegram_channel_id, copiedFilePath,
+            file_ID = self.telegram.send_document(
+                    self.telegram_channel_id, copied_file_path,
                     progress=self.progress_fun,
-                    progress_args=(0, 1, self.s_file)
+                    progress_args=(0, 1, self.s_file) # 0 out of 1 chunks
                 ).message_id
 
             self.telegram.stop()
@@ -75,58 +73,52 @@ class pyrogramFuncs:
                 self.should_stop = 0
                 return
 
-            remove(copiedFilePath)
-            # finished uploading, delete file
+            remove(copied_file_path) # finished uploading, delete file
 
-            return [[fileData[0][0], fileData[0][1], [fileID]], index+1]
             # return file information
-
+            return {'rPath'    : fileData['rPath'],
+                    'fileID'   : [file_ID], # keep as list for compatibility
+                    'IDindex'  : 0,
+                    'size'     : fileData['size'],
+                    'resuming' : 0}
 
         # else file should be split
-        fileID = fileData[0][2].copy()
-        nrChunks = (fileData[0][1] // 1572864000) + 1 # Used by progress fun
-
-        if not fileID: # if not resuming upload
-            chunkIndex = i = 0
-            in_file = fileData[1]
-        else: # resuming upload
-            chunkIndex = fileData[3]
-            i = len(fileID) # Used by progress fun
-            in_file = fileData[2]
+        tot_chunks = (fileData['size'] // 1572864000) + 1 # used by progress fun
 
         self.now_transmitting = 2
         self.telegram.start()
         while True: # not end of file
-            copiedFilePath = path.join(self.tmp_path, "tfilemgr",
-                "{}_{}".format(self.s_file, index))
+            copied_file_path = path.join(self.tmp_path, "tfilemgr",
+                "{}_{}".format(self.s_file, fileData['index']))
 
-            chunkIndex = self.extern.splitFile(chunkIndex,
-                in_file.encode('ascii'),
-                copiedFilePath.encode('ascii'),
-                1572864, 1000)
+            fileData['chunkIndex'] = self.extern.splitFile(
+                fileData['chunkIndex'],
+                fileData['path'].encode('ascii'),
+                copied_file_path.encode('ascii'),
+                1572864, 1000
+            )
 
-            msgObj = self.telegram.send_document(
+            msg_obj = self.telegram.send_document(
                     self.telegram_channel_id,
                     copiedFilePath,
                     progress=self.progress_fun,
-                    progress_args=(i, nrChunks, self.s_file)
+                    progress_args=(len(fileData['fileID']), tot_chunk,
+                                   self.s_file)
             )
 
-            remove(copiedFilePath) # delete the chunk
+            remove(copied_file_path) # delete the chunk
 
             if self.should_stop == 2: # force stop
                 break
 
-            fileID.append(msgObj.message_id)
+            fileData['fileID'].append(msgObj.message_id)
 
-            if not chunkIndex:
+            if not fileData['chunkIndex']: # reached EOF
                 break
 
-            index += 1
-            i += 1
+            fileData['index'] += 1
 
-            self.data_fun([[fileData[0][0], fileData[0][1], fileID],
-                           1, in_file, chunkIndex], index, self.s_file)
+            self.data_fun(fileData, self.s_file, 1)
 
             if self.should_stop == 1:
                 break
@@ -135,8 +127,12 @@ class pyrogramFuncs:
         self.now_transmitting = 0
         self.should_stop = 0 # Set this to 0 no matter what
 
-        if not chunkIndex: # finished uploading
-            return [[fileData[0][0], fileData[0][1], fileID], index]
+        if not fileData['chunkIndex']: # finished uploading
+            return {'rPath'    : fileData['rPath'],
+                    'fileID'   : fileData['fileID'],
+                    'IDindex'  : 0,
+                    'size'     : fileData['size'],
+                    'resuming' : 0}
             # return file information
 
 

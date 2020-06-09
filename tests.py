@@ -13,8 +13,6 @@ tmp_path = path.expanduser("~/.tmp")
 telegram_channel_id = "me"
 resumeTest = 0
 toResume = True
-progressUpload = []
-progressDownload = []
 
 if len(sys.argv) > 1:
     if sys.argv[1] == "resume1":
@@ -34,7 +32,7 @@ def printProgress(current, total, current_chunk, total_chunks, sFile):
         tg.stop(resumeTest)
 
 
-def fileDataFun(fileData, dataType):
+def fileDataFun(fileData, sFile, dataType):
     # recvIndex is only for uploading
     global progressDownload
     global progressUpload
@@ -54,10 +52,12 @@ print("Starting uploading of file")
 
 # Do first time uploading and resuming upload in same function
 
-inputFileData = {'rPath'    : "temp/tfilemk_rand".split('/'),
-                 'path'     : tmp_file,
-                 'size'     : path.getsize(tmp_file),
-                 'resuming' : 0}
+inputFileData = {'rPath'      : "temp/tfilemk_rand".split('/'),
+                 'path'       : tmp_file,
+                 'size'       : path.getsize(tmp_file),
+                 'fileID'     : [],
+                 'index'      : 1,
+                 'chunkIndex' : 0}
 
 fileData = tg.uploadFiles(inputFileData)
 if resumeTest:
