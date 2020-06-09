@@ -187,7 +187,7 @@ class pyrogramFuncs:
             if self.should_stop == 2:
                 break
 
-            i+=1
+            fileData['IDindex']+=1
 
             self.extern.concatFiles(
                 copied_file_path.encode('ascii'),
