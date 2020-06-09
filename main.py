@@ -3,6 +3,8 @@ import curses
 import configparser
 import pyrCaller
 import threading
+import fileSelector
+import pickle
 
 NAME = "Telegram File Manager"
 T_STR = ["Uploading:", "Downloading:"]
@@ -35,6 +37,35 @@ def getInputs(scr, prompts):
     curses.noecho()
     scr.nodelay(True)
     return inputs
+
+
+def loadDatabase(data_path):
+    with open(os.path.join(data_path, "fileData"), 'rb') as f:
+        fileList = pickle.load(f)
+
+    fileList.sort()
+
+    totalSize = 0
+    fancyList = []
+
+    for i in fileList:
+        totalSize += i['size'] # integer addition
+
+        tempPath = '/'.join(i['path'])
+        fancyList.append({'title'   : "{}  {}".format(tempPath, bytesConvert(i['size'])),
+                          'path'    : i['path'],
+                          'fileIDs' : i['fileIDs'],
+                          'type'    : 'file'})
+
+    menu = {'title'   : "Select file to download:",
+            'type'    : 'menu',
+            'options' : fancyList}
+
+    m = fileSelector.CursesMenu(menu, len(menu['options'])+10)
+
+    return {'menu'       : m,
+            'totalSize'  : totalSize,
+            'totalCount' : len(fileList)}
 
 
 class transferHandler:
@@ -115,8 +146,6 @@ class transferHandler:
 
         freeSession(sFile)
 
-        return finalData[0]
-
 
     def download(self, fileData=[]):
         if (not fileData) or not (type(fileData) is list):
@@ -164,9 +193,12 @@ def main():
                 strData = getInputs(scr, ["File Path:", "Relative Path:"])
                 fileData = [[strData[1].split('/'), os.path.getsize(strData[0]), []], strData[0], 0]
 
-                tHand.transfer(fileData, 1)
+                tHand.upload(fileData, 1)
                 uploadMenu = 0
                 scr.erase()
+
+            elif downloadMenu:
+                downloadMenu = 0
 
             usedSessionStr = "[ {} of {} ]".format(
                 tHand.max_sessions - len(tHand.freeSessions), tHand.max_sessions)
@@ -195,13 +227,11 @@ def main():
             ch = scr.getch()
             if ch == curses.KEY_UP and selected > 1:
                 selected -= 1
-
             elif ch == curses.KEY_DOWN and selected < tHand.max_sessions - len(tHand.freeSessions):
                 selected += 1
 
             elif ch == ord(cfg['keybinds']['upload']):
                 uploadMenu = 1
-
             elif ch == ord(cfg['keybinds']['download']):
                 downloadMenu = 1
 
