@@ -34,19 +34,18 @@ def printProgress(current, total, current_chunk, total_chunks, sFile):
         tg.stop(resumeTest)
 
 
-def fileDataFun(fileData=[], recvIndex=0, sFile=''):
+def fileDataFun(fileData, dataType):
     # recvIndex is only for uploading
     global progressDownload
     global progressUpload
     global index
 
-    if fileData[1] == 1:
+    print(fileData)
+
+    if dataType == 1:
         progressUpload = fileData.copy()
-        index = recvIndex
-        print("{} {}".format(fileData, index))
-    elif fileData[1] == 2:
-        progressDownload = fileData[0].copy()
-        print(fileData)
+    else:
+        progressDownload = fileData.copy()
 
 tg = pyrCaller.pyrogramFuncs(telegram_channel_id, cfg.api_id, cfg.api_hash,
                              data_path,tmp_path,"1",printProgress,fileDataFun)
@@ -55,17 +54,19 @@ print("Starting uploading of file")
 
 # Do first time uploading and resuming upload in same function
 
-inputFileData = [["temp/tfilemk_rand".split("/"), path.getsize(tmp_file), []],
-                 tmp_file, 0]
+inputFileData = {'rPath'    : "temp/tfilemk_rand".split('/'),
+                 'path'     : tmp_file,
+                 'size'     : path.getsize(tmp_file),
+                 'resuming' : 0}
 
-fileData = tg.uploadFiles(inputFileData, 1)
+fileData = tg.uploadFiles(inputFileData)
 if resumeTest:
-    fileData = tg.uploadFiles(progressUpload, index)
+    fileData = tg.uploadFiles(progressUpload)
 
 toResume = True
 print(fileData)
 print("Starting downloading of file")
-tg.downloadFiles([fileData[0], 0])
+tg.downloadFiles(fileData)
 if resumeTest:
     tg.downloadFiles(progressDownload)
 

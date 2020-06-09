@@ -53,8 +53,8 @@ def loadDatabase(data_path):
 
         tempPath = '/'.join(i['path'])
         fancyList.append({'title'   : "{}  {}".format(tempPath, bytesConvert(i['size'])),
-                          'path'    : i['path'],
-                          'fileIDs' : i['fileIDs'],
+                          'rPath'   : i['path'],
+                          'fileID'  : i['fileIDs'],
                           'type'    : 'file'})
 
     menu = {'title'   : "Select file to download:",
