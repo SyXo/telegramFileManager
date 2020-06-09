@@ -12,6 +12,12 @@ Don't upload files that are in the same directory as data_path
 
 The path of the uploaded file should only have ASCII characters,
 because the string is transmitted to a C function
+
+Due to how files are downloaded, downloading 2 files with the same name
+(not path) at the same time will cause problems.
+
+Also when a file with same name as one of previous files has been downloaded
+then the original file will be replaced. (If it has not been moved)
 '''
 
 from ctypes import *
@@ -136,23 +142,23 @@ class pyrogramFuncs:
             # return file information
 
 
-    def downloadFiles(self, fileData=[]):
-        if (not fileData) or not (type(fileData) is list):
+    def downloadFiles(self, fileData={}):
+        if (not fileData) or not (type(fileData) is dict):
             raise TypeError("Bad or empty value given.")
 
-        if len(fileData[0][0][2]) == 1: # no chunks
+        if len(fileData['fileID']) == 1: # no chunks
             # Single chunk download doesn't call data_fun
-            copiedFilePath=path.join(self.data_path,"downloads",
-                                     fileData[0][0][-1])
+            copied_file_path = path.join(self.data_path, "downloads",
+                                         fileData['rPath'][-1])
 
             self.now_transmitting = 1
             self.telegram.start()
 
             self.telegram.get_messages(self.telegram_channel_id,
-                                       fileData[0][2][0]).download(
-                file_name=copiedFilePath,
+                                       fileData['fileID'][0]).download(
+                file_name=copied_file_path,
                 progress=self.progress_fun,
-                progress_args=(0, 1, self.s_file)
+                progress_args=(0, 1, self.s_file) # 0 out of 1 chunks
             )
 
             self.telegram.stop()
@@ -165,19 +171,19 @@ class pyrogramFuncs:
             return 1
 
         # else has chunks
-        i = fileData[1] # this is the total number of chunks
-
-        copiedFilePath = path.join(self.tmp_path, "tfilemgr",
-                                   "{}_chunk".format(fileData[0][-1]))
+        copied_file_path = path.join(self.tmp_path, "tfilemgr",
+                                   "{}_chunk".format(fileData['rPath'][-1]))
 
         self.now_transmitting = 2
         self.telegram.start()
-        while i < len(fileData[0][0][2]):
+        while fileData['IDindex'] < len(fileData['fileID']):
             self.telegram.get_messages(self.telegram_channel_id,
-                                       fileData[0][2][i]).download(
-                    file_name=copiedFilePath,
+                                       fileData['fileID'][fileData['IDindex']]
+                                       ).download(
+                    file_name=copied_file_path,
                     progress=self.progress_fun,
-                    progress_args=(i, len(fileData[0][0][2]), self.s_file)
+                    progress_args=(fileData['IDindex'], len(fileData['fileID']),
+                                   self.s_file)
             )
 
             if self.should_stop == 2:
@@ -186,21 +192,21 @@ class pyrogramFuncs:
             i+=1
 
             self.extern.concatFiles(
-                copiedFilePath.encode('ascii'),
+                copied_file_path.encode('ascii'),
                 path.join(self.data_path, "downloads",
-                          fileData[0][0][-1]).encode('ascii'),
+                          fileData['rPath'][-1]).encode('ascii'),
                 1000
             )
 
-            remove(copiedFilePath)
+            remove(copied_file_path)
 
-            if i == len(fileData[0][0][2]):
+            if fileData['IDindex'] == len(fileData['fileID']):
                 # finished or canceled with 1 but it was last chunk
-                self.should_stop = 0 # modify this so we return 1
+                self.should_stop = 0 # download finished
                 break
 
             # stores only ids of files that haven't yet been downloaded
-            self.data_fun([fileData[0], i, 2], sFile=self.s_file)
+            self.data_fun(fileData, self.s_file, 2)
 
             if self.should_stop == 1:
                 # issued normal cancel
