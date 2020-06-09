@@ -116,7 +116,7 @@ class pyrogramFuncs:
             if self.should_stop == 2: # force stop
                 break
 
-            fileData['fileID'].append(msgObj.message_id)
+            fileData['fileID'].append(msg_obj.message_id)
 
             if not fileData['chunkIndex']: # reached EOF
                 break
