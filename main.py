@@ -5,6 +5,7 @@ import pyrCaller
 import threading
 import fileSelector
 import pickle
+from operator import itemgetter
 
 NAME = "Telegram File Manager"
 T_STR = ["Uploading:", "Downloading:"]
@@ -30,7 +31,7 @@ def getInputs(scr, prompts):
     inputs = []
     for prompt in prompts:
         scr.addstr(i, 0, prompt)
-        inputs.append(scr.getstr(i + 1, 0, 255))
+        inputs.append(scr.getstr(i + 1, 0, 255)) # has a limit of 255 chars/input
         i+=3
 
     curses.curs_set(False)
@@ -43,7 +44,7 @@ def loadDatabase(data_path):
     with open(os.path.join(data_path, "fileData"), 'rb') as f:
         fileList = pickle.load(f)
 
-    fileList.sort()
+    fileList = sorted(fileList, key=itemgetter('rPath'))
 
     totalSize = 0
     fancyList = []
@@ -51,11 +52,11 @@ def loadDatabase(data_path):
     for i in fileList:
         totalSize += i['size'] # integer addition
 
-        tempPath = '/'.join(i['path'])
-        fancyList.append({'title'   : "{}  {}".format(tempPath, bytesConvert(i['size'])),
-                          'rPath'   : i['path'],
-                          'fileID'  : i['fileIDs'],
-                          'type'    : 'file'})
+        tempPath = '/'.join(i['rPath'])
+        fancyList.append({'title'  : "{}  {}".format(tempPath, bytesConvert(i['size'])),
+                          'rPath'  : i['rPath'],
+                          'fileID' : i['fileID'],
+                          'type'   : 'file'})
 
     menu = {'title'   : "Select file to download:",
             'type'    : 'menu',
