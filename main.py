@@ -7,9 +7,6 @@ import fileSelector
 import pickle
 from operator import itemgetter
 
-NAME = "Telegram File Manager"
-T_STR = ["Uploading:", "Downloading:"]
-
 def bytesConvert(rawBytes):
     if   rawBytes >= 16**10: # tbyte
         return "{} TBytes".format(round(rawBytes/16**10, 2))
@@ -37,14 +34,13 @@ def getInputs(scr, prompts):
     curses.curs_set(False)
     curses.noecho()
     scr.nodelay(True)
+    scr.erase()
     return inputs
 
 
 def loadDatabase(data_path):
     with open(os.path.join(data_path, "fileData"), 'rb') as f:
         fileList = pickle.load(f)
-
-    fileList = sorted(fileList, key=itemgetter('rPath'))
 
     totalSize = 0
     fancyList = []
@@ -64,10 +60,24 @@ def loadDatabase(data_path):
 
     m = fileSelector.CursesMenu(menu, len(menu['options'])+10)
 
-    return {'menu'       : m,
-            'totalSize'  : totalSize,
-            'totalCount' : len(fileList)}
+    return {'downloadMenu' : m,
+            'fileList'     : fileList,
+            'totalSize'    : totalSize,
+            'totalCount'   : len(fileList)}
 
+
+def updateDatabase(data_path, fileList, newInfo):
+    # Sorts the new dict into filelist
+    # then updates both in memory and to file
+    fileList.append(newInfo)
+    fileList.sort(key=itemgetter('rPath'))
+    # This could be slow, a faster alternative is bisect.insort,
+    # howewer, I couldn't find a way to sort by an item in dictionary
+
+    with open(os.path.join(data_path, "fileData"), 'wb') as f:
+        pickle.dump(fileList, f)
+
+    return fileList
 
 class transferHandler:
     def __init__(self, telegram_channel_id, api_id, api_hash,
@@ -117,8 +127,8 @@ class transferHandler:
         self.transferInfo[sFile][2] = "{}%".format(prg)
 
 
-    def saveFileData(self, fileData, index, sFile):
-        with open(os.path.join(self.data_path, "resume_{}".format(sFile)), 'w') as f:
+    def saveFileData(self, fileData, sFile, dataType):
+        with open(os.path.join(self.data_path, "resume_{}".format(sFile)), 'wb') as f:
             f.write(str(fileData))
 
         if fileData[1] == 1: # uploading
@@ -126,8 +136,8 @@ class transferHandler:
                 f.write(str(index))
 
 
-    def upload(self, fileData=[]):
-        if (not fileData) or not (type(fileData) is list):
+    def upload(self, fileData={}):
+        if (not fileData) or not (type(fileData) is dict):
             raise TypeError("Bad or empty value given.")
 
         sFile = useSession() # Use a free session
@@ -136,8 +146,10 @@ class transferHandler:
         with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'r') as f:
             index = int(f.read())
 
+        fileData['index'] = index
+
         transferJob = threading.Thread(self.tgObject[sFile].uploadFiles,
-                                       args=(fileData, index))
+                                       args=(fileData))
         finalData = transferJob.start()
 
         os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
@@ -166,6 +178,9 @@ class transferHandler:
 
 
 def main():
+    NAME = "Telegram File Manager"
+    T_STR = ["Uploading:", "Downloading:"]
+
     cfg = configparser.ConfigParser()
     cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
 
@@ -192,11 +207,16 @@ def main():
 
             if uploadMenu:
                 strData = getInputs(scr, ["File Path:", "Relative Path:"])
-                fileData = [[strData[1].split('/'), os.path.getsize(strData[0]), []], strData[0], 0]
+                fileData = {'rPath'      : strData[1].split('/'),
+                            'path'       : strData[0],
+                            'size'       : os.path.getsize(strData[0]),
+                            'fileID'     : [],
+                            'index'      : 0, # managed by transferHandler
+                            'chunkIndex' : 0,
+                            'type'       : 1}
 
-                tHand.upload(fileData, 1)
+                tHand.upload(fileData)
                 uploadMenu = 0
-                scr.erase()
 
             elif downloadMenu:
                 downloadMenu = 0
