@@ -32,15 +32,14 @@ def printProgress(current, total, current_chunk, total_chunks, sFile):
         tg.stop(resumeTest)
 
 
-def fileDataFun(fileData, sFile, dataType):
-    # recvIndex is only for uploading
+def fileDataFun(fileData, sFile):
     global progressDownload
     global progressUpload
     global index
 
     print(fileData)
 
-    if dataType == 1:
+    if fileData['type'] == 1:
         progressUpload = fileData.copy()
     else:
         progressDownload = fileData.copy()
@@ -57,7 +56,8 @@ inputFileData = {'rPath'      : "temp/tfilemk_rand".split('/'),
                  'size'       : path.getsize(tmp_file),
                  'fileID'     : [],
                  'index'      : 1,
-                 'chunkIndex' : 0}
+                 'chunkIndex' : 0,
+                 'type'       : 1}
 
 fileData = tg.uploadFiles(inputFileData)
 if resumeTest:

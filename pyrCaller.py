@@ -85,7 +85,8 @@ class pyrogramFuncs:
             return {'rPath'    : fileData['rPath'],
                     'fileID'   : [file_ID], # keep as list for compatibility
                     'IDindex'  : 0,
-                    'size'     : fileData['size']}
+                    'size'     : fileData['size'],
+                    'type'     : 2}
 
         # else file should be split
         tot_chunks = (fileData['size'] // 1572864000) + 1 # used by progress fun
