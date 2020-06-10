@@ -124,7 +124,7 @@ class pyrogramFuncs:
 
             fileData['index'] += 1
 
-            self.data_fun(fileData, self.s_file, 1)
+            self.data_fun(fileData, self.s_file)
 
             if self.should_stop == 1:
                 break
