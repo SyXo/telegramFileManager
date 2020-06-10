@@ -59,7 +59,7 @@ authorization
 ## Donation
 This project takes a lot of my time and donations would really motivate me to
 continue working on this. You can donate either in bitcoin
-```bc1qzm8yl7f84ttnz2hwagd3qje3hqzgzlj2y6ke46```
+```bc1q8h4r5vlje7yu4ya3vlslzju0td8zy0hayu0k6y```
 or to my Payeer `P56752419`, any amount helps and i will be very thankful to you.
 
 ## TODO
