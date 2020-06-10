@@ -87,13 +87,11 @@ class transferHandler:
         self.api_hash = api_hash
         self.data_path = data_path
         self.max_sessions = max_sessions
-        self.transferInfo = {}
         self.freeSessions = []
         self.tgObject = {}
 
         # initialize all the pyrCaller sessions that will be used
         for i in range(1, max_sessions+1):
-            self.transferInfo[str(i)] = []
             self.freeSessions.append(str(i))
 
             self.tgObject[str(i)] = pyrCaller.pyrogramFuncs(
@@ -124,7 +122,6 @@ class transferHandler:
 
     def saveProgress(self, current, total, current_chunk, total_chunks, sFile):
         prg=int(((current/total/total_chunks)+(current_chunk/total_chunks))*100)
-        self.transferInfo[sFile][2] = "{}%".format(prg)
 
 
     def saveFileData(self, fileData, sFile, dataType):
@@ -141,7 +138,6 @@ class transferHandler:
             raise TypeError("Bad or empty value given.")
 
         sFile = useSession() # Use a free session
-        self.transferInfo[sFile] = [fileData[0][0], fileData[0][1], "0%", 1]
 
         with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'r') as f:
             index = int(f.read())
@@ -165,7 +161,6 @@ class transferHandler:
             raise TypeError("Bad or empty value given.")
 
         sFile = useSession() # Use a free session
-        self.transferInfo[sFile] = [fileData[0][0], fileData[0][1], "0%", 2]
 
         transferJob = threading.Thread(self.tgObject[sFile].downloadFiles,
                                        args=(fileData))
@@ -230,6 +225,7 @@ def main():
             scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr, curses.A_NORMAL)
 
             # transfer info
+            '''
             i = 2
             for sessionStr, info in tHand.transferInfo.items():
                 if not info: # empty
@@ -244,6 +240,7 @@ def main():
                 scr.addstr(i+2, 2, "{} - {}".format(info[2], bytesConvert(info[1])),
                            curses.A_NORMAL)
                 i+=4
+            '''
 
             ch = scr.getch()
             if ch == curses.KEY_UP and selected > 1:
