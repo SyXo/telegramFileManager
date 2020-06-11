@@ -59,14 +59,14 @@ inputFileData = {'rPath'      : "temp/tfilemk_rand".split('/'),
                  'chunkIndex' : 0,
                  'type'       : 1}
 
-fileData = tg.uploadFiles(inputFileData)
+outData = tg.uploadFiles(inputFileData)
 if resumeTest:
-    fileData = tg.uploadFiles(progressUpload)
+    outData = tg.uploadFiles(progressUpload)
 
 toResume = True
 print(fileData)
 print("Starting downloading of file")
-tg.downloadFiles(fileData)
+tg.downloadFiles(outData['fileData'])
 if resumeTest:
     tg.downloadFiles(progressDownload)
 
