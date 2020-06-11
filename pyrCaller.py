@@ -134,12 +134,12 @@ class pyrogramFuncs:
         self.should_stop = 0 # Set this to 0 no matter what
 
         if not fileData['chunkIndex']: # finished uploading
-            return {fileData : {'rPath'    : fileData['rPath'],
-                                'fileID'   : fileData['fileID'],
-                                'IDindex'  : 0,
-                                'size'     : fileData['size'],
-                                'type'     : 2},
-                    index    : fileData['index']}
+            return {'fileData' : {'rPath'    : fileData['rPath'],
+                                  'fileID'   : fileData['fileID'],
+                                  'IDindex'  : 0,
+                                  'size'     : fileData['size'],
+                                  'type'     : 2},
+                    'index'    : fileData['index']}
             # return file information
 
 
