@@ -64,7 +64,7 @@ if resumeTest:
     outData = tg.uploadFiles(progressUpload)
 
 toResume = True
-print(fileData)
+print(outData)
 print("Starting downloading of file")
 tg.downloadFiles(outData['fileData'])
 if resumeTest:
