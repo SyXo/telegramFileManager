@@ -137,7 +137,8 @@ class pyrogramFuncs:
             return {'rPath'    : fileData['rPath'],
                     'fileID'   : fileData['fileID'],
                     'IDindex'  : 0,
-                    'size'     : fileData['size']}
+                    'size'     : fileData['size'],
+                    'type'     : 2}
             # return file information
 
 
@@ -205,7 +206,7 @@ class pyrogramFuncs:
                 break
 
             # stores only ids of files that haven't yet been downloaded
-            self.data_fun(fileData, self.s_file, 2)
+            self.data_fun(fileData, self.s_file)
 
             if self.should_stop == 1:
                 # issued normal cancel
