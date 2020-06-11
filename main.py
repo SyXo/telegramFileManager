@@ -137,15 +137,14 @@ class transferHandler:
         if (not fileData) or not (type(fileData) is dict):
             raise TypeError("Bad or empty value given.")
 
-        sFile = useSession() # Use a free session
+        sFile = self.useSession() # Use a free session
 
         with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'r') as f:
             index = int(f.read())
 
         fileData['index'] = index
 
-        transferJob = threading.Thread(self.tgObject[sFile].uploadFiles,
-                                       args=(fileData))
+        transferJob = threading.Thread(self.tgObject[sFile].uploadFiles, args=(fileData))
         finalData = transferJob.start()
 
         os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
@@ -153,7 +152,7 @@ class transferHandler:
         with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'w') as f:
             f.write(str(finalData[1]))
 
-        freeSession(sFile)
+        self.freeSession(sFile)
 
 
     def download(self, fileData=[]):
