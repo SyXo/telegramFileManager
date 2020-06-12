@@ -19,12 +19,13 @@ def bytesConvert(rawBytes):
     else: return "{} Bytes".format(rawBytes)
 
 
-def getInputs(scr, prompts):
+def getInputs(scr, title, prompts):
     scr.nodelay(False)
     curses.echo()
     curses.curs_set(True)
 
-    i = 0
+    scr.addstr(0, 0, title)
+    i = 2
     inputs = []
     for prompt in prompts:
         scr.addstr(i, 0, prompt)
@@ -90,6 +91,7 @@ class transferHandler:
         self.freeSessions = []
         self.tgObject = {}
         self.resumeSessions = []
+        self.fileDatabase = []
 
         # initialize all the pyrCaller sessions that will be used
         for i in range(1, max_sessions+1):
@@ -152,9 +154,21 @@ class transferHandler:
 
         else: # delete the resume file
             os.remove(os.path.join(data_path, "resume_{}".format(sFile)))
-            # also need to call deleteUseless()
+            self.cleanTg()
 
         self.resumeSessions.remove(sFile)
+
+
+    def cleanTg(self):
+        sFile = self.useSession()
+
+        IDlist = []
+        for i in self.fileDatabase:
+            for j in i['fileID']:
+                IDlist.append(j)
+
+        self.tgObject[sFile].deleteUseless(IDlist)
+        self.freeSession(sFile)
 
 
     def upload(self, fileData={}):
@@ -221,6 +235,15 @@ def main():
     scr.timeout(5000)
     # wait for 5 seconds or a key to be pressed to refresh the screen
 
+    if tHand.resumeSessions:
+        resumeOpts = getInputs(scr, "Resume files found, choose an option for each: (1) Finish the transfer (2) Ignore for now (3) Delete resume file",
+                               ["Session %s:" % i for i in tHand.resumeSessions])
+
+        resumeIndex = 0
+        while resumeIndex < len(resumeOpts):
+            tHand.resumeHandler(tHand.resumeSessions[resumeIndex], int(resumeOpts[resumeIndex]))
+            resumeIndex += 1
+
     downloadMenu = uploadMenu = selected = 0
     try:
         while True:
@@ -228,7 +251,7 @@ def main():
             tlX, tlY = os.get_terminal_size(0)
 
             if uploadMenu:
-                strData = getInputs(scr, ["File Path:", "Relative Path:"])
+                strData = getInputs(scr, "Upload:", ["File Path:", "Relative Path:"])
                 fileData = {'rPath'      : strData[1].split('/'),
                             'path'       : strData[0],
                             'size'       : os.path.getsize(strData[0]),
