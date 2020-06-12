@@ -89,6 +89,7 @@ class transferHandler:
         self.max_sessions = max_sessions
         self.freeSessions = []
         self.tgObject = {}
+        self.resumeSessions = []
 
         # initialize all the pyrCaller sessions that will be used
         for i in range(1, max_sessions+1):
@@ -98,6 +99,10 @@ class transferHandler:
                     telegram_channel_id, api_id, api_hash, data_path,
                     tmp_path, str(i), self.saveProgress, self.saveFileData
             )
+
+            # check for resume files
+            if os.path.isfile(os.path.join(data_path, "resume_{}".format(i))):
+                self.resumeSessions.append(str(i))
 
 
     def useSession(self):
@@ -109,15 +114,13 @@ class transferHandler:
         return retSession
 
 
-    def freeSession(self, sessionStr=''):
-        if (not sessionStr) or not (type(sessionStr) is str):
-            raise TypeError("Bad or empty value given.")
-        if not int(sessionStr) in range(1, self.max_sessions+1):
-            raise IndexError("sessionStr should be between 1 and {}.".format(self.max_sessions))
-        if sessionStr in self.freeSession:
+    def freeSession(self, sFile=''):
+        if not int(sFile) in range(1, self.max_sessions+1):
+            raise IndexError("sFile should be between 1 and {}.".format(self.max_sessions))
+        if sFile in self.freeSession:
             raise ValueError("Can't free a session that is already free.")
 
-        self.freeSessions.append(sessionStr)
+        self.freeSessions.append(sFile)
 
 
     def saveProgress(self, current, total, current_chunk, total_chunks, sFile):
@@ -128,14 +131,37 @@ class transferHandler:
         with open(os.path.join(self.data_path, "resume_{}".format(sFile)), 'wb') as f:
             f.write(str(fileData))
 
-        if fileData[1] == 1: # uploading
-            with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'w') as f:
-                f.write(str(index))
+
+    def resumeHandler(self, sFile='', selected=0):
+        if not sFile in self.resumeSessions:
+            raise ValueError("This session doesn't have any resume info.")
+        if not selected in range(1, 4):
+            raise IndexError("selected should be between 1 and 3")
+
+        if selected == 1: # Finish the transfer
+            with open(os.path.join(data_path, "resume_{}".format(sFile)), 'rb') as f:
+                fileData = pickle.load(f)
+
+            if fileData['type'] == 1:
+                self.upload(fileData)
+            else:
+                self.download(fileData)
+
+        elif selected == 2: # Ignore for now
+            self.freeSessions.remove(sFile)
+
+        else: # delete the resume file
+            os.remove(os.path.join(data_path, "resume_{}".format(sFile)))
+            # also need to call deleteUseless()
+
+        self.resumeSessions.remove(sFile)
 
 
     def upload(self, fileData={}):
         if (not fileData) or not (type(fileData) is dict):
             raise TypeError("Bad or empty value given.")
+        if self.resumeSessions:
+            raise ValueError("Resume sessions not handled, refusing to upload.")
 
         sFile = self.useSession() # Use a free session
 
@@ -158,6 +184,8 @@ class transferHandler:
     def download(self, fileData=[]):
         if (not fileData) or not (type(fileData) is list):
             raise TypeError("Bad or empty value given.")
+        if self.resumeSessions:
+            raise ValueError("Resume sessions not handled, refusing to download.")
 
         sFile = useSession() # Use a free session
 
@@ -226,11 +254,11 @@ def main():
             # transfer info
             '''
             i = 2
-            for sessionStr, info in tHand.transferInfo.items():
+            for sFile, info in tHand.transferInfo.items():
                 if not info: # empty
                     continue
 
-                if str(selected) == sessionStr:
+                if str(selected) == sFile:
                     for j in range(i, i+3):
                         scr.addch(j, 0, '*')
 
