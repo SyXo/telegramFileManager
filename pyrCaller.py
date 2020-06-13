@@ -40,6 +40,10 @@ class pyrogramFuncs:
 
         self.telegram = Client(path.join(data_path, "a{}".format(s_file)),
                                api_id, api_hash)
+        # Connect to telegram servers when starting
+        # So that if we are missing any sessions it will prompt for login
+        # Before starting ncurses
+        self.telegram.start()
 
         self.telegram_channel_id = telegram_channel_id
         self.data_path = data_path
@@ -63,7 +67,6 @@ class pyrogramFuncs:
             copyfile(fileData['path'], copied_file_path)
 
             self.now_transmitting = 1
-            self.telegram.start()
 
             file_ID = self.telegram.send_document(
                     self.telegram_channel_id, copied_file_path,
@@ -71,7 +74,6 @@ class pyrogramFuncs:
                     progress_args=(0, 1, self.s_file) # 0 out of 1 chunks
                 ).message_id
 
-            self.telegram.stop()
             self.now_transmitting = 0
 
             # Canceling with 1 makes no sense for single chunk transmission
@@ -92,7 +94,6 @@ class pyrogramFuncs:
         tot_chunks = (fileData['size'] // 1572864000) + 1 # used by progress fun
 
         self.now_transmitting = 2
-        self.telegram.start()
         while True: # not end of file
             copied_file_path = path.join(self.tmp_path, "tfilemgr",
                 "{}_{}".format(self.s_file, fileData['index']))
@@ -129,7 +130,6 @@ class pyrogramFuncs:
             if self.should_stop == 1:
                 break
 
-        self.telegram.stop()
         self.now_transmitting = 0
         self.should_stop = 0 # Set this to 0 no matter what
 
@@ -153,7 +153,6 @@ class pyrogramFuncs:
                                          fileData['rPath'][-1])
 
             self.now_transmitting = 1
-            self.telegram.start()
 
             self.telegram.get_messages(self.telegram_channel_id,
                                        fileData['fileID'][0]).download(
@@ -162,7 +161,6 @@ class pyrogramFuncs:
                 progress_args=(0, 1, self.s_file) # 0 out of 1 chunks
             )
 
-            self.telegram.stop()
             self.now_transmitting = 0
 
             if self.should_stop == 2:
@@ -176,7 +174,6 @@ class pyrogramFuncs:
                                    "{}_chunk".format(fileData['rPath'][-1]))
 
         self.now_transmitting = 2
-        self.telegram.start()
         while fileData['IDindex'] < len(fileData['fileID']):
             self.telegram.get_messages(self.telegram_channel_id,
                                        fileData['fileID'][fileData['IDindex']]
@@ -213,7 +210,6 @@ class pyrogramFuncs:
                 # issued normal cancel
                 break
 
-        self.telegram.stop()
         self.now_transmitting = 0
 
         if self.should_stop:
@@ -228,7 +224,6 @@ class pyrogramFuncs:
             raise TypeError("Bad or empty value given.")
 
         deletedList = []
-        self.telegram.start()
 
         for tFile in self.telegram.iter_history(self.telegram_channel_id):
             if (tFile.media) and (not tFile.message_id in IDList):
@@ -238,7 +233,6 @@ class pyrogramFuncs:
             self.telegram.delete_messages(self.telegram_channel_id,
                     deletedList)
 
-        self.telegram.stop()
 
         return deletedList
 
