@@ -65,7 +65,7 @@ or to my Payeer `P56752419`, any amount helps and i will be very thankful to you
 ## TODO
 * Make the `fileSelector` interface look like an actual file tree
 (Currently shows all the files in one list)
-* Verify if we can run this on multiple platforms (Currently only checked on Linux)
+* Make the program work with windows.
 
 ## End of the line
 This is my first big project so please tell me if there are any mistakes I made.

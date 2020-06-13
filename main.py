@@ -7,6 +7,27 @@ import fileSelector
 import pickle
 from operator import itemgetter
 
+NAME = "Telegram File Manager"
+T_STR = ["Uploading:", "Downloading:"]
+CFG_STR = """[telegram]
+api_id = 0
+api_hash = 0
+; obtain the above by following the README
+channel_id = me
+max_sessions = 4
+
+[paths]
+data_path = {0}/tgFileManager
+tmp_path = {0}/.tmp/tgFileManager
+
+[keybinds]
+upload = u
+download = d
+resume = r
+cancel = c
+"""
+
+
 def bytesConvert(rawBytes):
     if   rawBytes >= 16**10: # tbyte
         return "{} TBytes".format(round(rawBytes/16**10, 2))
@@ -214,8 +235,11 @@ class transferHandler:
 
 
 def main():
-    NAME = "Telegram File Manager"
-    T_STR = ["Uploading:", "Downloading:"]
+    if not os.path.isfile(os.path.expanduser("~/.config/tgFileManager.ini")):
+        with open(os.path.expanduser("~/.config/tgFileManager.ini"), 'w') as f:
+            f.write(CFG_STR.format(os.path.expanduser("~")))
+        print("Config file created, please enter your api_id and api_hash in {}".format(os.path.expanduser("~/.config/tgFileManager.ini")))
+        return
 
     cfg = configparser.ConfigParser()
     cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
@@ -239,10 +263,9 @@ def main():
         resumeOpts = getInputs(scr, "Resume files found, choose an option for each: (1) Finish the transfer (2) Ignore for now (3) Delete resume file",
                                ["Session %s:" % i for i in tHand.resumeSessions])
 
-        resumeIndex = 0
-        while resumeIndex < len(resumeOpts):
-            tHand.resumeHandler(tHand.resumeSessions[resumeIndex], int(resumeOpts[resumeIndex]))
-            resumeIndex += 1
+        for i in range(0, len(resumeOpts)):
+            tHand.resumeHandler(tHand.resumeSessions[i], int(resumeOpts[i]))
+            # bad solution, chooses sFile by index which could be wrong
 
     downloadMenu = uploadMenu = selected = 0
     try:
