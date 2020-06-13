@@ -42,47 +42,6 @@ def getInputs(scr, title, prompts):
     return inputs
 
 
-def loadDatabase(data_path):
-    with open(os.path.join(data_path, "fileData"), 'rb') as f:
-        fileList = pickle.load(f)
-
-    totalSize = 0
-    fancyList = []
-
-    for i in fileList:
-        totalSize += i['size'] # integer addition
-
-        tempPath = '/'.join(i['rPath'])
-        fancyList.append({'title'  : "{}  {}".format(tempPath, bytesConvert(i['size'])),
-                          'rPath'  : i['rPath'],
-                          'fileID' : i['fileID'],
-                          'type'   : 'file'})
-
-    menu = {'title'   : "Select file to download:",
-            'type'    : 'menu',
-            'options' : fancyList}
-
-    m = fileSelector.CursesMenu(menu, len(menu['options'])+10)
-
-    return {'downloadMenu' : m,
-            'fileList'     : fileList,
-            'totalSize'    : totalSize,
-            'totalCount'   : len(fileList)}
-
-
-def updateDatabase(data_path, fileList, newInfo):
-    # Sorts the new dict into filelist
-    # then updates both in memory and to file
-    fileList.append(newInfo)
-    fileList.sort(key=itemgetter('rPath'))
-    # This could be slow, a faster alternative is bisect.insort,
-    # howewer, I couldn't find a way to sort by an item in dictionary
-
-    with open(os.path.join(data_path, "fileData"), 'wb') as f:
-        pickle.dump(fileList, f)
-
-    return fileList
-
 class transferHandler:
     def __init__(self, telegram_channel_id, api_id, api_hash,
                  data_path, tmp_path, max_sessions):
@@ -108,6 +67,48 @@ class transferHandler:
             # check for resume files
             if os.path.isfile(os.path.join(data_path, "resume_{}".format(i))):
                 self.resumeSessions.append(str(i))
+
+
+    def loadDatabase(data_path):
+        with open(os.path.join(data_path, "fileData"), 'rb') as f:
+            fileList = pickle.load(f)
+
+        totalSize = 0
+        fancyList = []
+
+        for i in fileList:
+            totalSize += i['size'] # integer addition
+
+            tempPath = '/'.join(i['rPath'])
+            fancyList.append({'title'  : "{}  {}".format(tempPath, bytesConvert(i['size'])),
+                              'rPath'  : i['rPath'],
+                              'fileID' : i['fileID'],
+                              'type'   : 'file'})
+
+        menu = {'title'   : "Select file to download:",
+                'type'    : 'menu',
+                'options' : fancyList}
+
+        m = fileSelector.CursesMenu(menu, len(menu['options'])+10)
+
+        return {'downloadMenu' : m,
+                'fileList'     : fileList,
+                'totalSize'    : totalSize,
+                'totalCount'   : len(fileList)}
+
+
+    def updateDatabase(data_path, fileList, newInfo):
+        # Sorts the new dict into filelist
+        # then updates both in memory and to file
+        fileList.append(newInfo)
+        fileList.sort(key=itemgetter('rPath'))
+        # This could be slow, a faster alternative is bisect.insort,
+        # howewer, I couldn't find a way to sort by an item in dictionary
+
+        with open(os.path.join(data_path, "fileData"), 'wb') as f:
+            pickle.dump(fileList, f)
+
+        return fileList
 
 
     def useSession(self):
