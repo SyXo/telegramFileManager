@@ -9,24 +9,6 @@ from operator import itemgetter
 
 NAME = "Telegram File Manager"
 T_STR = ["Uploading:", "Downloading:"]
-CFG_STR = """[telegram]
-api_id = 0
-api_hash = 0
-; obtain the above by following the README
-channel_id = me
-max_sessions = 4
-
-[paths]
-data_path = {0}/tgFileManager
-tmp_path = {0}/.tmp/tgFileManager
-
-[keybinds]
-upload = u
-download = d
-resume = r
-cancel = c
-"""
-
 
 def bytesConvert(rawBytes):
     if   rawBytes >= 16**10: # tbyte
@@ -235,14 +217,34 @@ class transferHandler:
 
 
 def main():
-    if not os.path.isfile(os.path.expanduser("~/.config/tgFileManager.ini")):
-        with open(os.path.expanduser("~/.config/tgFileManager.ini"), 'w') as f:
-            f.write(CFG_STR.format(os.path.expanduser("~")))
-        print("Config file created, please enter your api_id and api_hash in {}".format(os.path.expanduser("~/.config/tgFileManager.ini")))
-        return
-
     cfg = configparser.ConfigParser()
-    cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
+
+    if not os.path.isfile(os.path.expanduser("~/.config/tgFileManager.ini")):
+        print("Config file not found, user input required for first time configuration.")
+
+        cfg['telegram'] = {}
+        cfg['telegram']['api_id'] = ''
+        cfg['telegram']['api_hash'] = ''
+        cfg['telegram']['channel_id'] = 'me'
+        cfg['telegram']['max_sessions'] = '4'
+        cfg['paths'] = {}
+        cfg['paths']['data_path'] = os.expanduser("~/tgFileManager")
+        cfg['paths']['tmp_path'] = os.expanduser("~/.tmp/tgFileManager")
+        cfg['keybinds'] = {}
+        cfg['keybinds']['upload'] = 'u'
+        cfg['keybinds']['download'] = 'd'
+        cfg['keybinds']['resume'] = 'r'
+        cfg['keybinds']['cancel'] = 'c'
+
+        cfg['telegram']['api_id'] = input("api_id: ")
+        cfg['telegram']['api_hash'] = input("api_hash: ")
+
+        with open(os.path.expanduser("~/.config/tgFileManager.ini"), 'w') as f:
+            cfg.write(f)
+        print("Config file created at {}".format(os.path.expanduser("~/.config/tgFileManager.ini")))
+
+    else:
+        cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
 
     tHand = transferHandler(cfg['telegram']['channel_id'], cfg['telegram']['api_id'],
                             cfg['telegram']['api_hash'], cfg['paths']['data_path'],
