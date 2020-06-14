@@ -84,11 +84,12 @@ class pyrogramFuncs:
             remove(copied_file_path) # finished uploading, delete file
 
             # return file information
-            return {'rPath'    : fileData['rPath'],
-                    'fileID'   : [file_ID], # keep as list for compatibility
-                    'IDindex'  : 0,
-                    'size'     : fileData['size'],
-                    'type'     : 2}
+            return {'fileData' : {'rPath'    : fileData['rPath'],
+                                  'fileID'   : [file_ID],
+                                  'IDindex'  : 0,
+                                  'size'     : fileData['size'],
+                                  'type'     : 2},
+                    'index'    : fileData['index']+1}
 
         # else file should be split
         tot_chunks = (fileData['size'] // 1572864000) + 1 # used by progress fun
