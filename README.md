@@ -52,6 +52,10 @@ variable)
 for every session from 1 to `max_sessions` (which by default is 4), there is no
 **easy** way to automate this.
 
+**Warning**: You may get a FloodWait exception when doing this,
+if you get that you need to force close the program, wait for the time
+specified, then run the program again.
+
 ## Getting app_id and api_hash
 * Log in to your [Telegram core](https://my.telegram.org)
 * Go to 'API development tools' and fill out the form
