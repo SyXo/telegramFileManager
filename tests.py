@@ -73,3 +73,5 @@ if resumeTest:
 print("Deleting temp files from telegram")
 if input("this is very dangerous to run, make sure the telegram channel doesn't contain any other files, if you are sure type yes: ") == 'yes':
     tg.deleteUseless([0])
+
+tg.endSession()
