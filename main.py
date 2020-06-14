@@ -284,7 +284,7 @@ def main():
                         'type'    : 'menu',
                         'options' : fancyList}
 
-                m = fileSelector.CursesMenu(menu, len(menu['options'])+10)
+                m = fileSelector.CursesMenu(menu, scr, len(menu['options'])+10)
 
                 selectedFile = m.display()
                 tHand.download({'rPath'   : selectedFile['rPath'],

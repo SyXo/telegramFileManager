@@ -7,26 +7,15 @@ class CursesMenu(object):
     INIT = {'type' : 'init'}
     MAX_PAD_X = 250
 
-    def __init__(self, menu_options, list_len):
+    def __init__(self, menu_options, scr, list_len):
 
-        self.screen = curses.initscr()
+        self.screen = scr
         self.screen = curses.newpad(list_len, self.MAX_PAD_X)
         self.menu_options = menu_options
         self.selected_option = 0
         self._previously_selected_option = None
         self.running = True
 
-        #init curses and curses input
-        curses.noecho()
-        curses.cbreak()
-        curses.start_color()
-        curses.use_default_colors()
-        curses.curs_set(0) #Hide cursor
-        self.screen.keypad(1)
-
-        #set up color pair
-        curses.init_pair(1, -1, -1)
-        self.normal_color = curses.color_pair(1)
 
     def prompt_selection(self):
         showX, showY = 0, 0
@@ -44,12 +33,12 @@ class CursesMenu(object):
                 if self.selected_option == option:
                     self._draw_option(option, curses.A_STANDOUT)
                 else:
-                    self._draw_option(option, self.normal_color)
+                    self._draw_option(option, curses.A_NORMAL)
 
             if self.selected_option == option_count:
                 self.screen.addstr(3 + option_count, 3, "Exit", curses.A_STANDOUT)
             else:
-                self.screen.addstr(3 + option_count, 3, "Exit", self.normal_color)
+                self.screen.addstr(3 + option_count, 3, "Exit", curses.A_NORMAL)
 
             tlX, tlY = os.get_terminal_size(0)  
             self.screen.refresh(showY,showX, 0,0, tlY-1,tlX-1)
