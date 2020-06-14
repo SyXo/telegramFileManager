@@ -56,8 +56,9 @@ class transferHandler:
         self.fileDatabase = []
 
         # Load database
-        with open(os.path.join(self.data_path, "fileData"), 'rb') as f:
-            self.fileDatabase = pickle.load(f)
+        if os.path.isfile(os.path.join(self.data_path, "fileData")):
+            with open(os.path.join(self.data_path, "fileData"), 'rb') as f:
+                self.fileDatabase = pickle.load(f)
 
         # initialize all the pyrCaller sessions that will be used
         for i in range(1, max_sessions+1):
