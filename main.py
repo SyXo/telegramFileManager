@@ -50,10 +50,14 @@ class transferHandler:
         self.api_hash = api_hash
         self.data_path = data_path
         self.max_sessions = max_sessions
-        self.freeSessions = []
         self.tgObject = {}
+        self.freeSessions = []
         self.resumeSessions = []
         self.fileDatabase = []
+
+        # Load database
+        with open(os.path.join(self.data_path, "fileData"), 'rb') as f:
+            self.fileDatabase = pickle.load(f)
 
         # initialize all the pyrCaller sessions that will be used
         for i in range(1, max_sessions+1):
@@ -69,46 +73,16 @@ class transferHandler:
                 self.resumeSessions.append(str(i))
 
 
-    def loadDatabase(data_path):
-        with open(os.path.join(data_path, "fileData"), 'rb') as f:
-            fileList = pickle.load(f)
-
-        totalSize = 0
-        fancyList = []
-
-        for i in fileList:
-            totalSize += i['size'] # integer addition
-
-            tempPath = '/'.join(i['rPath'])
-            fancyList.append({'title'  : "{}  {}".format(tempPath, bytesConvert(i['size'])),
-                              'rPath'  : i['rPath'],
-                              'fileID' : i['fileID'],
-                              'type'   : 'file'})
-
-        menu = {'title'   : "Select file to download:",
-                'type'    : 'menu',
-                'options' : fancyList}
-
-        m = fileSelector.CursesMenu(menu, len(menu['options'])+10)
-
-        return {'downloadMenu' : m,
-                'fileList'     : fileList,
-                'totalSize'    : totalSize,
-                'totalCount'   : len(fileList)}
-
-
-    def updateDatabase(data_path, fileList, newInfo):
+    def updateDatabase(self, newInfo):
         # Sorts the new dict into filelist
         # then updates both in memory and to file
-        fileList.append(newInfo)
-        fileList.sort(key=itemgetter('rPath'))
+        self.fileDatabase.append(newInfo)
+        self.fileDatabase.sort(key=itemgetter('rPath'))
         # This could be slow, a faster alternative is bisect.insort,
         # howewer, I couldn't find a way to sort by an item in dictionary
 
-        with open(os.path.join(data_path, "fileData"), 'wb') as f:
+        with open(os.path.join(self.data_path, "fileData"), 'wb') as f:
             pickle.dump(fileList, f)
-
-        return fileList
 
 
     def useSession(self):
@@ -131,11 +105,12 @@ class transferHandler:
 
     def saveProgress(self, current, total, current_chunk, total_chunks, sFile):
         prg=int(((current/total/total_chunks)+(current_chunk/total_chunks))*100)
+        # WIP
 
 
-    def saveFileData(self, fileData, sFile, dataType):
+    def saveFileData(self, fileData, sFile):
         with open(os.path.join(self.data_path, "resume_{}".format(sFile)), 'wb') as f:
-            f.write(str(fileData))
+            pickle.dump(fileData, f)
 
 
     def resumeHandler(self, sFile='', selected=0):
@@ -199,7 +174,7 @@ class transferHandler:
         self.freeSession(sFile)
 
 
-    def download(self, fileData=[]):
+    def download(self, fileData={}):
         if (not fileData) or not (type(fileData) is list):
             raise TypeError("Bad or empty value given.")
         if self.resumeSessions:
@@ -290,6 +265,34 @@ def main():
                 uploadMenu = 0
 
             elif downloadMenu:
+                totalSize = 0
+                fancyList = []
+
+                # Generate fancyList dynamically so new files will be shown
+                # this could be slow, needs a check if the list was updated
+                for i in tHand.fileDatabase:
+                    totalSize += i['size'] # integer addition
+
+                    tempPath = '/'.join(i['rPath'])
+                    fancyList.append({'title'  : "{}  {}".format(tempPath, bytesConvert(i['size'])),
+                                      'rPath'  : i['rPath'],
+                                      'fileID' : i['fileID'],
+                                      'size'   : i['size'],
+                                      'type'   : 'file'})
+
+                menu = {'title'   : "Select file to download:",
+                        'type'    : 'menu',
+                        'options' : fancyList}
+
+                m = fileSelector.CursesMenu(menu, len(menu['options'])+10)
+
+                selectedFile = m.display()
+                tHand.download({'rPath'   : selectedFile['rPath'],
+                                'fileID'  : selectedFile['fileID'],
+                                'IDindex' : 0,
+                                'size'    : selectedFile['size'],
+                                'type'    : 2})
+
                 downloadMenu = 0
 
             usedSessionStr = "[ {} of {} ]".format(
