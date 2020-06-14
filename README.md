@@ -47,7 +47,10 @@ directory
 * Do `make install` to compile the dependencies and install the program in
 `/usr/local/bin` (if you don't have root permissions, give `install_path=<dir>`
 argument where `<dir>` is a path you can write to and is in your `$PATH`
-variable) 
+variable)
+* When you first run the program, you will be asked for your phone number and confirmation
+for every session from 1 to max_sessions (which by default is 4), there is no
+**easy** way to automate this.
 
 ## Getting app_id and api_hash
 * Log in to your [Telegram core](https://my.telegram.org)
