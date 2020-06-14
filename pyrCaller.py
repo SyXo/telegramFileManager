@@ -251,3 +251,7 @@ class pyrogramFuncs:
         self.should_stop = stop_type
         if stop_type == 2: #force stop
             self.telegram.stop_transmission()
+
+
+    def endSession(self):
+        self.telegram.stop()
