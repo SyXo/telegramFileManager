@@ -8,7 +8,7 @@ pyrCaller_extern: src/pyrCaller_extern.c
 	$(CC) -std=c99 -fPIC -shared -o $@.so $?
 
 clean:
-	rm -rf __pycache__ pyrCaller_extern.so
+	rm -rf src/__pycache__ pyrCaller_extern.so
 
 test: pyrCaller_extern
 	echo "Just a heads up this will take around an hour"
