@@ -193,6 +193,11 @@ class transferHandler:
         return finalData
 
 
+    def endSessions(self):
+        for i in range(1, self.max_sessions+1):
+            self.tgObject[str(i)].endSession()
+
+
 def main():
     cfg = configparser.ConfigParser()
 
@@ -340,6 +345,7 @@ def main():
 
     # exit
     curses.endwin()
+    tHand.endSessions()
 
 
 if __name__ == "__main__":
