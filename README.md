@@ -28,7 +28,7 @@ work, you need to use the development branch instead
 
 ## Testing (currently only for GNU/Linux)
 ### The test generates a random file, uploads it to telegram, downloads it and then checks if the 2 files are the same
-* Create a file in the script folder named `config.py` with the contents:
+* Create a file in the `src` folder named `config.py` with the contents:
 ```
 api_id = <app_id>
 api_hash = <api_hash>
@@ -39,8 +39,8 @@ You can obtain these by following [Getting app_id and api_hash](https://github.c
 * and/or `test_args=resume(1|2)` argument to check soft|force cancelling
 * Example: `make test test_filesize=10G test_args=resume1`
 * Your phone number and confirmation code will only be asked the first time
-you run the tests, after that they will be saved as `a1.session` in the script
-directory
+you run the tests, after that they will be saved as `a1.session` in the
+`Makefile` directory
 
 
 ## Installing telegramFileManager (WIP)
