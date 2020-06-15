@@ -84,11 +84,9 @@ class pyrogramFuncs:
             remove(copied_file_path) # finished uploading, delete file
 
             # return file information
-            return {'fileData' : {'rPath'    : fileData['rPath'],
-                                  'fileID'   : [file_ID],
-                                  'IDindex'  : 0,
-                                  'size'     : fileData['size'],
-                                  'type'     : 2},
+            return {'fileData' : {'rPath'  : fileData['rPath'],
+                                  'fileID' : [file_ID],
+                                  'size'   : fileData['size']},
                     'index'    : fileData['index']+1}
 
         # else file should be split
@@ -135,11 +133,9 @@ class pyrogramFuncs:
         self.should_stop = 0 # Set this to 0 no matter what
 
         if not fileData['chunkIndex']: # finished uploading
-            return {'fileData' : {'rPath'    : fileData['rPath'],
-                                  'fileID'   : fileData['fileID'],
-                                  'IDindex'  : 0,
-                                  'size'     : fileData['size'],
-                                  'type'     : 2},
+            return {'fileData' : {'rPath'  : fileData['rPath'],
+                                  'fileID' : fileData['fileID'],
+                                  'size'   : fileData['size']},
                     'index'    : fileData['index']}
             # return file information
 

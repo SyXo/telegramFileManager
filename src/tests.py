@@ -63,10 +63,16 @@ outData = tg.uploadFiles(inputFileData)
 if resumeTest:
     outData = tg.uploadFiles(progressUpload)
 
+downloadData = {'rPath'   : outData['fileData']['rPath'],
+                'fileID'  : outData['fileData']['fileID'],
+                'IDindex' : 0,
+                'size'    : outData['fileData']['size'],
+                'type'    : 2}
+
 toResume = True
 print(outData)
 print("Starting downloading of file")
-tg.downloadFiles(outData['fileData'])
+tg.downloadFiles(downloadData)
 if resumeTest:
     tg.downloadFiles(progressDownload)
 
