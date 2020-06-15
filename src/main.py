@@ -75,9 +75,12 @@ class transferHandler:
 
 
     def updateDatabase(self, newInfo):
+        # This should be called after finishing an upload
         # Sorts the new dict into filelist
         # then updates both in memory and to file
-        self.fileDatabase.append(newInfo)
+        self.fileDatabase.append('rPath'  : newInfo['rPath'],
+                                 'fileID' : newInfo['fileID'],
+                                 'size'   : newInfo['size'])
         self.fileDatabase.sort(key=itemgetter('rPath'))
         # This could be slow, a faster alternative is bisect.insort,
         # howewer, I couldn't find a way to sort by an item in dictionary
@@ -168,9 +171,10 @@ class transferHandler:
         finalData = transferJob.start()
 
         os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
-
         with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'w') as f:
             f.write(str(finalData['index']))
+
+        self.updateDatabase(finalData)
 
         self.freeSession(sFile)
 
