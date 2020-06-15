@@ -174,7 +174,7 @@ class transferHandler:
         with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'w') as f:
             f.write(str(finalData['index']))
 
-        self.updateDatabase(finalData)
+        self.updateDatabase(finalData['fileData'])
 
         self.freeSession(sFile)
 
