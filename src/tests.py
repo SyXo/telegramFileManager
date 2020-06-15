@@ -8,7 +8,7 @@ import pyrCaller
 import sys
 import config as cfg
 
-data_path = "."
+data_path = ".."
 tmp_path = path.expanduser("~/.tmp")
 telegram_channel_id = "me"
 resumeTest = 0

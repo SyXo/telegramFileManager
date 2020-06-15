@@ -4,7 +4,7 @@ test_args = "noResume" # could also be "resume(1|2)", for testing resuming capab
 # this also needs to be modified inside tests.py
 tmp_path = ~/.tmp
 
-pyrCaller_extern: pyrCaller_extern.c
+pyrCaller_extern: src/pyrCaller_extern.c
 	$(CC) -std=c99 -fPIC -shared -o $@.so $?
 
 clean:
@@ -24,11 +24,11 @@ test: pyrCaller_extern
 	# The reason we start the test in the makefile is to not use
 	# system specific commands in the python program so the tests can be
 	# easily modified for other systems
-	python tests.py $(test_args)
+	cd src && python tests.py $(test_args)
 	echo "Checking if files are the same"
-	diff $(tmp_path)/tfilemgr/rand ./downloads/tfilemk_rand
+	diff $(tmp_path)/tfilemgr/rand downloads/tfilemk_rand
 	echo "Finished test"
 	echo "Deleting temporary files"
-	rm $(tmp_path)/tfilemgr/rand ./downloads/tfilemk_rand
+	rm $(tmp_path)/tfilemgr/rand downloads/tfilemk_rand
 
 .SILENT: test
