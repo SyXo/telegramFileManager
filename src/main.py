@@ -178,19 +178,19 @@ class transferHandler:
 
 
     def download(self, fileData={}):
-        if (not fileData) or not (type(fileData) is list):
+        if (not fileData) or not (type(fileData) is dict):
             raise TypeError("Bad or empty value given.")
         if self.resumeSessions:
             raise ValueError("Resume sessions not handled, refusing to download.")
 
-        sFile = useSession() # Use a free session
+        sFile = self.useSession() # Use a free session
 
         transferJob = threading.Thread(self.tgObject[sFile].downloadFiles,
                                        args=(fileData))
         finalData = transferJob.start()
 
         os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
-        freeSession(sFile)
+        self.freeSession(sFile)
 
         return finalData
 
