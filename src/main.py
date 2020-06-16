@@ -78,15 +78,13 @@ class transferHandler:
         # This should be called after finishing an upload
         # Sorts the new dict into filelist
         # then updates both in memory and to file
-        self.fileDatabase.append('rPath'  : newInfo['rPath'],
-                                 'fileID' : newInfo['fileID'],
-                                 'size'   : newInfo['size'])
+        self.fileDatabase.append(newInfo)
         self.fileDatabase.sort(key=itemgetter('rPath'))
         # This could be slow, a faster alternative is bisect.insort,
         # howewer, I couldn't find a way to sort by an item in dictionary
 
         with open(os.path.join(self.data_path, "fileData"), 'wb') as f:
-            pickle.dump(fileList, f)
+            pickle.dump(self.fileDatabase, f)
 
 
     def useSession(self):
