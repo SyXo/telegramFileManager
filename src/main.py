@@ -29,10 +29,10 @@ def getInputs(scr, title, prompts):
 
     scr.addstr(0, 0, title)
     i = 2
-    inputs = []
-    for prompt in prompts:
+    inputs = {}
+    for key, prompt in prompts.items():
         scr.addstr(i, 0, prompt)
-        inputs.append(scr.getstr(i + 1, 0, 255)) # has a limit of 255 chars/input
+        inputs[key] = scr.getstr(i + 1, 0, 255) # has a limit of 255 chars/input
         i+=3
 
     curses.curs_set(False)
@@ -261,12 +261,14 @@ def main():
     # wait for 5 seconds or a key to be pressed to refresh the screen
 
     if tHand.resumeSessions:
-        resumeOpts = getInputs(scr, "Resume files found, choose an option for each: (1) Finish the transfer (2) Ignore for now (3) Delete resume file",
-                               ["Session %s:" % i for i in tHand.resumeSessions])
+        inDict = {}
+        for i in tHand.resumeSessions:
+            inDict[i] = "Session {}:".format(i)
 
-        for i in range(0, len(resumeOpts)):
-            tHand.resumeHandler(tHand.resumeSessions[i], int(resumeOpts[i]))
-            # bad solution, chooses sFile by index which could be wrong
+        resumeOpts = getInputs(scr, "Resume files found, choose an option for each: (1) Finish the transfer (2) Ignore for now (3) Delete resume file", inDict)
+
+        for sFile, selected in resumeOpts.items():
+            tHand.resumeHandler(sFile, int(selected))
 
     downloadMenu = uploadMenu = selected = 0
     try:
@@ -275,10 +277,11 @@ def main():
             tlX, tlY = os.get_terminal_size(0)
 
             if uploadMenu:
-                strData = getInputs(scr, "Upload:", ["File Path:", "Relative Path:"])
-                fileData = {'rPath'      : strData[1].split('/'),
-                            'path'       : strData[0],
-                            'size'       : os.path.getsize(strData[0]),
+                strData = getInputs(scr, "Upload:", {'path'  : "File Path:",
+                                                     'rPath' : "Relative Path:"})
+                fileData = {'rPath'      : strData['rPath'].split('/'),
+                            'path'       : strData['path'],
+                            'size'       : os.path.getsize(strData['path']),
                             'fileID'     : [],
                             'index'      : 0, # managed by transferHandler
                             'chunkIndex' : 0,
