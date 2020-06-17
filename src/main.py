@@ -54,6 +54,7 @@ class transferHandler:
         self.freeSessions = []
         self.resumeSessions = []
         self.fileDatabase = []
+        self.transferInfo = {} # used by main fun
 
         # Load database
         if os.path.isfile(os.path.join(self.data_path, "fileData")):
@@ -63,6 +64,10 @@ class transferHandler:
         # initialize all the pyrCaller sessions that will be used
         for i in range(1, max_sessions+1):
             self.freeSessions.append(str(i))
+            self.transferInfo[str(i)]['rPath'] = ''
+            self.transferInfo[str(i)]['progress'] = 0
+            self.transferInfo[str(i)]['size'] = 0
+            self.transferInfo[str(i)]['type'] = 0
 
             self.tgObject[str(i)] = pyrCaller.pyrogramFuncs(
                     telegram_channel_id, api_id, api_hash, data_path,
@@ -106,8 +111,8 @@ class transferHandler:
 
 
     def saveProgress(self, current, total, current_chunk, total_chunks, sFile):
-        prg=int(((current/total/total_chunks)+(current_chunk/total_chunks))*100)
-        # WIP
+        prg = int(((current/total/total_chunks)+(current_chunk/total_chunks))*100)
+        self.transferInfo[sFile]['progress'] = prg
 
 
     def saveFileData(self, fileData, sFile):
@@ -159,6 +164,10 @@ class transferHandler:
             raise ValueError("Resume sessions not handled, refusing to upload.")
 
         sFile = self.useSession() # Use a free session
+        self.transferInfo[sFile]['rPath'] = fileData['rPath']
+        self.transferInfo[sFile]['progress'] = 0
+        self.transferInfo[sFile]['size'] = fileData['size']
+        self.transferInfo[sFile]['type'] = 1
 
         with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'r') as f:
             index = int(f.read())
@@ -168,13 +177,14 @@ class transferHandler:
         transferJob = threading.Thread(self.tgObject[sFile].uploadFiles, args=(fileData))
         finalData = transferJob.start()
 
-        os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
+        os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)<M-Up><M-Up>))
         with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'w') as f:
             f.write(str(finalData['index']))
 
         self.updateDatabase(finalData['fileData'])
 
-        self.freeSession(sFile)
+        self.transferInfo[sFile]['type'] = 0 # not transferring anything
+        self.freeSession(sFile) # Obviously wrong, will free before finishing upload
 
 
     def download(self, fileData={}):
@@ -184,12 +194,17 @@ class transferHandler:
             raise ValueError("Resume sessions not handled, refusing to download.")
 
         sFile = self.useSession() # Use a free session
+        self.transferInfo[sFile]['rPath'] = fileData['rPath']
+        self.transferInfo[sFile]['progress'] = 0
+        self.transferInfo[sFile]['size'] = fileData['size']
+        self.transferInfo[sFile]['type'] = 2
 
         transferJob = threading.Thread(self.tgObject[sFile].downloadFiles,
                                        args=(fileData))
         finalData = transferJob.start()
 
         os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
+        self.transferInfo[sFile]['type'] = 0
         self.freeSession(sFile)
 
         return finalData
@@ -312,22 +327,20 @@ def main():
             scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr, curses.A_NORMAL)
 
             # transfer info
-            '''
             i = 2
             for sFile, info in tHand.transferInfo.items():
-                if not info: # empty
+                if not info['type']: # empty
                     continue
 
-                if str(selected) == sFile:
+                if str(selected) == sFile: # wrong
                     for j in range(i, i+3):
                         scr.addch(j, 0, '*')
 
-                scr.addstr(i, 2, T_STR[info[3]-1], curses.A_NORMAL)
-                scr.addstr(i+1, 2, "/".join(info[0]), curses.A_NORMAL)
-                scr.addstr(i+2, 2, "{} - {}".format(info[2], bytesConvert(info[1])),
+                scr.addstr(i, 2, T_STR[info['type']-1], curses.A_NORMAL)
+                scr.addstr(i+1, 2, "/".join(info['rPath']), curses.A_NORMAL)
+                scr.addstr(i+2, 2, "{}% - {}".format(info['progress'], bytesConvert(info['size'])),
                            curses.A_NORMAL)
                 i+=4
-            '''
 
             ch = scr.getch()
             if ch == curses.KEY_UP and selected > 1:
