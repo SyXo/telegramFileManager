@@ -171,10 +171,11 @@ class transferHandler:
         self.transferInfo[sFile]['size'] = fileData['size']
         self.transferInfo[sFile]['type'] = 1
 
-        with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'r') as f:
-            index = int(f.read())
-
-        fileData['index'] = index
+        if os.path.isfile(os.path.join(self.data_path, "index_{}".format(sFile))):
+            with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'r') as f:
+                fileData['index'] = int(f.read())
+        else:
+            fileData['index'] = 1
 
         finalData = self.tgObject[sFile].uploadFiles(fileData)
 
