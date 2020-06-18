@@ -32,7 +32,8 @@ def getInputs(scr, title, prompts):
     inputs = {}
     for key, prompt in prompts.items():
         scr.addstr(i, 0, prompt)
-        inputs[key] = scr.getstr(i + 1, 0, 255) # has a limit of 255 chars/input
+        inputs[key] = scr.getstr(i + 1, 0).decode(encoding='utf-8')
+        # has a limit of 255 chars/input
         i+=3
 
     curses.curs_set(False)
