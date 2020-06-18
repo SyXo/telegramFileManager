@@ -1,6 +1,8 @@
 test_filesize = 3G
 test_args = "noResume" # could also be "resume(1|2)", for testing resuming capability
 
+install_path = /usr/local/bin
+
 # this also needs to be modified inside tests.py
 tmp_path = ~/.tmp
 
@@ -8,7 +10,7 @@ pyrCaller_extern: src/pyrCaller_extern.c
 	$(CC) -std=c99 -fPIC -shared -o $@.so $?
 
 clean:
-	rm -rf src/__pycache__ pyrCaller_extern.so
+	rm -rf src/__pycache__ pyrCaller_extern.so main.spec build dist
 
 test: pyrCaller_extern
 	echo "Just a heads up this will take around an hour"
@@ -30,5 +32,10 @@ test: pyrCaller_extern
 	echo "Finished test"
 	echo "Deleting temporary files"
 	rm $(tmp_path)/tfilemgr/rand downloads/tfilemk_rand
+
+install: pyrCaller_extern
+	pyinstaller src/main.py --add-data /usr/lib/python3.8/site-packages/pyrogram/client/ext/mime.types:pyrogram/client/ext --onefile
+
+	cp dist/main $(install_path)/tgFileManager
 
 .SILENT: test
