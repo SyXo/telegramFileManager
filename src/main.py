@@ -205,7 +205,8 @@ class transferHandler:
 
         finalData = self.tgObject[sFile].downloadFiles(fileData)
 
-        os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
+        if len(fileData['fileID']) > 1:
+            os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
         self.transferInfo[sFile]['type'] = 0
         self.freeSession(sFile)
 
