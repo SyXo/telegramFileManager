@@ -174,8 +174,7 @@ class transferHandler:
 
         fileData['index'] = index
 
-        transferJob = threading.Thread(self.tgObject[sFile].uploadFiles, args=(fileData))
-        finalData = transferJob.start()
+        finalData = self.tgObject[sFile].uploadFiles(fileData)
 
         os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)<M-Up><M-Up>))
         with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'w') as f:
@@ -184,7 +183,7 @@ class transferHandler:
         self.updateDatabase(finalData['fileData'])
 
         self.transferInfo[sFile]['type'] = 0 # not transferring anything
-        self.freeSession(sFile) # Obviously wrong, will free before finishing upload
+        self.freeSession(sFile)
 
 
     def download(self, fileData={}):
@@ -199,9 +198,7 @@ class transferHandler:
         self.transferInfo[sFile]['size'] = fileData['size']
         self.transferInfo[sFile]['type'] = 2
 
-        transferJob = threading.Thread(self.tgObject[sFile].downloadFiles,
-                                       args=(fileData))
-        finalData = transferJob.start()
+        finalData = self.tgObject[sFile].downloadFiles(fileData)
 
         os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
         self.transferInfo[sFile]['type'] = 0
@@ -287,7 +284,8 @@ def main():
                             'chunkIndex' : 0,
                             'type'       : 1}
 
-                tHand.upload(fileData)
+                upJob = threading.Thread(tHand.upload, args=(fileData))
+                upJob.start()
                 uploadMenu = 0
 
             elif downloadMenu:
@@ -313,11 +311,13 @@ def main():
                 m = fileSelector.CursesMenu(menu, scr, len(menu['options'])+10)
 
                 selectedFile = m.display()
-                tHand.download({'rPath'   : selectedFile['rPath'],
-                                'fileID'  : selectedFile['fileID'],
-                                'IDindex' : 0,
-                                'size'    : selectedFile['size'],
-                                'type'    : 2})
+                downJob = threading.Thread(tHand.download,
+                                args=({'rPath'   : selectedFile['rPath'],
+                                       'fileID'  : selectedFile['fileID'],
+                                       'IDindex' : 0,
+                                       'size'    : selectedFile['size'],
+                                       'type'    : 2}))
+                downJob.start()
 
                 downloadMenu = 0
 
