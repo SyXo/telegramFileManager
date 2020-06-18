@@ -176,7 +176,7 @@ class transferHandler:
 
         finalData = self.tgObject[sFile].uploadFiles(fileData)
 
-        os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)<M-Up><M-Up>))
+        os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
         with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'w') as f:
             f.write(str(finalData['index']))
 
