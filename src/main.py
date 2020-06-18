@@ -106,7 +106,7 @@ class transferHandler:
     def freeSession(self, sFile=''):
         if not int(sFile) in range(1, self.max_sessions+1):
             raise IndexError("sFile should be between 1 and {}.".format(self.max_sessions))
-        if sFile in self.freeSession:
+        if sFile in self.freeSessions:
             raise ValueError("Can't free a session that is already free.")
 
         self.freeSessions.append(sFile)
