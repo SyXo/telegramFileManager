@@ -34,7 +34,7 @@ test: pyrCaller_extern
 	rm $(tmp_path)/tfilemgr/rand downloads/tfilemk_rand
 
 install: pyrCaller_extern
-	pyinstaller src/main.py --add-data /usr/lib/python3.8/site-packages/pyrogram/client/ext/mime.types:pyrogram/client/ext --onefile
+	pyinstaller src/main.py --add-data /usr/lib/python3.8/site-packages/pyrogram/client/ext/mime.types:pyrogram/client/ext --add-binary pyrCaller_extern.so:. --onefile
 
 	cp dist/main $(install_path)/tgFileManager
 

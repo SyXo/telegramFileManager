@@ -2,4 +2,7 @@ src/__pycache__
 src/config.py
 *.so
 *.session
+*.spec
 downloads
+build
+dist
