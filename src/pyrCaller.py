@@ -30,8 +30,7 @@ class pyrogramFuncs:
     def __init__(self, telegram_channel_id, api_id, api_hash, data_path,
                  tmp_path, s_file, progress_fun, data_fun, local_library=True):
 
-        lib_str = "pyrCaller_extern.so" if local_library else "../pyrCaller_extern.so"
-        self.extern = CDLL(lib_str)
+        self.extern = CDLL("pyrCaller_extern.so" if local_library else "../pyrCaller_extern.so")
         self.extern.splitFile.restype = c_size_t
         self.extern.splitFile.argtypes = [c_size_t, c_char_p, c_char_p,
                                           c_size_t, c_size_t]
