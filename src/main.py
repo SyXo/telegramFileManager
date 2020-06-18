@@ -286,7 +286,7 @@ def main():
                             'chunkIndex' : 0,
                             'type'       : 1}
 
-                upJob = threading.Thread(tHand.upload, args=(fileData))
+                upJob = threading.Thread(target=tHand.upload, args=(fileData))
                 upJob.start()
                 uploadMenu = 0
 
@@ -313,7 +313,7 @@ def main():
                 m = fileSelector.CursesMenu(menu, scr, len(menu['options'])+10)
 
                 selectedFile = m.display()
-                downJob = threading.Thread(tHand.download,
+                downJob = threading.Thread(target=tHand.download,
                                 args=({'rPath'   : selectedFile['rPath'],
                                        'fileID'  : selectedFile['fileID'],
                                        'IDindex' : 0,
