@@ -9,10 +9,10 @@ larger than 1.5G and more!
 ## Features
 * Ability to show downloading and uploading progress
 * Ability to transfer files larger than 1.5G (telegram's limit)
-* Intuitive and fast scrolling when selecting uploaded files (WIP)
+* Intuitive and fast scrolling when selecting uploaded files
 * Fast downloading and uploading of files (10Mbit UP | 15Mbit DOWN)
 * Ability to upload/download multiple files at once (after 4 there if no speed
-benefit) (WIP)
+benefit)
 * Canceling and resuming file transfer progress (WIP)
 * Interface that is similar to `rtorrent` (WIP)
 
