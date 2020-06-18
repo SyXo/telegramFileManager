@@ -278,13 +278,6 @@ def main():
             if uploadMenu:
                 strData = getInputs(scr, "Upload:", {'path'  : "File Path:",
                                                      'rPath' : "Relative Path:"})
-                fileData = {'rPath'      : strData['rPath'].split('/'),
-                            'path'       : strData['path'],
-                            'size'       : os.path.getsize(strData['path']),
-                            'fileID'     : [],
-                            'index'      : 0, # managed by transferHandler
-                            'chunkIndex' : 0,
-                            'type'       : 1}
 
                 upJob = threading.Thread(target=tHand.upload,
                                          args=({'rPath'      : strData['rPath'].split('/'),
