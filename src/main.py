@@ -286,7 +286,14 @@ def main():
                             'chunkIndex' : 0,
                             'type'       : 1}
 
-                upJob = threading.Thread(target=tHand.upload, args=(fileData))
+                upJob = threading.Thread(target=tHand.upload,
+                                         args=({'rPath'      : strData['rPath'].split('/'),
+                                                'path'       : strData['path'],
+                                                'size'       : os.path.getsize(strData['path']),
+                                                'fileID'     : [],
+                                                'index'      : 0, # managed by transferHandler
+                                                'chunkIndex' : 0,
+                                                'type'       : 1},))
                 upJob.start()
                 uploadMenu = 0
 
@@ -314,11 +321,11 @@ def main():
 
                 selectedFile = m.display()
                 downJob = threading.Thread(target=tHand.download,
-                                args=({'rPath'   : selectedFile['rPath'],
-                                       'fileID'  : selectedFile['fileID'],
-                                       'IDindex' : 0,
-                                       'size'    : selectedFile['size'],
-                                       'type'    : 2}))
+                                           args=({'rPath'   : selectedFile['rPath'],
+                                                  'fileID'  : selectedFile['fileID'],
+                                                  'IDindex' : 0,
+                                                  'size'    : selectedFile['size'],
+                                                  'type'    : 2},))
                 downJob.start()
 
                 downloadMenu = 0
