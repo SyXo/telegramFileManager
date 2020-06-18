@@ -64,6 +64,7 @@ class transferHandler:
         # initialize all the pyrCaller sessions that will be used
         for i in range(1, max_sessions+1):
             self.freeSessions.append(str(i))
+            self.transferInfo[str(i)] = {}
             self.transferInfo[str(i)]['rPath'] = ''
             self.transferInfo[str(i)]['progress'] = 0
             self.transferInfo[str(i)]['size'] = 0
