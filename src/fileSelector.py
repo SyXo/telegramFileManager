@@ -24,7 +24,7 @@ class CursesMenu:
         inputKey = None
 
         while inputKey != ord('\n'): # ENTER
-            self.scr.addstr(0, 0, self.menu_options['title'], curses.A_STANDOUT)
+            self.pad.addstr(0, 0, self.menu_options['title'], curses.A_STANDOUT)
 
             for option in range(option_count):
                 if self.selected_option == option:
@@ -32,8 +32,8 @@ class CursesMenu:
                 else:
                     self._draw_option(option, curses.A_NORMAL)
 
-            tlX, tlY = os.get_terminal_size(0)  
-            self.scr.refresh(showY,showX, 0,0, tlY-1,tlX-1)
+            tlX, tlY = os.get_terminal_size(0)
+            self.pad.refresh(showY,showX, 0,0, tlY-1,tlX-1)
 
             inputKey = self.scr.getch()
             exitKeys = [ord('q'), ord('Q')]
@@ -80,10 +80,10 @@ class CursesMenu:
 
 
     def _draw_option(self, option_number, style):
-        self.scr.addstr(2 + option_number,
-                           2,
-                           "{}".format(self.menu_options['options'][option_number]['title']),
-                           style)
+        self.pad.addstr(2 + option_number,
+                        2,
+                        "{}".format(self.menu_options['options'][option_number]['title']),
+                        style)
 
 
     def display(self):
