@@ -17,7 +17,7 @@ Due to how files are downloaded, downloading 2 files with the same name
 (not path) at the same time will cause problems.
 
 Also when a file with same name as one of previous files has been downloaded
-then the original file will be replaced. (If it has not been moved)
+then the original file will be replaced. (If the original has not been moved)
 '''
 
 from ctypes import *
@@ -216,23 +216,27 @@ class pyrogramFuncs:
         return 1
 
 
-    def deleteUseless(self, IDList=[]):
+    def deleteUseless(self, IDList=[], delete_mode=1):
+        # delete_mode is 1 for enerything except IDList,
+        #                2 for only IDList
         if (not IDList) or not (type(IDList) is list):
             raise TypeError("Bad or empty value given.")
 
         deletedList = []
 
-        for tFile in self.telegram.iter_history(self.telegram_channel_id):
-            if (tFile.media) and (not tFile.message_id in IDList):
-                deletedList.append(tFile.message_id)
+        if delete_mode == 1:
+            for tFile in self.telegram.iter_history(self.telegram_channel_id):
+                if (tFile.media) and (not tFile.message_id in IDList):
+                    deletedList.append(tFile.message_id)
 
-        if deletedList:
-            self.telegram.delete_messages(self.telegram_channel_id,
-                    deletedList)
+            if deletedList:
+                self.telegram.delete_messages(self.telegram_channel_id,
+                                              deletedList)
 
+        elif delete_mode == 2:
+            self.telegram.delete_messages(self.telegram_channel_id, IDList)
 
         return deletedList
-
 
     def stop(self, stop_type=0):
         #Values of stop_type:
