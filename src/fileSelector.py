@@ -9,8 +9,8 @@ class CursesMenu:
 
     def __init__(self, menu_options, scr, list_len):
 
-        self.screen = scr
-        self.screen.nodelay(False)
+        self.scr = scr
+        self.scr.nodelay(False)
         #self.screen = curses.newpad(list_len, self.MAX_PAD_X)
         self.menu_options = menu_options
         self.selected_option = 0
@@ -24,7 +24,7 @@ class CursesMenu:
         inputKey = None
 
         while inputKey != ord('\n'): # ENTER
-            self.screen.addstr(0, 0, self.menu_options['title'], curses.A_STANDOUT)
+            self.scr.addstr(0, 0, self.menu_options['title'], curses.A_STANDOUT)
 
             for option in range(option_count):
                 if self.selected_option == option:
@@ -33,9 +33,9 @@ class CursesMenu:
                     self._draw_option(option, curses.A_NORMAL)
 
             tlX, tlY = os.get_terminal_size(0)  
-            self.screen.refresh()
+            self.scr.refresh()
 
-            inputKey = self.screen.getch()
+            inputKey = self.scr.getch()
             exitKeys = [ord('q'), ord('Q')]
 
             if inputKey == curses.KEY_DOWN:
@@ -80,7 +80,7 @@ class CursesMenu:
 
 
     def _draw_option(self, option_number, style):
-        self.screen.addstr(2 + option_number,
+        self.scr.addstr(2 + option_number,
                            2,
                            "{}".format(self.menu_options['options'][option_number]['title']),
                            style)
@@ -88,8 +88,8 @@ class CursesMenu:
 
     def display(self):
         selected_option = self.prompt_selection()
-        self.screen.nodelay(True)
-        self.screen.erase()
+        self.scr.nodelay(True)
+        self.scr.erase()
         if selected_option < len(self.menu_options['options']):
             selected_opt = self.menu_options['options'][selected_option]
             return selected_opt
