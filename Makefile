@@ -7,13 +7,13 @@ package_path = $(shell python -c "import pyrogram;import os;print(os.path.dirnam
 # this also needs to be modified inside tests.py
 tmp_path = ~/.tmp
 
-pyrCaller_extern: src/pyrCaller_extern.c
+pyrCaller_extern: src/backend/pyrCaller_extern.c
 	$(CC) -std=c99 -fPIC -shared -o $@.so $?
 
 clean:
 	rm -rf src/__pycache__ pyrCaller_extern.so main.spec build dist
 
-test: pyrCaller_extern
+test: clean pyrCaller_extern
 	echo "Just a heads up this will take around an hour"
 	echo "Also it is recommended but not required for any other file up/down"
 	echo "progress to be finished before running this test"
@@ -36,7 +36,7 @@ test: pyrCaller_extern
 	echo "Compiling main program"
 	pyinstaller src/main.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary pyrCaller_extern.so:. --onefile
 
-install: pyrCaller_extern
+install: clean pyrCaller_extern
 	pyinstaller src/main.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary pyrCaller_extern.so:. --onefile
 
 	cp dist/main $(install_path)/tgFileManager
