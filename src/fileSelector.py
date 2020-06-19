@@ -2,7 +2,7 @@ import curses
 import sys
 import os
 
-class CursesMenu(object):
+class CursesMenu:
 
     INIT = {'type' : 'init'}
     MAX_PAD_X = 250
@@ -10,11 +10,10 @@ class CursesMenu(object):
     def __init__(self, menu_options, scr, list_len):
 
         self.screen = scr
-        self.screen = curses.newpad(list_len, self.MAX_PAD_X)
+        self.screen.nodelay(False)
+        #self.screen = curses.newpad(list_len, self.MAX_PAD_X)
         self.menu_options = menu_options
         self.selected_option = 0
-        self._previously_selected_option = None
-        self.running = True
 
 
     def prompt_selection(self):
@@ -25,10 +24,8 @@ class CursesMenu(object):
         inputKey = None
 
         while inputKey != ord('\n'): # ENTER
-            if self.selected_option != self._previously_selected_option:
-                self._previously_selected_option = self.selected_option
+            self.screen.addstr(0, 0, self.menu_options['title'], curses.A_STANDOUT)
 
-            self._draw_title()
             for option in range(option_count):
                 if self.selected_option == option:
                     self._draw_option(option, curses.A_STANDOUT)
@@ -36,13 +33,13 @@ class CursesMenu(object):
                     self._draw_option(option, curses.A_NORMAL)
 
             tlX, tlY = os.get_terminal_size(0)  
-            self.screen.refresh(showY,showX, 0,0, tlY-1,tlX-1)
+            self.screen.refresh()
 
             inputKey = self.screen.getch()
             exitKeys = [ord('q'), ord('Q')]
 
             if inputKey == curses.KEY_DOWN:
-                if self.selected_option < option_count:
+                if self.selected_option < option_count-1:
                     self.selected_option += 1
                     if self.selected_option + 4 > showY + tlY:
                         showY += 1
@@ -81,23 +78,20 @@ class CursesMenu(object):
 
         return self.selected_option
 
+
     def _draw_option(self, option_number, style):
         self.screen.addstr(2 + option_number,
                            2,
                            "{}".format(self.menu_options['options'][option_number]['title']),
                            style)
 
-    def _draw_title(self):
-        self.screen.addstr(0, 0, self.menu_options['title'], curses.A_STANDOUT)
 
     def display(self):
         selected_option = self.prompt_selection()
-        curses.endwin()
-        os.system('clear')
+        self.screen.nodelay(True)
+        self.screen.erase()
         if selected_option < len(self.menu_options['options']):
             selected_opt = self.menu_options['options'][selected_option]
             return selected_opt
         else:
-            self.running = False
             return {'title' : 'Exit', 'type' : 'exitmenu'}
-

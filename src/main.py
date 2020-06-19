@@ -280,7 +280,7 @@ def main():
 
             if uploadMenu:
                 strData = getInputs(scr, "Upload", {'path'  : "File Path:",
-                                                     'rPath' : "Relative Path:"})
+                                                    'rPath' : "Relative Path:"})
 
                 upJob = threading.Thread(target=tHand.upload,
                                          args=({'rPath'      : strData['rPath'].split('/'),
