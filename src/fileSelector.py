@@ -11,7 +11,7 @@ class CursesMenu:
 
         self.scr = scr
         self.scr.nodelay(False)
-        #self.screen = curses.newpad(list_len, self.MAX_PAD_X)
+        self.pad = curses.newpad(list_len, self.MAX_PAD_X)
         self.menu_options = menu_options
         self.selected_option = 0
 
@@ -33,7 +33,7 @@ class CursesMenu:
                     self._draw_option(option, curses.A_NORMAL)
 
             tlX, tlY = os.get_terminal_size(0)  
-            self.scr.refresh()
+            self.scr.refresh(showY,showX, 0,0, tlY-1,tlX-1)
 
             inputKey = self.scr.getch()
             exitKeys = [ord('q'), ord('Q')]
