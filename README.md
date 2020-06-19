@@ -43,7 +43,7 @@ you run the tests, after that they will be saved as `a1.session` in the
 `Makefile` directory
 
 
-## Installing telegramFileManager (WIP)
+## Installing telegramFileManager
 * Do `make install` to compile the dependencies and install the program in
 `/usr/local/bin` (if you don't have root permissions, give `install_path=<dir>`
 argument where `<dir>` is a path you can write to and is in your `$PATH`

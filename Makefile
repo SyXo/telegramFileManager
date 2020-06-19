@@ -2,6 +2,7 @@ test_filesize = 3G
 test_args = "noResume" # could also be "resume(1|2)", for testing resuming capability
 
 install_path = /usr/local/bin
+package_path = $(shell python -c "import pyrogram;import os;print(os.path.dirname(pyrogram.__file__))")
 
 # this also needs to be modified inside tests.py
 tmp_path = ~/.tmp
@@ -34,7 +35,7 @@ test: pyrCaller_extern
 	rm $(tmp_path)/tfilemgr/rand downloads/tfilemk_rand
 
 install: pyrCaller_extern
-	pyinstaller src/main.py --add-data /usr/lib/python3.8/site-packages/pyrogram/client/ext/mime.types:pyrogram/client/ext --add-binary pyrCaller_extern.so:. --onefile
+	pyinstaller src/main.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary pyrCaller_extern.so:. --onefile
 
 	cp dist/main $(install_path)/tgFileManager
 
