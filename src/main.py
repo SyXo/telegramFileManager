@@ -316,13 +316,15 @@ def main():
                 m = fileSelector.CursesMenu(menu, scr, len(menu['options'])+10)
 
                 selectedFile = m.display()
-                downJob = threading.Thread(target=tHand.download,
-                                           args=({'rPath'   : selectedFile['rPath'],
-                                                  'fileID'  : selectedFile['fileID'],
-                                                  'IDindex' : 0,
-                                                  'size'    : selectedFile['size'],
-                                                  'type'    : 2},))
-                downJob.start()
+
+                if selectedFile['type'] == 'file':
+                    downJob = threading.Thread(target=tHand.download,
+                                               args=({'rPath'   : selectedFile['rPath'],
+                                                      'fileID'  : selectedFile['fileID'],
+                                                      'IDindex' : 0,
+                                                      'size'    : selectedFile['size'],
+                                                      'type'    : 2},))
+                    downJob.start()
 
                 downloadMenu = 0
 
