@@ -35,11 +35,6 @@ class CursesMenu(object):
                 else:
                     self._draw_option(option, curses.A_NORMAL)
 
-            if self.selected_option == option_count:
-                self.screen.addstr(3 + option_count, 3, "Exit", curses.A_STANDOUT)
-            else:
-                self.screen.addstr(3 + option_count, 3, "Exit", curses.A_NORMAL)
-
             tlX, tlY = os.get_terminal_size(0)  
             self.screen.refresh(showY,showX, 0,0, tlY-1,tlX-1)
 

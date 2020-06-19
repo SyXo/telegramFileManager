@@ -279,7 +279,7 @@ def main():
             tlX, tlY = os.get_terminal_size(0)
 
             if uploadMenu:
-                strData = getInputs(scr, "Upload:", {'path'  : "File Path:",
+                strData = getInputs(scr, "Upload", {'path'  : "File Path:",
                                                      'rPath' : "Relative Path:"})
 
                 upJob = threading.Thread(target=tHand.upload,
@@ -309,7 +309,7 @@ def main():
                                       'size'   : i['size'],
                                       'type'   : 'file'})
 
-                menu = {'title'   : "Select file to download:",
+                menu = {'title'   : "Select file to download",
                         'type'    : 'menu',
                         'options' : fancyList}
 
