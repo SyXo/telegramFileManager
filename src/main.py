@@ -221,7 +221,9 @@ class transferHandler:
 def main():
     cfg = configparser.ConfigParser()
 
-    if not os.path.isfile(os.path.expanduser("~/.config/tgFileManager.ini")):
+    if os.path.isfile(os.path.expanduser("~/.config/tgFileManager.ini")):
+        cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
+    else:
         print("Config file not found, user input required for first time configuration.")
 
         cfg['telegram'] = {}
@@ -244,9 +246,6 @@ def main():
         with open(os.path.expanduser("~/.config/tgFileManager.ini"), 'w') as f:
             cfg.write(f)
         print("Config file created at {}".format(os.path.expanduser("~/.config/tgFileManager.ini")))
-
-    else:
-        cfg.read(os.path.expanduser("~/.config/tgFileManager.ini"))
 
     tHand = transferHandler(cfg['telegram']['channel_id'], cfg['telegram']['api_id'],
                             cfg['telegram']['api_hash'], cfg['paths']['data_path'],
