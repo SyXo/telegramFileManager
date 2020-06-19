@@ -33,6 +33,8 @@ test: pyrCaller_extern
 	echo "Finished test"
 	echo "Deleting temporary files"
 	rm $(tmp_path)/tfilemgr/rand downloads/tfilemk_rand
+	echo "Compiling main program"
+	pyinstaller src/main.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary pyrCaller_extern.so:. --onefile
 
 install: pyrCaller_extern
 	pyinstaller src/main.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary pyrCaller_extern.so:. --onefile
