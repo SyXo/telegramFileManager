@@ -24,7 +24,6 @@ from ctypes import *
 from pyrogram import Client
 from shutil import copyfile
 from os import remove, path
-from time import sleep
 
 class TransferHandler:
     def __init__(self, telegram_channel_id, api_id, api_hash, data_path,
