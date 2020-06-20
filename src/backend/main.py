@@ -4,11 +4,6 @@ import configparser
 import pyrCaller
 import threading
 import fileSelector
-import pickle
-from operator import itemgetter
-
-NAME = "Telegram File Manager"
-T_STR = ["Uploading:", "Downloading:"]
 
 class transferHandler:
     def __init__(self, telegram_channel_id, api_id, api_hash,
@@ -23,11 +18,6 @@ class transferHandler:
         self.resumeSessions = []
         self.fileDatabase = []
         self.transferInfo = {} # used by main fun
-
-        # Load database
-        if os.path.isfile(os.path.join(self.data_path, "fileData")):
-            with open(os.path.join(self.data_path, "fileData"), 'rb') as f:
-                self.fileDatabase = pickle.load(f)
 
         # initialize all the pyrCaller sessions that will be used
         for i in range(1, max_sessions+1):
@@ -46,19 +36,6 @@ class transferHandler:
             # check for resume files
             if os.path.isfile(os.path.join(data_path, "resume_{}".format(i))):
                 self.resumeSessions.append(str(i))
-
-
-    def updateDatabase(self, newInfo):
-        # This should be called after finishing an upload
-        # Sorts the new dict into filelist
-        # then updates both in memory and to file
-        self.fileDatabase.append(newInfo)
-        self.fileDatabase.sort(key=itemgetter('rPath'))
-        # This could be slow, a faster alternative is bisect.insort,
-        # howewer, I couldn't find a way to sort by an item in dictionary
-
-        with open(os.path.join(self.data_path, "fileData"), 'wb') as f:
-            pickle.dump(self.fileDatabase, f)
 
 
     def useSession(self):
