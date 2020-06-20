@@ -36,13 +36,13 @@ class TransferHandler:
                                           c_size_t, c_size_t]
 
         self.extern.concatFiles.restype = c_char
-        self.extern.concatFiles.argtypes = [c_char_p, c_char_p, c_size_t] 
+        self.extern.concatFiles.argtypes = [c_char_p, c_char_p, c_size_t]
 
         self.telegram = Client(path.join(data_path, "a{}".format(s_file)),
                                api_id, api_hash)
         # Connect to telegram servers when starting
         # So that if we are missing any sessions it will prompt for login
-        # Before starting ncurses
+        # Before starting curses
         self.telegram.start()
 
         self.telegram_channel_id = telegram_channel_id
