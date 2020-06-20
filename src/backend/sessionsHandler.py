@@ -3,29 +3,28 @@ Extends transferHandler by managing the database and implementing multithreading
 '''
 
 import os
-import configparser
-import pyrCaller
 import threading
-import fileSelector
 
 from transferHandler import TransferHandler
 from fileIO import FileIO
 
-class transferHandler(TransferHandler, FileIO):
+class SessionsHandler:
     def __init__(self, telegram_channel_id, api_id, api_hash,
                  data_path, tmp_path, max_sessions):
+
+        self.fileObj = FileIO(data_path, max_sessions)
 
         self.api_id = api_id
         self.api_hash = api_hash
         self.data_path = data_path
         self.max_sessions = max_sessions
-        self.tgObject = {}
+        self.tHandObj = {}
         self.freeSessions = []
-        self.resumeSessions = []
         self.fileDatabase = []
-        self.transferInfo = {} # used by main fun
+        self.transferInfo = {}
 
-        # initialize all the pyrCaller sessions that will be used
+        self.resumeData = self.fileObj.loadResumeData()
+
         for i in range(1, max_sessions+1):
             self.freeSessions.append(str(i))
             self.transferInfo[str(i)] = {}
@@ -34,14 +33,10 @@ class transferHandler(TransferHandler, FileIO):
             self.transferInfo[str(i)]['size'] = 0
             self.transferInfo[str(i)]['type'] = 0
 
-            self.tgObject[str(i)] = pyrCaller.pyrogramFuncs(
-                    telegram_channel_id, api_id, api_hash, data_path,
-                    tmp_path, str(i), self.saveProgress, self.saveFileData
+            self.tgObject[str(i)] = TransferHandler(
+                    telegram_channel_id, api_id, api_hash, data_path, tmp_path,
+                    str(i), self.saveProgress, self.fileObj.saveResumeData
             )
-
-            # check for resume files
-            if os.path.isfile(os.path.join(data_path, "resume_{}".format(i))):
-                self.resumeSessions.append(str(i))
 
 
     def useSession(self):
@@ -68,28 +63,23 @@ class transferHandler(TransferHandler, FileIO):
 
 
     def resumeHandler(self, sFile='', selected=0):
-        if not sFile in self.resumeSessions:
-            raise ValueError("This session doesn't have any resume info.")
         if not selected in range(1, 4):
             raise IndexError("selected should be between 1 and 3")
 
         if selected == 1: # Finish the transfer
-            with open(os.path.join(data_path, "resume_{}".format(sFile)), 'rb') as f:
-                fileData = pickle.load(f)
-
-            if fileData['type'] == 1:
+            if self.resumeData[sFile]['type'] == 1:
                 self.upload(fileData)
-            else:
+            elif self.resumeData[sFile]['type'] == 2:
                 self.download(fileData)
 
         elif selected == 2: # Ignore for now
             self.freeSessions.remove(sFile)
 
         else: # delete the resume file
-            os.remove(os.path.join(data_path, "resume_{}".format(sFile)))
+            self.fileObj.delResumeData(sFile)
             self.cleanTg()
 
-        self.resumeSessions.remove(sFile)
+        self.resumeData[sFile] = {}
 
 
     def cleanTg(self):
@@ -156,6 +146,18 @@ class transferHandler(TransferHandler, FileIO):
         self.freeSession(sFile)
 
         return finalData
+
+
+    def transferInThread(self, selected=0, fileData={}):
+        # selected: 1 - upload, 2 - download
+
+        if selected == 1:
+            threadTarget = self.upload
+        elif selected == 2:
+            threadTarget = self.download
+
+        transferJob = threading.Thread(target=threadTarget, args=(fileData,))
+        transferJob.start()
 
 
     def endSessions(self):

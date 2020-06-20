@@ -42,7 +42,7 @@ class FileIO:
         resumeData = {}
 
         for i in range(1, self.max_sessions+1):
-            fileData = ''
+            fileData = {}
             if os.path.isfile(os.path.join(self.data_path, "resume_{}".format(i))):
                 with open(os.path.join(self.data_path, "resume_{}".format(i)), 'rb') as f:
                     fileData = pickle.load(f)
