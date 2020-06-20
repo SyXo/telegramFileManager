@@ -1,11 +1,17 @@
+'''
+Extends transferHandler by managing the database and implementing multithreading
+'''
+
 import os
-import curses
 import configparser
 import pyrCaller
 import threading
 import fileSelector
 
-class transferHandler:
+from transferHandler import TransferHandler
+from fileIO import FileIO
+
+class transferHandler(TransferHandler, FileIO):
     def __init__(self, telegram_channel_id, api_id, api_hash,
                  data_path, tmp_path, max_sessions):
 
@@ -59,11 +65,6 @@ class transferHandler:
     def saveProgress(self, current, total, current_chunk, total_chunks, sFile):
         prg = int(((current/total/total_chunks)+(current_chunk/total_chunks))*100)
         self.transferInfo[sFile]['progress'] = prg
-
-
-    def saveFileData(self, fileData, sFile):
-        with open(os.path.join(self.data_path, "resume_{}".format(sFile)), 'wb') as f:
-            pickle.dump(fileData, f)
 
 
     def resumeHandler(self, sFile='', selected=0):

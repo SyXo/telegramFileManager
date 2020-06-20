@@ -1,16 +1,18 @@
 from operator import itemgetter
 import pickle
+import os
 
 class FileIO:
-    def __init__(self, data_path):
+    def __init__(self, data_path, max_sessions):
         self.data_path = data_path
+        self.max_sessions = max_sessions
 
 
-    def updateDatabase(self, fileDatabase, newInfo):
+    def updateDatabase(self, fileDatabase, newData):
         # This should be called after finishing an upload
         # Sorts the new dict into filelist
         # then updates both in memory and to file
-        fileDatabase.append(newInfo)
+        fileDatabase.append(newData)
         fileDatabase.sort(key=itemgetter('rPath'))
         # This could be slow, a faster alternative is bisect.insort,
         # howewer, I couldn't find a way to sort by an item in dictionary
@@ -29,3 +31,26 @@ class FileIO:
                 self.fileDatabase = pickle.load(f)
 
         return fileDatabase
+
+
+    def saveResumeData(self, fileData, sFile):
+        with open(os.path.join(self.data_path, "resume_{}".format(sFile)), 'wb') as f:
+            pickle.dump(fileData, f)
+
+
+    def loadResumeData(self):
+        resumeData = {}
+
+        for i in range(1, self.max_sessions+1):
+            fileData = ''
+            if os.path.isfile(os.path.join(self.data_path, "resume_{}".format(i))):
+                with open(os.path.join(self.data_path, "resume_{}".format(i)), 'rb') as f:
+                    fileData = pickle.load(f)
+
+            resumeData[str(i)] = fileData
+
+        return resumeData
+
+
+    def delResumeData(self, sFile):
+        os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
