@@ -4,7 +4,7 @@
 # them !!!
 
 from os import path
-from backend import pyrCaller
+from backend.transferHandler import TransferHandler
 import sys
 import config as cfg
 
@@ -44,7 +44,7 @@ def fileDataFun(fileData, sFile):
     else:
         progressDownload = fileData.copy()
 
-tg = pyrCaller.pyrogramFuncs(telegram_channel_id, cfg.api_id, cfg.api_hash,
+tg = TransferHandler(telegram_channel_id, cfg.api_id, cfg.api_hash,
                              data_path,tmp_path,"1",printProgress,fileDataFun,
                              local_library=False)
 

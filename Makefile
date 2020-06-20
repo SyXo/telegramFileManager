@@ -1,19 +1,18 @@
 test_filesize = 3G
 test_args = "noResume" # could also be "resume(1|2)", for testing resuming capability
-
 install_path = /usr/local/bin
 package_path = $(shell python -c "import pyrogram;import os;print(os.path.dirname(pyrogram.__file__))")
 
 # this also needs to be modified inside tests.py
 tmp_path = ~/.tmp
 
-pyrCaller_extern: src/backend/pyrCaller_extern.c
+transferHandler_extern: src/backend/transferHandler_extern.c
 	$(CC) -std=c99 -fPIC -shared -o $@.so $?
 
 clean:
-	rm -rf src/__pycache__ pyrCaller_extern.so main.spec build dist
+	rm -rf src/__pycache__ src/backend/__pycache__ src/ui/__pycache__ transferHandler_extern.so main.spec build dist
 
-test: clean pyrCaller_extern
+test: clean transferHandler_extern
 	echo "Just a heads up this will take around an hour"
 	echo "Also it is recommended but not required for any other file up/down"
 	echo "progress to be finished before running this test"
@@ -33,8 +32,6 @@ test: clean pyrCaller_extern
 	echo "Finished test"
 	echo "Deleting temporary files"
 	rm $(tmp_path)/tfilemgr/rand downloads/tfilemk_rand
-	echo "Compiling main program"
-	pyinstaller src/main.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary pyrCaller_extern.so:. --onefile
 
 install: clean pyrCaller_extern
 	pyinstaller src/main.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary pyrCaller_extern.so:. --onefile
