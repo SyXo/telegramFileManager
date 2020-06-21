@@ -54,3 +54,16 @@ class FileIO:
 
     def delResumeData(self, sFile):
         os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
+
+
+    def loadIndexData(self, sFile):
+        if os.path.isfile(os.path.join(self.data_path, "index_{}".format(sFile))):
+            with open(os.path.join(self.data_path, "index_{}".format(sFile))) as f:
+                return int(f.read())
+        else:
+            return 1
+
+
+    def saveIndexData(self, sFile, index):
+        with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'w') as f:
+            f.write(str(index))

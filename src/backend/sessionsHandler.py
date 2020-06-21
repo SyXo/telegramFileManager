@@ -37,7 +37,7 @@ class SessionsHandler:
             ) # initialize all sessions that will be used
 
 
-    def _useSession(self): # Gets the first available session
+    def __useSession(self): # Gets the first available session
         if not self.freeSessions:
             raise IndexError("No free sessions.")
 
@@ -46,7 +46,7 @@ class SessionsHandler:
         return retSession
 
 
-    def _freeSession(self, sFile=''):
+    def __freeSession(self, sFile=''):
         if not int(sFile) in range(1, self.max_sessions+1):
             raise IndexError("sFile should be between 1 and {}.".format(self.max_sessions))
         if sFile in self.freeSessions:
@@ -80,7 +80,7 @@ class SessionsHandler:
 
 
     def cleanTg(self):
-        sFile = self._useSession()
+        sFile = self.__useSession()
 
         IDlist = []
         for i in self.fileDatabase:
@@ -88,38 +88,32 @@ class SessionsHandler:
                 IDlist.append(j)
 
         self.tHandler[sFile].deleteUseless(IDlist)
-        self._freeSession(sFile)
+        self.__freeSession(sFile)
 
 
     def _upload(self, fileData={}):
-        sFile = self._useSession() # Use a free session
+        sFile = self.__useSession() # Use a free session
         self.transferInfo[sFile]['rPath'] = fileData['rPath']
         self.transferInfo[sFile]['progress'] = 0
         self.transferInfo[sFile]['size'] = fileData['size']
         self.transferInfo[sFile]['type'] = 1
 
-        if os.path.isfile(os.path.join(self.data_path, "index_{}".format(sFile))):
-            with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'r') as f:
-                fileData['index'] = int(f.read())
-        else:
-            fileData['index'] = 1
+        fileData['index'] = self.fileIO.loadIndexData(sFile)
 
         finalData = self.tHandler[sFile].uploadFiles(fileData)
 
-        if len(finalData['fileData']['fileID']) > 1:
-            os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
+        if len(finalData['fileData']['fileID']) > 1: # not single chunk
+            self.fileIO.delResumeData(sFile)
 
-        with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'w') as f:
-            f.write(str(finalData['index']))
-
+        self.fileIO.saveIndexData(sFile, finalData['index'])
         self.updateDatabase(finalData['fileData'])
 
         self.transferInfo[sFile]['type'] = 0 # not transferring anything
-        self._freeSession(sFile)
+        self.__freeSession(sFile)
 
 
     def _download(self, fileData={}):
-        sFile = self._useSession() # Use a free session
+        sFile = self.__useSession() # Use a free session
         self.transferInfo[sFile]['rPath'] = fileData['rPath']
         self.transferInfo[sFile]['progress'] = 0
         self.transferInfo[sFile]['size'] = fileData['size']
@@ -128,9 +122,10 @@ class SessionsHandler:
         finalData = self.tHandler[sFile].downloadFiles(fileData)
 
         if len(fileData['fileID']) > 1:
-            os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
+            self.fileIO.delResumeData(sFile)
+
         self.transferInfo[sFile]['type'] = 0
-        self._freeSession(sFile)
+        self.__freeSession(sFile)
 
         return finalData
 
