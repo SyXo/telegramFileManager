@@ -1,17 +1,25 @@
 import curses
 import misc
 
+from backend.sessionsHandler import SessionsHandler
+
 class UserInterface:
-    def __init__(self, updateHandler):
+    def __init__(self):
+        cfg = misc.loadConfig()
+        self.sHandler = SessionsHandler(
+                cfg['telegram']['channel_id'], cfg['telegram']['api_id'],
+                cfg['telegram']['api_hash'], cfg['paths']['data_path'],
+                cfg['paths']['tmp_path'], int(cfg['telegram']['max_sessions'])
+        )
+
         self.scr = curses.initscr()
-        self.updateHandler = updateHandler
 
         curses.noecho()
         curses.cbreak()
         curses.curs_set(False)
-        scr.keypad(True)
-        scr.nodelay(True)
-        scr.timeout(5000)
+        self.scr.keypad(True)
+        self.scr.nodelay(True)
+        self.scr.timeout(5000)
         # waits for 5 seconds or a key to be pressed to refresh the screen
 
 
@@ -28,7 +36,7 @@ class UserInterface:
             inputs[key] = self.scr.getstr(i + 1, 0).decode(encoding='utf-8')
             i+=3
 
-       curses.curs_set(False)
+        curses.curs_set(False)
         curses.noecho()
         self.scr.nodelay(True)
         self.scr.erase()
@@ -52,3 +60,8 @@ class UserInterface:
         pass # TODO
 
     def main(self):
+
+
+if __name__ == "__main__":
+    ui = UserInterface()
+    ui.main()
