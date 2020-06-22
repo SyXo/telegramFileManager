@@ -1,11 +1,12 @@
 '''
-Extends transferHandler by managing the database
+Extends transferHandler by managing the database and implementing multithreading
 '''
 
 import os
 
 from transferHandler import TransferHandler
 from fileIO import FileIO
+import threading
 
 class SessionsHandler:
     def __init__(self, telegram_channel_id, api_id, api_hash,
@@ -90,12 +91,7 @@ class SessionsHandler:
         self.__freeSession(sFile)
 
 
-    def upload(self, fileData={}):
-        if (not fileData) or not (type(fileData) is dict):
-            raise TypeError("Bad or empty value given.")
-        if self.resumeSessions:
-            raise ValueError("Resume sessions not handled, refusing to transfer.")
-
+    def _upload(self, fileData={}):
         sFile = self.__useSession() # Use a free session
         self.transferInfo[sFile]['rPath'] = fileData['rPath']
         self.transferInfo[sFile]['progress'] = 0
@@ -116,12 +112,7 @@ class SessionsHandler:
         self.__freeSession(sFile)
 
 
-    def download(self, fileData={}):
-        if (not fileData) or not (type(fileData) is dict):
-            raise TypeError("Bad or empty value given.")
-        if self.resumeSessions:
-            raise ValueError("Resume sessions not handled, refusing to transfer.")
-
+    def _download(self, fileData={}):
         sFile = self.__useSession() # Use a free session
         self.transferInfo[sFile]['rPath'] = fileData['rPath']
         self.transferInfo[sFile]['progress'] = 0
@@ -137,6 +128,21 @@ class SessionsHandler:
         self.__freeSession(sFile)
 
         return finalData
+
+
+    def transferInThread(self, fileData={}):	
+        if (not fileData) or not (type(fileData) is dict):	
+            raise TypeError("Bad or empty value given.")	
+        if self.resumeSessions:	
+            raise ValueError("Resume sessions not handled, refusing to transfer.")	
+
+        if fileData['type'] == 1:	
+            threadTarget = self._upload	
+        elif fileData['type'] == 2:	
+            threadTarget = self._download	
+
+        transferJob = threading.Thread(target=threadTarget, args=(fileData,))	
+        transferJob.start()	
 
 
     def endSessions(self):

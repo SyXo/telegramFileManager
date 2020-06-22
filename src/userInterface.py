@@ -28,7 +28,7 @@ class UserInterface:
             inputs[key] = self.scr.getstr(i + 1, 0).decode(encoding='utf-8')
             i+=3
 
-        curses.curs_set(False)
+       curses.curs_set(False)
         curses.noecho()
         self.scr.nodelay(True)
         self.scr.erase()
@@ -50,3 +50,5 @@ class UserInterface:
 
     def downloadHandler(self, fileData):
         pass # TODO
+
+    def main(self):
