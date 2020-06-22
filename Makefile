@@ -10,7 +10,7 @@ transferHandler_extern: src/backend/transferHandler_extern.c
 	$(CC) -std=c99 -fPIC -shared -o $@.so $?
 
 clean:
-	rm -rf src/__pycache__ src/backend/__pycache__ src/ui/__pycache__ transferHandler_extern.so main.spec build dist
+	rm -rf src/__pycache__ src/backend/__pycache__ transferHandler_extern.so main.spec build dist
 
 test: clean transferHandler_extern
 	echo "Just a heads up this will take around an hour"
@@ -34,7 +34,7 @@ test: clean transferHandler_extern
 	rm $(tmp_path)/tfilemgr/rand downloads/tfilemk_rand
 
 install: clean pyrCaller_extern
-	pyinstaller src/main.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary pyrCaller_extern.so:. --onefile
+	pyinstaller src/userInterface.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary pyrCaller_extern.so:. --onefile
 
 	cp dist/main $(install_path)/tgFileManager
 
