@@ -140,7 +140,7 @@ class UserInterface:
         prompts = []
         totalSize = 0
         # Generate list dynamically
-        for i in sHandler.fileDatabase:
+        for i in self.sHandler.fileDatabase:
             totalSize += i['size']
 
             tempPath = '/'.join(i['rPath'])
