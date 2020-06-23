@@ -1,4 +1,5 @@
 import configparser
+import os
 
 def bytesConvert(rawBytes):
     if   rawBytes >= 16**10: # tbyte
