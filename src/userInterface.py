@@ -55,8 +55,16 @@ class UserInterface:
 
 
     def uploadHandler(self):
-        return self._getInputs("Upload", {'path'  : "File Path:",
-                                          'rPath' : "Relative Path:"})
+        inData = self._getInputs("Upload", {'path'  : "File Path:",
+                                            'rPath' : "Relative Path:"})
+
+        self.sHandler.transferInThread({'rPath'      : inData['rPath'].split('/'),
+                                        'path'       : inData['path'],
+                                        'size'       : os.path.getsize(inData['path']),
+                                        'fileID'     : [],
+                                        'index'      : 0, # managed by transferHandler
+                                        'chunkIndex' : 0,
+                                        'type'       : 1})
 
 
     def downloadHandler(self, fileData):
@@ -100,7 +108,7 @@ class UserInterface:
 
                     self.scr.addstr(i, 2, self.T_STR[info['type']-1])
                     self.scr.addstr(i+1, 2, "/".join(info['rPath']))
-                    self.scr.addstr(i+2, 2, "{}% - {}".format(info['progress'], bytesConvert(info['size'])))
+                    self.scr.addstr(i+2, 2, "{}% - {}".format(info['progress'], misc.bytesConvert(info['size'])))
                     i+=4
 
                 ch = self.scr.getch()

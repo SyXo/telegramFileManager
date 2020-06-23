@@ -10,7 +10,7 @@ transferHandler_extern: src/backend/transferHandler_extern.c
 	$(CC) -std=c99 -fPIC -shared -o $@.so $?
 
 clean:
-	rm -rf src/__pycache__ src/backend/__pycache__ transferHandler_extern.so main.spec build dist
+	rm -rf src/__pycache__ src/backend/__pycache__ transferHandler_extern.so userInterface.spec build dist
 
 test: clean transferHandler_extern
 	echo "Just a heads up this will take around an hour"

@@ -17,8 +17,8 @@ class SessionsHandler:
         self.fileIO = FileIO(data_path, max_sessions)
         self.tHandler = {}
         self.freeSessions = []
-        self.fileDatabase = []
         self.transferInfo = {}
+        self.fileDatabase = self.fileIO.loadDatabase()
         self.resumeData = self.fileIO.loadResumeData()
 
         for i in range(1, max_sessions+1):
@@ -104,7 +104,7 @@ class SessionsHandler:
             self.fileIO.delResumeData(sFile)
 
         self.fileIO.saveIndexData(sFile, finalData['index'])
-        self.updateDatabase(finalData['fileData'])
+        self.fileIO.updateDatabase(self.fileData, finalData['fileData'])
 
         self.transferInfo[sFile]['type'] = 0 # not transferring anything
         self.__freeSession(sFile)
@@ -131,8 +131,10 @@ class SessionsHandler:
     def transferInThread(self, fileData={}):	
         if (not fileData) or not (type(fileData) is dict):	
             raise TypeError("Bad or empty value given.")	
-        if self.resumeSessions:	
-            raise ValueError("Resume sessions not handled, refusing to transfer.")	
+
+        for sFile, info in self.resumeData.items():
+            if info: # resume file exists
+                raise ValueError("Resume sessions not handled, refusing to transfer.")
 
         if fileData['type'] == 1:	
             threadTarget = self._upload	
