@@ -47,6 +47,72 @@ class UserInterface:
 
 
     def _selectFromList(self, title, prompts):
+        self.scr.nodelay(False)
+
+        MAX_PAD_X = 250
+        promptCount = len(prompts)
+        scrPad = curses.newpad(promptCount+10, MAX_PAD_X) # Y, X max size
+        selected = showX = showY = 0
+        inputKey = None
+        didQuit = False
+
+        while inputKey != ord('\n'): # Enter
+            scrPad.addstr(0, 0, title, curses.A_STANDOUT)
+
+            for i in range(option_count):
+                scrPad.addstr(2 + i, 2,
+                              self.menu_options[i]['title'],
+                              curses.A_STANDOUT if selected == i else curses.A_NORMAL)
+
+            tlX, tlY = os.get_terminal_size(0)
+            scrPad.refresh(showY,showX, 0,0, tlY-1,tlX-1)
+
+            inputKey = self.scr.getch()
+
+            if inputKey == curses.KEY_DOWN and selected < promptCount-1:
+                selected += 1
+                if selected + 4 > showY + tlY:
+                    showY += 1
+
+            elif inputKey == curses.KEY_UP and selected > 0:
+                selected -= 1
+                if selected < showY:
+                    showY -= 1
+
+            elif inputKey == curses.KEY_NPAGE: # Page Down
+                selected += tlY-1
+                showY += tlY-1
+                if selected > promptCount:
+                    selected = promptCount
+                if showY > option_count-(tlY-5):
+                    showY = option_count-(tlY-5) 
+
+            elif inputKey == curses.KEY_PPAGE: # Page Up
+                selected -= tlY-1
+                showY -= tlY-1
+                if selected < 0:
+                    selected = 0
+                if showY < 0:
+                    showY = 0
+
+            elif inputKey == curses.KEY_RIGHT and showX < MAX_PAD_X:
+                showX += round(tlX/2)
+                if showX > MAX_PAD_X-1:
+                    showX = MAX_PAD_X-1
+            elif inputKey == curses.KEY_LEFT and showX >= 0:
+                showX -= round(tlX/2)
+                if showX < 0:
+                    showX = 0
+
+            elif inputKey in [ord('q'), ord('Q')]:
+                didQuit = True
+                break
+
+        self.scr.nodelay(True)
+        if didQuit:
+            return None
+        else:
+            return prompts[selected]
 
 
     def resumeHandler(self, resumeSessions):
@@ -85,6 +151,12 @@ class UserInterface:
 
         inData = self._selectFromList("Select file to download - {} Total".format(totalSize),
                                       prompts)
+
+        self.sHandler.transferInThread({'rPath'   : inData['rPath'],
+                                        'fileID'  : inData['fileID'],
+                                        'IDindex' : 0,
+                                        'size'    : inData['size'],
+                                        'type'    : 2})
 
 
     def main(self):
