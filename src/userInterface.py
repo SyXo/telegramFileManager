@@ -46,6 +46,9 @@ class UserInterface:
         return inputs
 
 
+    def _selectFromList(self, title, prompts):
+
+
     def resumeHandler(self, resumeSessions):
         inDict = {}
         for i in resumeSessions:
@@ -67,8 +70,21 @@ class UserInterface:
                                         'type'       : 1})
 
 
-    def downloadHandler(self, fileData):
-        pass # TODO
+    def downloadHandler(self):
+        prompts = []
+        totalSize = 0
+        # Generate list dynamically
+        for i in sHandler.fileDatabase:
+            totalSize += i['size']
+
+            tempPath = '/'.join(i['rPath'])
+            prompts.append({'title'  : "{}  {}".format(tempPath, misc.bytesConvert(i['size'])),
+                            'rPath'  : i['rPath'],
+                            'fileID' : i['fileID'],
+                            'size'   : i['size']})
+
+        inData = self._selectFromList("Select file to download - {} Total".format(totalSize),
+                                      prompts)
 
 
     def main(self):
