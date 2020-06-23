@@ -59,7 +59,7 @@ class UserInterface:
         while inputKey != ord('\n'): # Enter
             scrPad.addstr(0, 0, title, curses.A_STANDOUT)
 
-            for i in range(option_count):
+            for i in range(promptCount):
                 scrPad.addstr(2 + i, 2,
                               self.menu_options[i]['title'],
                               curses.A_STANDOUT if selected == i else curses.A_NORMAL)
@@ -84,8 +84,8 @@ class UserInterface:
                 showY += tlY-1
                 if selected > promptCount:
                     selected = promptCount
-                if showY > option_count-(tlY-5):
-                    showY = option_count-(tlY-5) 
+                if showY > promptCount-(tlY-5):
+                    showY = promptCount-(tlY-5) 
 
             elif inputKey == curses.KEY_PPAGE: # Page Up
                 selected -= tlY-1
