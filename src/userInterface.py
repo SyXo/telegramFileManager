@@ -51,12 +51,12 @@ class UserInterface:
         for i in resumeSessions:
             inDict[i] = "Session {}:".format(i)
 
-        return _getInputs("Resume files found, choose an option for each: (1) Finish the transfer (2) Ignore for now (3) Delete resume file", inDict)
+        return self._getInputs("Resume files found, choose an option for each: (1) Finish the transfer (2) Ignore for now (3) Delete resume file", inDict)
 
 
     def uploadHandler(self):
-        return _getInputs("Upload", {'path'  : "File Path:",
-                                     'rPath' : "Relative Path:"})
+        return self._getInputs("Upload", {'path'  : "File Path:",
+                                          'rPath' : "Relative Path:"})
 
 
     def downloadHandler(self, fileData):
@@ -70,56 +70,6 @@ class UserInterface:
             while True:
                 self.scr.erase()
                 tlX, tlY = os.get_terminal_size(0)
-
-                if uploadMenu:
-                    strData = getInputs(self.scr, "Upload", {'path'  : "File Path:",
-                                                             'rPath' : "Relative Path:"})
-
-                    upJob = threading.Thread(target=self.sHandler.upload,
-                                             args=({'rPath'      : strData['rPath'].split('/'),
-                                                    'path'       : strData['path'],
-                                                    'size'       : os.path.getsize(strData['path']),
-                                                    'fileID'     : [],
-                                                    'index'      : 0, # managed by transferHandler
-                                                    'chunkIndex' : 0,
-                                                    'type'       : 1},))
-                    upJob.start()
-                    uploadMenu = 0
-
-                elif downloadMenu:
-                    totalSize = 0
-                    fancyList = []
-
-                    # Generate fancyList dynamically so new files will be shown
-                    # this could be slow, needs a check if the list was updated
-                    for i in self.sHandler.fileDatabase:
-                        totalSize += i['size'] # integer addition
-
-                        tempPath = '/'.join(i['rPath'])
-                        fancyList.append({'title'  : "{}  {}".format(tempPath, bytesConvert(i['size'])),
-                                          'rPath'  : i['rPath'],
-                                          'fileID' : i['fileID'],
-                                          'size'   : i['size'],
-                                          'type'   : 'file'})
-
-                    menu = {'title'   : "Select file to download",
-                            'type'    : 'menu',
-                            'options' : fancyList}
-
-                    m = fileSelector.CursesMenu(menu, self.scr, len(menu['options'])+10)
-
-                    selectedFile = m.display()
-
-                    if selectedFile['type'] == 'file':
-                        downJob = threading.Thread(target=tHand.download,
-                                                   args=({'rPath'   : selectedFile['rPath'],
-                                                          'fileID'  : selectedFile['fileID'],
-                                                          'IDindex' : 0,
-                                                          'size'    : selectedFile['size'],
-                                                          'type'    : 2},))
-                        downJob.start()
-
-                    downloadMenu = 0
 
                 usedSessionStr = "[ {} of {} ]".format(
                     self.sHandler.max_sessions - len(self.sHandler.freeSessions), self.sHandler.max_sessions)
@@ -158,12 +108,12 @@ class UserInterface:
 
                 elif ch == 17: # Ctrl+Q
                     break
-        except KeyboardInterrupt: # dont crash the terminal when quitting with Ctrl+c
+        except KeyboardInterrupt: # dont crash the terminal when quitting with Ctrl+C
             pass
 
         # exit
         curses.endwin()
-        self.sHandler.endSessions()
+        self.sHandler.endSessions() # Must call to exit the program
 
 
 if __name__ == "__main__":
