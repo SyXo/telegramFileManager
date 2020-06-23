@@ -3,16 +3,16 @@ import misc
 
 from backend.sessionsHandler import SessionsHandler
 
-NAME = "Telegram File Manager"
-T_STR = ["Uploading:", "Downloading:"]
-
 class UserInterface:
     def __init__(self):
-        cfg = misc.loadConfig()
+        self.NAME = "Telegram File Manager"
+        self.T_STR = ["Uploading:", "Downloading:"]
+
+        self.cfg = misc.loadConfig()
         self.sHandler = SessionsHandler(
-                cfg['telegram']['channel_id'], cfg['telegram']['api_id'],
-                cfg['telegram']['api_hash'], cfg['paths']['data_path'],
-                cfg['paths']['tmp_path'], int(cfg['telegram']['max_sessions'])
+                self.cfg['telegram']['channel_id'], self.cfg['telegram']['api_id'],
+                self.cfg['telegram']['api_hash'], self.cfg['paths']['data_path'],
+                self.cfg['paths']['tmp_path'], int(self.cfg['telegram']['max_sessions'])
         )
 
         self.scr = curses.initscr()
@@ -62,19 +62,20 @@ class UserInterface:
     def downloadHandler(self, fileData):
         pass # TODO
 
+
     def main(self):
         downloadMenu = uploadMenu = selected = 0
 
         try:
             while True:
-                scr.erase()
+                self.scr.erase()
                 tlX, tlY = os.get_terminal_size(0)
 
                 if uploadMenu:
-                    strData = getInputs(scr, "Upload", {'path'  : "File Path:",
-                                                        'rPath' : "Relative Path:"})
+                    strData = getInputs(self.scr, "Upload", {'path'  : "File Path:",
+                                                             'rPath' : "Relative Path:"})
 
-                    upJob = threading.Thread(target=tHand.upload,
+                    upJob = threading.Thread(target=self.sHandler.upload,
                                              args=({'rPath'      : strData['rPath'].split('/'),
                                                     'path'       : strData['path'],
                                                     'size'       : os.path.getsize(strData['path']),
@@ -91,7 +92,7 @@ class UserInterface:
 
                     # Generate fancyList dynamically so new files will be shown
                     # this could be slow, needs a check if the list was updated
-                    for i in tHand.fileDatabase:
+                    for i in self.sHandler.fileDatabase:
                         totalSize += i['size'] # integer addition
 
                         tempPath = '/'.join(i['rPath'])
@@ -105,7 +106,7 @@ class UserInterface:
                             'type'    : 'menu',
                             'options' : fancyList}
 
-                    m = fileSelector.CursesMenu(menu, scr, len(menu['options'])+10)
+                    m = fileSelector.CursesMenu(menu, self.scr, len(menu['options'])+10)
 
                     selectedFile = m.display()
 
@@ -121,38 +122,38 @@ class UserInterface:
                     downloadMenu = 0
 
                 usedSessionStr = "[ {} of {} ]".format(
-                    tHand.max_sessions - len(tHand.freeSessions), tHand.max_sessions)
+                    self.sHandler.max_sessions - len(self.sHandler.freeSessions), self.sHandler.max_sessions)
 
                 # program name
-                scr.addstr(0, max(round((tlX-len(NAME))/2), 0), NAME, curses.A_NORMAL)
+                self.scr.addstr(0, max(round((tlX-len(self.NAME))/2), 0), self.NAME, curses.A_NORMAL)
                 # Nr of used sessions
-                scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr, curses.A_NORMAL)
+                self.scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr, curses.A_NORMAL)
 
                 # transfer info
                 i = 2
-                for sFile, info in tHand.transferInfo.items():
+                for sFile, info in self.sHandler.transferInfo.items():
                     if not info['type']: # empty
                         continue
 
                     if str(selected) == sFile: # wrong
                         for j in range(i, i+3):
-                            scr.addch(j, 0, '*')
+                            self.scr.addch(j, 0, '*')
 
-                    scr.addstr(i, 2, T_STR[info['type']-1], curses.A_NORMAL)
-                    scr.addstr(i+1, 2, "/".join(info['rPath']), curses.A_NORMAL)
-                    scr.addstr(i+2, 2, "{}% - {}".format(info['progress'], bytesConvert(info['size'])),
+                    self.scr.addstr(i, 2, self.T_STR[info['type']-1], curses.A_NORMAL)
+                    self.scr.addstr(i+1, 2, "/".join(info['rPath']), curses.A_NORMAL)
+                    self.scr.addstr(i+2, 2, "{}% - {}".format(info['progress'], bytesConvert(info['size'])),
                                curses.A_NORMAL)
                     i+=4
 
-                ch = scr.getch()
+                ch = self.scr.getch()
                 if ch == curses.KEY_UP and selected > 1:
                     selected -= 1
-                elif ch == curses.KEY_DOWN and selected < tHand.max_sessions - len(tHand.freeSessions):
+                elif ch == curses.KEY_DOWN and selected < self.sHandler.max_sessions - len(self.sHandler.freeSessions):
                     selected += 1
 
-                elif ch == ord(cfg['keybinds']['upload']):
+                elif ch == ord(self.cfg['keybinds']['upload']):
                     uploadMenu = 1
-                elif ch == ord(cfg['keybinds']['download']):
+                elif ch == ord(self.cfg['keybinds']['download']):
                     downloadMenu = 1
 
                 elif ch == 17: # Ctrl+Q
@@ -162,7 +163,7 @@ class UserInterface:
 
         # exit
         curses.endwin()
-        tHand.endSessions()
+        self.sHandler.endSessions()
 
 
 if __name__ == "__main__":
