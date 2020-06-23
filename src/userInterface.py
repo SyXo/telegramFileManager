@@ -80,7 +80,7 @@ class UserInterface:
                 self.scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr, curses.A_NORMAL)
 
                 # transfer info
-                i = 2
+                i = 2 # on which line to start displaying transfers
                 for sFile, info in self.sHandler.transferInfo.items():
                     if not info['type']: # empty
                         continue
@@ -108,6 +108,11 @@ class UserInterface:
 
                 elif ch == 17: # Ctrl+Q
                     break
+
+                # Go to the last transfer if the transfer that was selected finished
+                if selected > self.sHandler.max_sessions - len(self.sHandler.freeSessions):
+                    selected = self.sHandler.max_sessions - len(self.sHandler.freeSessions)
+
         except KeyboardInterrupt: # dont crash the terminal when quitting with Ctrl+C
             pass
 
