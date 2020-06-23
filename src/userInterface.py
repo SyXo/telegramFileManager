@@ -64,12 +64,20 @@ class UserInterface:
 
 
     def main(self):
-        downloadMenu = uploadMenu = selected = 0
+        downloadMenu = uploadMenu = False
+        selected = 0
 
         try:
             while True:
                 self.scr.erase()
                 tlX, tlY = os.get_terminal_size(0)
+
+                if uploadMenu:
+                    uploadHandler()
+                    uploadMenu = False
+                elif downloadMenu:
+                    downloadHandler()
+                    downloadMenu = False
 
                 usedSessionStr = "[ {} of {} ]".format(
                     self.sHandler.max_sessions - len(self.sHandler.freeSessions), self.sHandler.max_sessions)
@@ -101,9 +109,9 @@ class UserInterface:
                     selected += 1
 
                 elif ch == ord(self.cfg['keybinds']['upload']):
-                    uploadMenu = 1
+                    uploadMenu = True
                 elif ch == ord(self.cfg['keybinds']['download']):
-                    downloadMenu = 1
+                    downloadMenu = True
 
                 elif ch == 17: # Ctrl+Q
                     break
