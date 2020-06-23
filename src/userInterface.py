@@ -64,7 +64,9 @@ class UserInterface:
 
 
     def main(self):
-        downloadMenu = uploadMenu = False
+        optionDict = {'upload' : {'value' : False, 'function' : self.uploadHandler},
+                      'download' : {'value' : False, 'function' : self.downloadHandler}}
+
         selected = 0
 
         try:
@@ -72,12 +74,11 @@ class UserInterface:
                 self.scr.erase()
                 tlX, tlY = os.get_terminal_size(0)
 
-                if uploadMenu:
-                    uploadHandler()
-                    uploadMenu = False
-                elif downloadMenu:
-                    downloadHandler()
-                    downloadMenu = False
+                for option, info in optionDict.items():
+                    if info['value']:
+                        info['function']()
+                        info['value'] = False
+                        break
 
                 usedSessionStr = "[ {} of {} ]".format(
                     self.sHandler.max_sessions - len(self.sHandler.freeSessions), self.sHandler.max_sessions)
@@ -109,11 +110,11 @@ class UserInterface:
                     selected += 1
 
                 elif ch == ord(self.cfg['keybinds']['upload']):
-                    uploadMenu = True
+                    optionDict['upload']['value'] = True
                 elif ch == ord(self.cfg['keybinds']['download']):
-                    downloadMenu = True
+                    optionDict['download']['value'] = True
 
-                elif ch == 17: # Ctrl+Q
+                elif ch == 17: # Ctrl-Q
                     break
 
                 # Go to the last transfer if the transfer that was selected finished
