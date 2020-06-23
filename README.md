@@ -73,7 +73,6 @@ or to my Payeer `P56752419`, any amount helps and i will be very thankful to you
 * Make the `fileSelector` interface look like an actual file tree
 (Currently shows all the files in one list)
 * Make the program work with windows.
-* Fix the program using one core at 100% when and after uploading.
 
 ## End of the line
 This is my first big project so please tell me if there are any mistakes I made.
