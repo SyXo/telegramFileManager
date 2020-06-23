@@ -42,6 +42,7 @@ class UserInterface:
         curses.curs_set(False)
         curses.noecho()
         self.scr.nodelay(True)
+        self.scr.timeout(5000)
         self.scr.erase()
         return inputs
 
@@ -109,6 +110,8 @@ class UserInterface:
                 break
 
         self.scr.nodelay(True)
+        self.scr.timeout(5000)
+        self.scr.erase()
         if didQuit:
             return None
         else:
