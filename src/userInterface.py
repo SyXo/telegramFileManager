@@ -152,11 +152,12 @@ class UserInterface:
         inData = self._selectFromList("Select file to download - {} Total".format(totalSize),
                                       prompts)
 
-        self.sHandler.transferInThread({'rPath'   : inData['rPath'],
-                                        'fileID'  : inData['fileID'],
-                                        'IDindex' : 0,
-                                        'size'    : inData['size'],
-                                        'type'    : 2})
+        if inData:
+            self.sHandler.transferInThread({'rPath'   : inData['rPath'],
+                                            'fileID'  : inData['fileID'],
+                                            'IDindex' : 0,
+                                            'size'    : inData['size'],
+                                            'type'    : 2})
 
 
     def main(self):
