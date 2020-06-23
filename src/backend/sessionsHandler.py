@@ -128,21 +128,21 @@ class SessionsHandler:
         return finalData
 
 
-    def transferInThread(self, fileData={}):	
-        if (not fileData) or not (type(fileData) is dict):	
-            raise TypeError("Bad or empty value given.")	
+    def transferInThread(self, fileData={}):
+        if (not fileData) or not (type(fileData) is dict):
+            raise TypeError("Bad or empty value given.")
 
         for sFile, info in self.resumeData.items():
             if info: # resume file exists
                 raise ValueError("Resume sessions not handled, refusing to transfer.")
 
-        if fileData['type'] == 1:	
-            threadTarget = self._upload	
-        elif fileData['type'] == 2:	
-            threadTarget = self._download	
+        if fileData['type'] == 1:
+            threadTarget = self._upload
+        elif fileData['type'] == 2:
+            threadTarget = self._download
 
-        transferJob = threading.Thread(target=threadTarget, args=(fileData,))	
-        transferJob.start()	
+        transferJob = threading.Thread(target=threadTarget, args=(fileData,))
+        transferJob.start()
 
 
     def endSessions(self):
