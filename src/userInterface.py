@@ -75,9 +75,9 @@ class UserInterface:
                     self.sHandler.max_sessions - len(self.sHandler.freeSessions), self.sHandler.max_sessions)
 
                 # program name
-                self.scr.addstr(0, max(round((tlX-len(self.NAME))/2), 0), self.NAME, curses.A_NORMAL)
+                self.scr.addstr(0, max(round((tlX-len(self.NAME))/2), 0), self.NAME)
                 # Nr of used sessions
-                self.scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr, curses.A_NORMAL)
+                self.scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr)
 
                 # transfer info
                 i = 2 # on which line to start displaying transfers
@@ -89,10 +89,9 @@ class UserInterface:
                     if not info['type']: # empty
                         continue
 
-                    self.scr.addstr(i, 2, self.T_STR[info['type']-1], curses.A_NORMAL)
-                    self.scr.addstr(i+1, 2, "/".join(info['rPath']), curses.A_NORMAL)
-                    self.scr.addstr(i+2, 2, "{}% - {}".format(info['progress'], bytesConvert(info['size'])),
-                               curses.A_NORMAL)
+                    self.scr.addstr(i, 2, self.T_STR[info['type']-1])
+                    self.scr.addstr(i+1, 2, "/".join(info['rPath']))
+                    self.scr.addstr(i+2, 2, "{}% - {}".format(info['progress'], bytesConvert(info['size'])))
                     i+=4
 
                 ch = self.scr.getch()
