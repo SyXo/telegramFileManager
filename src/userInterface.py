@@ -81,13 +81,13 @@ class UserInterface:
 
                 # transfer info
                 i = 2 # on which line to start displaying transfers
+                if selected:
+                    for j in range((selected-1)*4+i, (selected-1)*4+i+3):
+                        self.scr.addch(j, 0, '*')
+
                 for sFile, info in self.sHandler.transferInfo.items():
                     if not info['type']: # empty
                         continue
-
-                    if str(selected) == sFile: # wrong
-                        for j in range(i, i+3):
-                            self.scr.addch(j, 0, '*')
 
                     self.scr.addstr(i, 2, self.T_STR[info['type']-1], curses.A_NORMAL)
                     self.scr.addstr(i+1, 2, "/".join(info['rPath']), curses.A_NORMAL)
