@@ -7,9 +7,10 @@ class FileIO:
     def __init__(self, data_path, tmp_path, max_sessions):
         self.data_path = data_path
         self.max_sessions = max_sessions
-        os.mkdir(data_path)
-        os.mkdir(tmp_path)
-        os.mkdir(os.path.join(data_path, "downloads"))
+
+        for i in [data_path, tmp_path, os.path.join(data_path, "downloads")]:
+            if not os.path.isdir(i):
+                os.mkdir(i)
 
 
     def updateDatabase(self, fileDatabase):
