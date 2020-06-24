@@ -14,7 +14,7 @@ larger than 1.5G and more!
 * Ability to upload/download multiple files at once (after 4 there if no speed
 benefit)
 * Canceling and resuming file transfer progress (WIP)
-* Interface that is similar to `rtorrent` (WIP)
+* Interface that is similar to `rtorrent`
 
 ## Installing requirements
 ```pip3 install -r requirements.txt -U```
