@@ -1,4 +1,6 @@
 src/__pycache__
+src/backend/__pycache__
+src/ui/__pycache__
 src/config.py
 *.so
 *.session
