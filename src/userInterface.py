@@ -66,6 +66,7 @@ class UserInterface:
                               curses.A_STANDOUT if selected == i else curses.A_NORMAL)
 
             tlX, tlY = os.get_terminal_size(0)
+            self.scr.refresh()
             scrPad.refresh(showY,showX, 0,0, tlY-1,tlX-1)
 
             inputKey = self.scr.getch()
@@ -112,6 +113,7 @@ class UserInterface:
         self.scr.nodelay(True)
         self.scr.timeout(5000)
         self.scr.erase()
+
         if didQuit:
             return None
         else:

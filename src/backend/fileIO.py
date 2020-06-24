@@ -9,19 +9,10 @@ class FileIO:
         self.max_sessions = max_sessions
 
 
-    def updateDatabase(self, fileDatabase, newData):
+    def updateDatabase(self, fileDatabase):
         # This should be called after finishing an upload
-        # Sorts the new dict into filelist
-        # then updates both in memory and to file
-        fileDatabase.append(newData)
-        fileDatabase.sort(key=itemgetter('rPath'))
-        # This could be slow, a faster alternative is bisect.insort,
-        # howewer, I couldn't find a way to sort by an item in dictionary
-
         with open(os.path.join(self.data_path, "fileData"), 'wb') as f:
             pickle.dump(fileDatabase, f)
-
-        return fileDatabase
 
 
     def loadDatabase(self):
@@ -58,13 +49,15 @@ class FileIO:
 
 
     def loadIndexData(self, sFile):
+        indexData = 1
+
         if os.path.isfile(os.path.join(self.data_path, "index_{}".format(sFile))):
-            with open(os.path.join(self.data_path, "index_{}".format(sFile))) as f:
-                return int(f.read())
-        else:
-            return 1
+            with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'rb') as f:
+                indexData = pickle.load(f)
+
+        return indexData
 
 
     def saveIndexData(self, sFile, index):
-        with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'w') as f:
-            f.write(str(index))
+        with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'wb') as f:
+            pickle.dump(index, f)

@@ -5,6 +5,7 @@ Extends transferHandler by managing the database and implementing multithreading
 from backend.transferHandler import TransferHandler
 from backend.fileIO import FileIO
 import threading
+from operator import itemgetter
 
 class SessionsHandler:
     def __init__(self, telegram_channel_id, api_id, api_hash,
@@ -104,7 +105,13 @@ class SessionsHandler:
             self.fileIO.delResumeData(sFile)
 
         self.fileIO.saveIndexData(sFile, finalData['index'])
-        self.fileIO.updateDatabase(self.fileData, finalData['fileData'])
+
+        # This could be slow, a faster alternative is bisect.insort,
+        # howewer, I couldn't find a way to sort by an item in dictionary
+        self.fileDatabase.append(newData)
+        self.fileDatabase.sort(key=itemgetter('rPath'))
+
+        self.fileIO.updateDatabase(self.fileDatabase)
 
         self.transferInfo[sFile]['type'] = 0 # not transferring anything
         self.__freeSession(sFile)
