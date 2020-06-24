@@ -61,13 +61,12 @@ class UserInterface:
             scrPad.addstr(0, 0, title, curses.A_STANDOUT)
 
             for i in range(promptCount):
-                scrPad.addstr(2 + i, 2,
-                              self.menu_options[i]['title'],
+                scrPad.addstr(2 + i, 2, prompts[i]['title'],
                               curses.A_STANDOUT if selected == i else curses.A_NORMAL)
 
             tlX, tlY = os.get_terminal_size(0)
             self.scr.refresh()
-            scrPad.refresh(showY,showX, 0,0, tlY-1,tlX-1)
+            scrPad.refresh(showY, showX, 0, 0, tlY-1, tlX-1)
 
             inputKey = self.scr.getch()
 
@@ -84,8 +83,8 @@ class UserInterface:
             elif inputKey == curses.KEY_NPAGE: # Page Down
                 selected += tlY-1
                 showY += tlY-1
-                if selected > promptCount:
-                    selected = promptCount
+                if selected > promptCount-1:
+                    selected = promptCount-1
                 if showY > promptCount-(tlY-5):
                     showY = promptCount-(tlY-5) 
 
@@ -148,14 +147,17 @@ class UserInterface:
         for i in self.sHandler.fileDatabase:
             totalSize += i['size']
 
-            tempPath = '/'.join(i['rPath'])
-            prompts.append({'title'  : "{}  {}".format(tempPath, misc.bytesConvert(i['size'])),
+            prompts.append({'title'  : "{}  {}".format(
+                                '/'.join(i['rPath']),
+                                misc.bytesConvert(i['size'])
+                            ),
                             'rPath'  : i['rPath'],
                             'fileID' : i['fileID'],
                             'size'   : i['size']})
 
-        inData = self._selectFromList("Select file to download - {} Total".format(totalSize),
-                                      prompts)
+        inData = self._selectFromList("Select file to download - {} Total".format(
+                                          misc.bytesConvert(totalSize)
+                                      ), prompts)
 
         if inData:
             self.sHandler.transferInThread({'rPath'   : inData['rPath'],

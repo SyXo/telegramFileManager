@@ -15,7 +15,7 @@ class SessionsHandler:
         self.api_hash = api_hash
         self.data_path = data_path
         self.max_sessions = max_sessions
-        self.fileIO = FileIO(data_path, max_sessions)
+        self.fileIO = FileIO(data_path, tmp_path, max_sessions)
         self.tHandler = {}
         self.freeSessions = []
         self.transferInfo = {}
@@ -108,7 +108,7 @@ class SessionsHandler:
 
         # This could be slow, a faster alternative is bisect.insort,
         # howewer, I couldn't find a way to sort by an item in dictionary
-        self.fileDatabase.append(newData)
+        self.fileDatabase.append(finalData['fileData'])
         self.fileDatabase.sort(key=itemgetter('rPath'))
 
         self.fileIO.updateDatabase(self.fileDatabase)

@@ -4,9 +4,12 @@ import os
 import configparser
 
 class FileIO:
-    def __init__(self, data_path, max_sessions):
+    def __init__(self, data_path, tmp_path, max_sessions):
         self.data_path = data_path
         self.max_sessions = max_sessions
+        os.mkdir(data_path)
+        os.mkdir(tmp_path)
+        os.mkdir(os.path.join(data_path, "downloads"))
 
 
     def updateDatabase(self, fileDatabase):
@@ -20,7 +23,7 @@ class FileIO:
 
         if os.path.isfile(os.path.join(self.data_path, "fileData")):
             with open(os.path.join(self.data_path, "fileData"), 'rb') as f:
-                self.fileDatabase = pickle.load(f)
+                fileDatabase = pickle.load(f)
 
         return fileDatabase
 
