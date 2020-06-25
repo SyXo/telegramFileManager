@@ -119,12 +119,17 @@ class UserInterface:
             return prompts[selected]
 
 
-    def resumeHandler(self, resumeSessions):
+    def resumeHandler(self):
         inDict = {}
-        for i in resumeSessions:
-            inDict[i] = "Session {}:".format(i)
+        for sFile, info in self.sHandler.resumeData.items():
+            if info: # has resume data
+                inDict[sFile] = "Session {}:".format(sFile)
 
-        return self._getInputs("Resume files found, choose an option for each: (1) Finish the transfer (2) Ignore for now (3) Delete resume file", inDict)
+        resumeOpts = self._getInputs("Resume files found, choose an option for each: (1) Finish the transfer (2) Ignore for now (3) Delete resume file",
+                                     inDict)
+
+        for sFile, selected in resumeOpts.items():
+            self.sHandler.resumeHandler(sFile, int(selected))
 
 
     def uploadHandler(self):
@@ -174,6 +179,8 @@ class UserInterface:
         selected = 0
 
         try:
+            self.resumeHandler()
+
             while True:
                 self.scr.erase()
                 tlX, tlY = os.get_terminal_size(0)
