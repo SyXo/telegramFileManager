@@ -66,8 +66,9 @@ class SessionsHandler:
             raise IndexError("selected should be between 1 and 3")
 
         if selected == 1: # Finish the transfer
+            tmpResume = self.resumeData[sFile]
             self.resumeData[sFile] = {}
-            self.transferInThread(self.resumeData[sFile])
+            self.transferInThread(tmpResume)
 
         elif selected == 2: # Ignore for now
             self.resumeData[sFile] = {} # wrong if in the future the user wants
