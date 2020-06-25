@@ -66,13 +66,17 @@ class SessionsHandler:
             raise IndexError("selected should be between 1 and 3")
 
         if selected == 1: # Finish the transfer
+            self.resumeData[sFile] = {}
             self.transferInThread(self.resumeData[sFile])
 
         elif selected == 2: # Ignore for now
+            self.resumeData[sFile] = {} # wrong if in the future the user wants
+                                        # to resume without closing the program
             self.freeSessions.remove(sFile)
 
         else: # delete the resume file
-            self.fileObj.delResumeData(sFile)
+            self.resumeData[sFile] = {}
+            self.fileIO.delResumeData(sFile)
             self.cleanTg()
 
         self.resumeData[sFile] = {}
