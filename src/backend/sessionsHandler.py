@@ -36,10 +36,15 @@ class SessionsHandler:
             ) # initialize all sessions that will be used
 
 
-    def __useSession(self): # Gets the first available session
+    def __useSession(self, sFile=''): # Gets the first available session or the given one
         if not self.freeSessions:
             raise IndexError("No free sessions.")
 
+        if sFile:
+            self.freeSessions.remove(sFile)
+            return sFile
+
+        # get available session
         retSession = self.freeSessions[0]
         self.freeSessions.pop(0)
         return retSession
@@ -68,7 +73,7 @@ class SessionsHandler:
         if selected == 1: # Finish the transfer
             tmpResume = self.resumeData[sFile]
             self.resumeData[sFile] = {}
-            self.transferInThread(tmpResume)
+            self.transferInThread(tmpResume, sFile)
 
         elif selected == 2: # Ignore for now
             self.resumeData[sFile] = {} # wrong if in the future the user wants
@@ -95,8 +100,11 @@ class SessionsHandler:
         self.__freeSession(sFile)
 
 
-    def _upload(self, fileData={}):
-        sFile = self.__useSession() # Use a free session
+    def _upload(self, fileData, sFile):
+        sFile = self.__useSession(sFile) # Use a free session
+        if self.resumeData[sFile]:
+            raise ValueError("Resume sessions not handled, refusing to transfer.")
+
         self.transferInfo[sFile]['rPath'] = fileData['rPath']
         self.transferInfo[sFile]['progress'] = 0
         self.transferInfo[sFile]['size'] = fileData['size']
@@ -122,8 +130,11 @@ class SessionsHandler:
         self.__freeSession(sFile)
 
 
-    def _download(self, fileData={}):
-        sFile = self.__useSession() # Use a free session
+    def _download(self, fileData, sFile):
+        sFile = self.__useSession(sFile) # Use a free session
+        if self.resumeData[sFile]:
+            raise ValueError("Resume sessions not handled, refusing to transfer.")
+
         self.transferInfo[sFile]['rPath'] = fileData['rPath']
         self.transferInfo[sFile]['progress'] = 0
         self.transferInfo[sFile]['size'] = fileData['size']
@@ -140,20 +151,16 @@ class SessionsHandler:
         return finalData
 
 
-    def transferInThread(self, fileData={}):
+    def transferInThread(self, fileData={}, sFile=''):
         if (not fileData) or not (type(fileData) is dict):
             raise TypeError("Bad or empty value given.")
-
-        for sFile, info in self.resumeData.items():
-            if info: # resume file exists
-                raise ValueError("Resume sessions not handled, refusing to transfer.")
 
         if fileData['type'] == 1:
             threadTarget = self._upload
         elif fileData['type'] == 2:
             threadTarget = self._download
 
-        transferJob = threading.Thread(target=threadTarget, args=(fileData,))
+        transferJob = threading.Thread(target=threadTarget, args=(fileData,sFile,))
         transferJob.start()
 
 
