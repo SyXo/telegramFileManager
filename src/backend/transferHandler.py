@@ -117,11 +117,10 @@ class TransferHandler:
                 break
 
             fileData['fileID'].append(msg_obj.message_id)
+            fileData['index'] += 1
 
             if not fileData['chunkIndex']: # reached EOF
                 break
-
-            fileData['index'] += 1
 
             self.data_fun(fileData, self.s_file)
 
