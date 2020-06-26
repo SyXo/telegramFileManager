@@ -136,6 +136,11 @@ class UserInterface:
                 self.sHandler.resumeHandler(sFile, int(selected))
 
 
+    def cancelHandler(self):
+        stopType = self._getInputs("Choose cancel type: (1) Wait for current chunk to finish transferring (2) Force cancelling",
+                                   {'type' : "Cancel type:"})
+
+
     def uploadHandler(self):
         if not sHandler.freeSessions:
             self.notifBuf = 'All sessions are currently used.'
@@ -195,7 +200,8 @@ class UserInterface:
         NAME = "Telegram File Manager"
         T_STR = ["Uploading:", "Downloading:"]
         optionDict = {'upload' : {'value' : False, 'function' : self.uploadHandler},
-                      'download' : {'value' : False, 'function' : self.downloadHandler}}
+                      'download' : {'value' : False, 'function' : self.downloadHandler},
+                      'cancel' : {'value' : False, 'function' : self.cancelHandler}}
 
         selected = 0
 
@@ -249,6 +255,8 @@ class UserInterface:
                     optionDict['upload']['value'] = True
                 elif ch == ord(self.cfg['keybinds']['download']):
                     optionDict['download']['value'] = True
+                elif ch == ord(self.cfg['keybinds']['cancel']):
+                    optionDict['cancel']['value'] = True
 
                 elif ch == 17: # Ctrl-Q
                     break

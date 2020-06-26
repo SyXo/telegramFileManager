@@ -168,6 +168,13 @@ class SessionsHandler:
         transferJob.start()
 
 
+    def cancelTransfer(self, sFile='', stopType=0):
+        if not int(sFile) in range(1, self.max_sessions+1):
+            raise IndexError("sFile should be between 1 and {}.".format(self.max_sessions))
+
+        self.tHandler[sFile].stop(stopType)
+
+
     def endSessions(self):
         for i in range(1, self.max_sessions+1):
             self.tHandler[str(i)].endSession()
