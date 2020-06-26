@@ -110,7 +110,8 @@ class SessionsHandler:
         self.transferInfo[sFile]['size'] = fileData['size']
         self.transferInfo[sFile]['type'] = 1
 
-        fileData['index'] = self.fileIO.loadIndexData(sFile)
+        if not fileData['index']: # not resuming
+            fileData['index'] = self.fileIO.loadIndexData(sFile)
 
         finalData = self.tHandler[sFile].uploadFiles(fileData)
 
