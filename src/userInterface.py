@@ -5,8 +5,6 @@ from backend.sessionsHandler import SessionsHandler
 
 class UserInterface:
     def __init__(self):
-        self.NAME = "Telegram File Manager"
-        self.T_STR = ["Uploading:", "Downloading:"]
         self.notifBuf = ''
 
         self.cfg = misc.loadConfig()
@@ -178,6 +176,8 @@ class UserInterface:
 
 
     def main(self):
+        NAME = "Telegram File Manager"
+        T_STR = ["Uploading:", "Downloading:"]
         optionDict = {'upload' : {'value' : False, 'function' : self.uploadHandler},
                       'download' : {'value' : False, 'function' : self.downloadHandler}}
 
@@ -200,7 +200,7 @@ class UserInterface:
                     self.sHandler.max_sessions - len(self.sHandler.freeSessions), self.sHandler.max_sessions)
 
                 # program name
-                self.scr.addstr(0, max(round((tlX-len(self.NAME))/2), 0), self.NAME)
+                self.scr.addstr(0, max(round((tlX-len(NAME))/2), 0), NAME)
                 # Nr of used sessions
                 self.scr.addstr(1, max(tlX-len(usedSessionStr), 0), usedSessionStr)
 
@@ -214,7 +214,7 @@ class UserInterface:
                     if not info['type']: # empty
                         continue
 
-                    self.scr.addstr(i, 2, self.T_STR[info['type']-1])
+                    self.scr.addstr(i, 2, T_STR[info['type']-1])
                     self.scr.addstr(i+1, 2, "/".join(info['rPath']))
                     self.scr.addstr(i+2, 2, "{}% - {}".format(info['progress'], misc.bytesConvert(info['size'])))
                     i+=4
