@@ -81,22 +81,25 @@ class SessionsHandler:
             self.freeSessions.remove(sFile)
 
         else: # delete the resume file
+            rmIDs = self.resumeData[sFile]['fileID']
             self.resumeData[sFile] = {}
             self.fileIO.delResumeData(sFile)
-            self.cleanTg()
+            self.cleanTg(rmIDs)
 
         self.resumeData[sFile] = {}
 
 
-    def cleanTg(self):
+    def cleanTg(self, IDList=[]):
         sFile = self.__useSession()
+        mode = 2
 
-        IDlist = []
-        for i in self.fileDatabase:
-            for j in i['fileID']:
-                IDlist.append(j)
+        if not IDList
+            mode = 1
+            for i in self.fileDatabase:
+                for j in i['fileID']:
+                    IDlist.append(j)
 
-        self.tHandler[sFile].deleteUseless(IDlist)
+        self.tHandler[sFile].deleteUseless(IDlist, mode)
         self.__freeSession(sFile)
 
 
