@@ -137,6 +137,10 @@ class UserInterface:
 
 
     def uploadHandler(self):
+        if not sHandler.freeSessions:
+            self.notifBuf = 'All sessions are currently used.'
+            return
+
         inData = self._getInputs("Upload", {'path'  : "File Path:",
                                             'rPath' : "Relative Path:"})
 
@@ -157,6 +161,10 @@ class UserInterface:
 
 
     def downloadHandler(self):
+        if not sHandler.freeSessions:
+            self.notifBuf = 'All sessions are currently used.'
+            return
+
         prompts = []
         totalSize = 0
         # Generate list dynamically
