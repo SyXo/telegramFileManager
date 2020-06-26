@@ -7,6 +7,7 @@ class UserInterface:
     def __init__(self):
         self.NAME = "Telegram File Manager"
         self.T_STR = ["Uploading:", "Downloading:"]
+        self.notifBuf = ''
 
         self.cfg = misc.loadConfig()
         self.sHandler = SessionsHandler(
@@ -136,6 +137,10 @@ class UserInterface:
         inData = self._getInputs("Upload", {'path'  : "File Path:",
                                             'rPath' : "Relative Path:"})
 
+        if not os.path.isfile(inData['path']):
+            self.notifBuf = "There is no file with this path."
+            return
+
         self.sHandler.transferInThread({'rPath'      : inData['rPath'].split('/'),
                                         'path'       : inData['path'],
                                         'size'       : os.path.getsize(inData['path']),
@@ -213,6 +218,10 @@ class UserInterface:
                     self.scr.addstr(i+1, 2, "/".join(info['rPath']))
                     self.scr.addstr(i+2, 2, "{}% - {}".format(info['progress'], misc.bytesConvert(info['size'])))
                     i+=4
+
+                if self.notifBuf:
+                    self.scr.addstr(tlY-1, 0, self.notifBuf, curses.A_STANDOUT)
+                    self.notifBuf = ''
 
                 ch = self.scr.getch()
                 if ch == curses.KEY_UP and selected > 1:
