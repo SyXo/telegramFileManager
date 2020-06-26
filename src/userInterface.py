@@ -36,6 +36,10 @@ class UserInterface:
         for key, prompt in prompts.items():
             self.scr.addstr(i, 0, prompt)
             inputs[key] = self.scr.getstr(i + 1, 0).decode(encoding='utf-8')
+
+            if not inputs[key]: # User wants to cancel
+                break
+
             i+=3
 
         curses.curs_set(False)
@@ -128,12 +132,16 @@ class UserInterface:
                                      inDict)
 
         for sFile, selected in resumeOpts.items():
-            self.sHandler.resumeHandler(sFile, int(selected))
+            if selected:
+                self.sHandler.resumeHandler(sFile, int(selected))
 
 
     def uploadHandler(self):
         inData = self._getInputs("Upload", {'path'  : "File Path:",
                                             'rPath' : "Relative Path:"})
+
+        if not inData['path'] or not inData['rPath']:
+            return
 
         if not os.path.isfile(inData['path']):
             self.notifBuf = "There is no file with this path."
