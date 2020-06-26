@@ -93,7 +93,7 @@ class SessionsHandler:
         sFile = self.__useSession()
         mode = 2
 
-        if not IDList
+        if not IDList:
             mode = 1
             for i in self.fileDatabase:
                 for j in i['fileID']:
