@@ -166,7 +166,7 @@ class SessionsHandler:
         elif fileData['type'] == 2:
             threadTarget = self._download
 
-        transferJob = threading.Thread(target=threadTarget, args=(fileData,sFile,))
+        transferJob = threading.Thread(target=threadTarget, args=(fileData,sFile,), daemon=True)
         transferJob.start()
 
 
