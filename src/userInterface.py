@@ -6,6 +6,7 @@ from backend.sessionsHandler import SessionsHandler
 class UserInterface:
     def __init__(self):
         self.notifBuf = ''
+        self.selected = 0
 
         self.cfg = misc.loadConfig()
         self.sHandler = SessionsHandler(
@@ -133,12 +134,38 @@ class UserInterface:
 
         for sFile, selected in resumeOpts.items():
             if selected:
-                self.sHandler.resumeHandler(sFile, int(selected))
+                try:
+                    intSelected = int(selected)
+                except ValueError:
+                    continue
+
+                self.sHandler.resumeHandler(sFile, intSelected)
 
 
     def cancelHandler(self):
+        if not self.selected:
+            self.notifBuf = "No transfer selected to cancel."
+            return
+
         stopType = self._getInputs("Choose cancel type: (1) Wait for current chunk to finish transferring (2) Force cancelling",
                                    {'type' : "Cancel type:"})
+
+        if not stopType['type']:
+            return
+
+        try:
+            intStopType = int(stopType['type'])
+        except ValueError:
+            return
+
+        # Only solution I found for cancelling the right transfer
+        i = 0
+        for sFile, info in self.sHandler.transferInfo.items():
+            if not info['type']: # empty
+                continue
+            i += 1
+            if i == self.selected:
+                self.sHandler.cancelTransfer(sFile, intStopType)
 
 
     def uploadHandler(self):
@@ -203,8 +230,6 @@ class UserInterface:
                       'download' : {'value' : False, 'function' : self.downloadHandler},
                       'cancel' : {'value' : False, 'function' : self.cancelHandler}}
 
-        selected = 0
-
         try:
             self.resumeHandler()
 
@@ -228,8 +253,8 @@ class UserInterface:
 
                 # transfer info
                 i = 2 # on which line to start displaying transfers
-                if selected:
-                    for j in range((selected-1)*4+i, (selected-1)*4+i+3):
+                if self.selected:
+                    for j in range((self.selected-1)*4+i, (self.selected-1)*4+i+3):
                         self.scr.addch(j, 0, '*')
 
                 for sFile, info in self.sHandler.transferInfo.items():
@@ -246,10 +271,10 @@ class UserInterface:
                     self.notifBuf = ''
 
                 ch = self.scr.getch()
-                if ch == curses.KEY_UP and selected > 1:
-                    selected -= 1
-                elif ch == curses.KEY_DOWN and selected < self.sHandler.max_sessions - len(self.sHandler.freeSessions):
-                    selected += 1
+                if ch == curses.KEY_UP and self.selected > 1:
+                    self.selected -= 1
+                elif ch == curses.KEY_DOWN and self.selected < self.sHandler.max_sessions - len(self.sHandler.freeSessions):
+                    self.selected += 1
 
                 elif ch == ord(self.cfg['keybinds']['upload']):
                     optionDict['upload']['value'] = True
@@ -262,8 +287,8 @@ class UserInterface:
                     break
 
                 # Go to the last transfer if the transfer that was selected finished
-                if selected > self.sHandler.max_sessions - len(self.sHandler.freeSessions):
-                    selected = self.sHandler.max_sessions - len(self.sHandler.freeSessions)
+                if self.selected > self.sHandler.max_sessions - len(self.sHandler.freeSessions):
+                    self.selected = self.sHandler.max_sessions - len(self.sHandler.freeSessions)
 
         except KeyboardInterrupt: # dont crash the terminal when quitting with Ctrl+C
             pass
