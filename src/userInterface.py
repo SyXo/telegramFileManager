@@ -129,6 +129,9 @@ class UserInterface:
             if info: # has resume data
                 inDict[sFile] = "Session {}:".format(sFile)
 
+        if not inDict:
+            return
+
         resumeOpts = self._getInputs("Resume files found, choose an option for each: (1) Finish the transfer (2) Ignore for now (3) Delete resume file",
                                      inDict)
 
