@@ -150,17 +150,7 @@ class UserInterface:
             self.notifBuf = "No transfer selected to cancel."
             return
 
-        stopType = self._getInputs("Choose cancel type: (1) Wait for current chunk to finish transferring (2) Force cancelling",
-                                   {'type' : "Cancel type:"})
-
-        if not stopType['type']:
-            return
-
-        try:
-            intStopType = int(stopType['type'])
-        except ValueError:
-            return
-
+        self.notifBuf = "Transfer cancelled"
         # Only solution I found for cancelling the right transfer
         i = 0
         for sFile, info in self.sHandler.transferInfo.items():
@@ -168,7 +158,7 @@ class UserInterface:
                 continue
             i += 1
             if i == self.selected:
-                self.sHandler.cancelTransfer(sFile, intStopType)
+                self.sHandler.cancelTransfer(sFile)
                 break
 
 

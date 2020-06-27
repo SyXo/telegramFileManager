@@ -21,7 +21,6 @@ class SessionsHandler:
         self.transferInfo = {}
         self.fileDatabase = self.fileIO.loadDatabase()
         self.resumeData = self.fileIO.loadResumeData()
-        self.forceCancel = ''
 
         for i in range(1, max_sessions+1):
             self.freeSessions.append(str(i)) # all sessions are free by default
@@ -63,10 +62,6 @@ class SessionsHandler:
     def __saveProgress(self, current, total, current_chunk, total_chunks, sFile):
         prg = int(((current/total/total_chunks)+(current_chunk/total_chunks))*100)
         self.transferInfo[sFile]['progress'] = prg
-
-        if self.forceCancel:
-            self.tHandler[self.forceCancel].stop(2)
-            self.forceCancel = ''
 
 
     def resumeHandler(self, sFile='', selected=0):
@@ -175,14 +170,11 @@ class SessionsHandler:
         transferJob.start()
 
 
-    def cancelTransfer(self, sFile='', stopType=0):
+    def cancelTransfer(self, sFile=''):
         if not int(sFile) in range(1, self.max_sessions+1):
             raise IndexError("sFile should be between 1 and {}.".format(self.max_sessions))
 
-        if stopType == 1:
-            self.tHandler[sFile].stop(1)
-        elif stopType == 2:
-            self.forceCancel = sFile # you can only force cancel from __saveProgress
+        self.tHandler[sFile].stop(1)
 
 
     def endSessions(self):
