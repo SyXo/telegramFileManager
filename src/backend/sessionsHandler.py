@@ -118,17 +118,18 @@ class SessionsHandler:
 
         finalData = self.tHandler[sFile].uploadFiles(fileData)
 
-        if len(finalData['fileData']['fileID']) > 1: # not single chunk
-            self.fileIO.delResumeData(sFile)
+        if finalData: # Finished uploading
+            if len(finalData['fileData']['fileID']) > 1: # not single chunk
+                self.fileIO.delResumeData(sFile)
 
-        self.fileIO.saveIndexData(sFile, finalData['index'])
+            self.fileIO.saveIndexData(sFile, finalData['index'])
 
-        # This could be slow, a faster alternative is bisect.insort,
-        # howewer, I couldn't find a way to sort by an item in dictionary
-        self.fileDatabase.append(finalData['fileData'])
-        self.fileDatabase.sort(key=itemgetter('rPath'))
+            # This could be slow, a faster alternative is bisect.insort,
+            # howewer, I couldn't find a way to sort by an item in dictionary
+            self.fileDatabase.append(finalData['fileData'])
+            self.fileDatabase.sort(key=itemgetter('rPath'))
 
-        self.fileIO.updateDatabase(self.fileDatabase)
+            self.fileIO.updateDatabase(self.fileDatabase)
 
         self.transferInfo[sFile]['type'] = 0 # not transferring anything
         self.__freeSession(sFile)
@@ -146,8 +147,9 @@ class SessionsHandler:
 
         finalData = self.tHandler[sFile].downloadFiles(fileData)
 
-        if len(fileData['fileID']) > 1:
-            self.fileIO.delResumeData(sFile)
+        if finalData: # finished downloading
+            if len(fileData['fileID']) > 1:
+                self.fileIO.delResumeData(sFile)
 
         self.transferInfo[sFile]['type'] = 0
         self.__freeSession(sFile)
