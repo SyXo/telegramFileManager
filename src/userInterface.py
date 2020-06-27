@@ -166,6 +166,7 @@ class UserInterface:
             i += 1
             if i == self.selected:
                 self.sHandler.cancelTransfer(sFile, intStopType)
+                break
 
 
     def uploadHandler(self):

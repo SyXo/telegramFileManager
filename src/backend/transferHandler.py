@@ -67,11 +67,11 @@ class TransferHandler:
 
             self.now_transmitting = 1
 
-            file_ID = self.telegram.send_document(
+            msg_obj = self.telegram.send_document(
                     self.telegram_channel_id, copied_file_path,
                     progress=self.progress_fun,
                     progress_args=(0, 1, self.s_file) # 0 out of 1 chunks
-                ).message_id
+                )
 
             self.now_transmitting = 0
 
@@ -84,7 +84,7 @@ class TransferHandler:
 
             # return file information
             return {'fileData' : {'rPath'  : fileData['rPath'],
-                                  'fileID' : [file_ID],
+                                  'fileID' : [msg_obj.message_id],
                                   'size'   : fileData['size']},
                     'index'    : fileData['index']+1}
 
