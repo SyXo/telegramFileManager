@@ -169,7 +169,7 @@ class UserInterface:
 
 
     def uploadHandler(self):
-        if not sHandler.freeSessions:
+        if not self.sHandler.freeSessions:
             self.notifBuf = 'All sessions are currently used.'
             return
 
@@ -193,7 +193,7 @@ class UserInterface:
 
 
     def downloadHandler(self):
-        if not sHandler.freeSessions:
+        if not self.sHandler.freeSessions:
             self.notifBuf = 'All sessions are currently used.'
             return
 
@@ -226,9 +226,9 @@ class UserInterface:
     def main(self):
         NAME = "Telegram File Manager"
         T_STR = ["Uploading:", "Downloading:"]
-        optionDict = {'upload' : {'value' : False, 'function' : self.uploadHandler},
-                      'download' : {'value' : False, 'function' : self.downloadHandler},
-                      'cancel' : {'value' : False, 'function' : self.cancelHandler}}
+        optionDict = {'upload' : {'value' : False, 'keybind' : ord(self.cfg['keybinds']['upload']), 'function' : self.uploadHandler},
+                      'download' : {'value' : False, 'keybind' : ord(self.cfg['keybinds']['download']), 'function' : self.downloadHandler},
+                      'cancel' : {'value' : False, 'keybind' : ord(self.cfg['keybinds']['cancel']), 'function' : self.cancelHandler}}
 
         try:
             self.resumeHandler()
@@ -276,15 +276,13 @@ class UserInterface:
                 elif ch == curses.KEY_DOWN and self.selected < self.sHandler.max_sessions - len(self.sHandler.freeSessions):
                     self.selected += 1
 
-                elif ch == ord(self.cfg['keybinds']['upload']):
-                    optionDict['upload']['value'] = True
-                elif ch == ord(self.cfg['keybinds']['download']):
-                    optionDict['download']['value'] = True
-                elif ch == ord(self.cfg['keybinds']['cancel']):
-                    optionDict['cancel']['value'] = True
-
                 elif ch == 17: # Ctrl-Q
                     break
+
+                for option, info in optionDict.items():
+                    if info['keybind'] == ch:
+                        info['value'] = True
+                        break
 
                 # Go to the last transfer if the transfer that was selected finished
                 if self.selected > self.sHandler.max_sessions - len(self.sHandler.freeSessions):
