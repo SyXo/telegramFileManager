@@ -90,7 +90,7 @@ class UserInterface:
                 if selected > promptCount-1:
                     selected = promptCount-1
                 if showY > promptCount-(tlY-5):
-                    showY = promptCount-(tlY-5) 
+                    showY = promptCount-(tlY-5)
 
             elif inputKey == curses.KEY_PPAGE: # Page Up
                 selected -= tlY-1
