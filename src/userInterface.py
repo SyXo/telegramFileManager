@@ -127,7 +127,7 @@ class UserInterface:
         inDict = {}
         for sFile, info in self.sHandler.resumeData.items():
             if info: # has resume data
-                inDict[sFile] = "Session {}:".format(sFile)
+                inDict[sFile] = "Session {}, {}:".format(sFile, '/'.join(info['rPath'])
 
         if not inDict:
             return
