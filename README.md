@@ -4,8 +4,6 @@ uses Telegram servers for storing
 files. This program has an advanced ncurses interface, ability to transfer files
 larger than 1.5G and more!
 
-## This project is a WIP!!!
-
 ## Features
 * Ability to show downloading and uploading progress
 * Ability to transfer files larger than 1.5G (telegram's limit)
@@ -13,7 +11,7 @@ larger than 1.5G and more!
 * Fast downloading and uploading of files (10Mbit UP | 15Mbit DOWN)
 * Ability to upload/download multiple files at once (after 4 there if no speed
 benefit)
-* Canceling and resuming file transfer progress (WIP)
+* Canceling and resuming file transfers
 * Interface that is similar to `rtorrent`
 
 ## Installing requirements
@@ -43,18 +41,29 @@ you run the tests, after that they will be saved as `a1.session` in the
 `Makefile` directory
 
 
-## Installing telegramFileManager
+## Installing tgFileManager
 * Do `make install` to compile the dependencies and install the program in
 `/usr/local/bin` (if you don't have root permissions, give `install_path=<dir>`
 argument where `<dir>` is a path you can write to and is in your `$PATH`
 variable)
-* When you first run the program, you will be asked for your phone number and confirmation
+* When you first run `tgFileManager`, you will be asked for your phone number and confirmation
 for every session from 1 to `max_sessions` (which by default is 4), there is no
-**easy** way to automate this.
+**easy** way to automate this, also you will need your own [app_id and api_hash](https://github.com/BouncyMaster/telegramFileManager#getting-app_id-and-api_hash)
 
 **Warning**: You may get a FloodWait exception when doing this,
 if you get that you need to force close the program, wait for the time
 specified, then run the program again.
+
+## Running tgFileManager
+### These keybinds can be changed by editing ~/.config/tgFileManager.ini
+* Uploading: pressing `u` will prompt you for the file path and what you want it's path to be in the database.
+* Downloading: pressing `d` will show you the list of files you have uploaded and their total size.
+* Cancelling: selecting the transfer you want to cancel then pressing `c`
+will soft cancel the transfer (will wait current chunk to finish transferring then
+will exit, this doesn't work with single chunk transfers)
+* Resuming: this will run at the start or the program or you can run it with `r`
+to handle cancelled transfers, also shows transfers cancelled by the program quitting abnormally
+* Quitting: press `Ctrl-Q`
 
 ## Getting app_id and api_hash
 * Log in to your [Telegram core](https://my.telegram.org)
