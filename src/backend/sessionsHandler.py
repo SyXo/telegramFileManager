@@ -74,7 +74,6 @@ class SessionsHandler:
 
         elif selected == 2: # Ignore for now
             self.resumeData[sFile]['handled'] = 2
-            self.freeSessions.remove(sFile)
 
         elif selected == 3: # delete the resume file
             rmIDs = self.resumeData[sFile]['fileID']
@@ -93,7 +92,7 @@ class SessionsHandler:
                 for j in i['fileID']:
                     IDlist.append(j)
 
-        self.tHandler[sFile].deleteUseless(IDlist, mode)
+        self.tHandler[sFile].deleteUseless(IDList, mode)
         self.__freeSession(sFile)
 
 
