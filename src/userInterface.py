@@ -127,7 +127,7 @@ class UserInterface:
         inDict = {}
         for sFile, info in self.sHandler.resumeData.items():
             if info and info['handled'] in [0, 2]: # has resume data that wasn't handled
-                inDict[sFile] = "Session {}, {} - {}:".format(sFile, '/'.join(info['rPath']), misc.bytesConvert(info['size']))
+                inDict[sFile] = "Session {}, '{}' - {}:".format(sFile, '/'.join(info['rPath']), misc.bytesConvert(info['size']))
 
         if not inDict:
             self.notifBuf = "No resume information."
