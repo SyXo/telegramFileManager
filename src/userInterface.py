@@ -9,8 +9,12 @@ class UserInterface:
         self.selected = 0
 
         self.cfg = misc.loadConfig()
+        try:
+            realChannelID = int(self.cfg['telegram']['channel_id'])
+        except ValueError:
+            realChannelID = self.cfg['telegram']['channel_id']
         self.sHandler = SessionsHandler(
-                self.cfg['telegram']['channel_id'], self.cfg['telegram']['api_id'],
+                realChannelID, self.cfg['telegram']['api_id'],
                 self.cfg['telegram']['api_hash'], self.cfg['paths']['data_path'],
                 self.cfg['paths']['tmp_path'], int(self.cfg['telegram']['max_sessions'])
         )
