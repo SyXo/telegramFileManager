@@ -174,6 +174,9 @@ class SessionsHandler:
         if not int(sFile) in range(1, self.max_sessions+1):
             raise IndexError("sFile should be between 1 and {}.".format(self.max_sessions))
 
+        if self.tHandler[sFile].should_stop:
+            raise ValueError("Transfer already cancelled.")
+
         self.tHandler[sFile].stop(1)
 
 

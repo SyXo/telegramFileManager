@@ -163,7 +163,11 @@ class UserInterface:
                     return
 
                 self.notifBuf = "Transfer {} cancelled".format('/'.join(info['rPath']))
-                self.sHandler.cancelTransfer(sFile)
+                try:
+                    self.sHandler.cancelTransfer(sFile)
+                except ValueError:
+                    self.notifBuf = "Transfer already cancelled."
+
                 break
 
 
