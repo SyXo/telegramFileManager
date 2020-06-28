@@ -22,6 +22,7 @@ benefit)
 work, you need to use the development branch instead
 (`pip3 install -U https://github.com/pyrogram/pyrogram/archive/develop.zip`)
 * TgCrypto (`pip3 install -U tgcrypto`) (Recommended: used by `pyrogram`)
+* PyInstaller (`pip3 install -U pyinstaller`) (Bundles the scripts into one executable)
 
 
 ## Testing (currently only for GNU/Linux)
