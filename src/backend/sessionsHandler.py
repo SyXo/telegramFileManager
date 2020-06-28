@@ -67,26 +67,20 @@ class SessionsHandler:
     def resumeHandler(self, sFile='', selected=0):
         if not int(sFile) in range(1, self.max_sessions+1):
             raise IndexError("sFile should be between 1 and {}.".format(self.max_sessions))
-        if not selected in range(1, 4):
-            raise IndexError("selected should be between 1 and 3")
 
         if selected == 1: # Finish the transfer
-            tmpResume = self.resumeData[sFile]
-            self.resumeData[sFile] = {}
-            self.transferInThread(tmpResume, sFile)
+            self.resumeData[sFile]['handled'] = 1
+            self.transferInThread(self.resumeData[sFile], sFile)
 
         elif selected == 2: # Ignore for now
-            self.resumeData[sFile] = {} # wrong if in the future the user wants
-                                        # to resume without closing the program
+            self.resumeData[sFile]['handled'] = 2
             self.freeSessions.remove(sFile)
 
-        else: # delete the resume file
+        elif selected == 3: # delete the resume file
             rmIDs = self.resumeData[sFile]['fileID']
-            self.resumeData[sFile] = {}
+            self.resumeData[sFile] = {} # not possible to resume later
             self.fileIO.delResumeData(sFile)
             self.cleanTg(rmIDs)
-
-        self.resumeData[sFile] = {}
 
 
     def cleanTg(self, IDList=[]):
@@ -131,6 +125,9 @@ class SessionsHandler:
 
             self.fileIO.updateDatabase(self.fileDatabase)
 
+        else:
+            self.resumeData[sFile]['handled'] = 0
+
         self.transferInfo[sFile]['type'] = 0 # not transferring anything
         self.__freeSession(sFile)
 
@@ -150,6 +147,9 @@ class SessionsHandler:
         if finalData: # finished downloading
             if len(fileData['fileID']) > 1:
                 self.fileIO.delResumeData(sFile)
+
+        else:
+            self.resumeData[sFile]['handled'] = 0
 
         self.transferInfo[sFile]['type'] = 0
         self.__freeSession(sFile)

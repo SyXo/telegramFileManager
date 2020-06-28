@@ -126,10 +126,11 @@ class UserInterface:
     def resumeHandler(self):
         inDict = {}
         for sFile, info in self.sHandler.resumeData.items():
-            if info: # has resume data
+            if info and info['handled'] in [0, 2]: # has resume data that wasn't handled
                 inDict[sFile] = "Session {}, {}:".format(sFile, '/'.join(info['rPath']))
 
         if not inDict:
+            self.notifBuf = "No resume information."
             return
 
         resumeOpts = self._getInputs("Resume files found, choose an option for each: (1) Finish the transfer (2) Ignore for now (3) Delete resume file",
@@ -157,6 +158,10 @@ class UserInterface:
                 continue
             i += 1
             if i == self.selected:
+                if info['size'] <= 1572864000: # no chunks
+                    self.notifBuf = "Can't cancel single chunk transfers"
+                    return
+
                 self.notifBuf = "Transfer {} cancelled".format('/'.join(info['rPath']))
                 self.sHandler.cancelTransfer(sFile)
                 break
@@ -222,7 +227,8 @@ class UserInterface:
         T_STR = ["Uploading:", "Downloading:"]
         optionDict = {'upload' : {'value' : False, 'keybind' : ord(self.cfg['keybinds']['upload']), 'function' : self.uploadHandler},
                       'download' : {'value' : False, 'keybind' : ord(self.cfg['keybinds']['download']), 'function' : self.downloadHandler},
-                      'cancel' : {'value' : False, 'keybind' : ord(self.cfg['keybinds']['cancel']), 'function' : self.cancelHandler}}
+                      'cancel' : {'value' : False, 'keybind' : ord(self.cfg['keybinds']['cancel']), 'function' : self.cancelHandler},
+                      'resume' : {'value' : False, 'keybind' : ord(self.cfg['keybinds']['resume']), 'function' : self.resumeHandler}}
 
         try:
             self.resumeHandler()

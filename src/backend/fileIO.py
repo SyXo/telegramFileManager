@@ -43,6 +43,7 @@ class FileIO:
                 with open(os.path.join(self.data_path, "resume_{}".format(i)), 'rb') as f:
                     fileData = pickle.load(f)
 
+                fileData['handled'] = 0
             resumeData[str(i)] = fileData
 
         return resumeData
