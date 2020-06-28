@@ -99,7 +99,7 @@ class SessionsHandler:
 
     def _upload(self, fileData, sFile):
         sFile = self.__useSession(sFile) # Use a free session
-        if self.resumeData[sFile]:
+        if self.resumeData[sFile] and self.resumeData[sFile]['handled'] in [0, 2]:
             raise ValueError("Resume sessions not handled, refusing to transfer.")
 
         self.transferInfo[sFile]['rPath'] = fileData['rPath']
@@ -134,7 +134,7 @@ class SessionsHandler:
 
     def _download(self, fileData, sFile):
         sFile = self.__useSession(sFile) # Use a free session
-        if self.resumeData[sFile]:
+        if self.resumeData[sFile] and self.resumeData[sFile]['handled'] in [0, 2]:
             raise ValueError("Resume sessions not handled, refusing to transfer.")
 
         self.transferInfo[sFile]['rPath'] = fileData['rPath']
