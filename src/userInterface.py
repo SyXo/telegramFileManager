@@ -127,7 +127,7 @@ class UserInterface:
         inDict = {}
         for sFile, info in self.sHandler.resumeData.items():
             if info: # has resume data
-                inDict[sFile] = "Session {}, {}:".format(sFile, '/'.join(info['rPath'])
+                inDict[sFile] = "Session {}, {}:".format(sFile, '/'.join(info['rPath']))
 
         if not inDict:
             return
@@ -150,7 +150,6 @@ class UserInterface:
             self.notifBuf = "No transfer selected to cancel."
             return
 
-        self.notifBuf = "Transfer cancelled"
         # Only solution I found for cancelling the right transfer
         i = 0
         for sFile, info in self.sHandler.transferInfo.items():
@@ -158,6 +157,7 @@ class UserInterface:
                 continue
             i += 1
             if i == self.selected:
+                self.notifBuf = "Transfer {} cancelled".format('/'.join(info['rPath']))
                 self.sHandler.cancelTransfer(sFile)
                 break
 
