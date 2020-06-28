@@ -177,6 +177,9 @@ class SessionsHandler:
         if self.tHandler[sFile].should_stop:
             raise ValueError("Transfer already cancelled.")
 
+        self.resumeData[sFile] = self.transferInfo[sFile]
+        self.resumeData[sFile]['handled'] = 0
+
         self.tHandler[sFile].stop(1)
 
 
