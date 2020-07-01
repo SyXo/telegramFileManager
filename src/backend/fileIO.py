@@ -8,7 +8,8 @@ class FileIO:
         self.data_path = data_path
         self.max_sessions = max_sessions
 
-        for i in [data_path, tmp_path, os.path.join(data_path, "downloads")]:
+        for i in [data_path, tmp_path, os.path.join(data_path, "downloads"),
+                  os.path.join(tmp_path, "tfilemgr")]:
             if not os.path.isdir(i):
                 os.mkdir(i)
 
