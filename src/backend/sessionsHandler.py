@@ -32,7 +32,7 @@ class SessionsHandler:
 
             self.tHandler[str(i)] = TransferHandler(
                     telegram_channel_id, api_id, api_hash, data_path, tmp_path,
-                    str(i), self.__saveProgress, self.fileIO.saveResumeData
+                    str(i), self.__saveProgress, self.__saveResumeData
             ) # initialize all sessions that will be used
 
 
@@ -40,8 +40,7 @@ class SessionsHandler:
         if not self.freeSessions:
             raise IndexError("No free sessions.")
 
-        if sFile:
-            self.freeSessions.remove(sFile)
+        if sFile: # don't remove session because it was already removed in resumeHandler
             return sFile
 
         # get available session
@@ -64,16 +63,26 @@ class SessionsHandler:
         self.transferInfo[sFile]['progress'] = prg
 
 
+    def __saveResumeData(self, fileData, sFile):
+        self.resumeData[sFile] = fileData
+        self.fileIO.saveResumeData(fileData, sFile)
+
+
     def resumeHandler(self, sFile='', selected=0):
         if not int(sFile) in range(1, self.max_sessions+1):
             raise IndexError("sFile should be between 1 and {}.".format(self.max_sessions))
 
         if selected == 1: # Finish the transfer
+            if self.resumeData[sFile]['handled'] != 2:
+                self.freeSessions.remove(sFile) # if it was handled at startup as ignore
+                                                # the session was already removed
+
             self.resumeData[sFile]['handled'] = 1
             self.transferInThread(self.resumeData[sFile], sFile)
 
         elif selected == 2: # Ignore for now
             self.resumeData[sFile]['handled'] = 2
+            self.freeSessions.remove(sFile)	# prevent using this session for transfer
 
         elif selected == 3: # delete the resume file
             rmIDs = self.resumeData[sFile]['fileID']
@@ -94,6 +103,14 @@ class SessionsHandler:
 
         self.tHandler[sFile].deleteUseless(IDList, mode)
         self.__freeSession(sFile)
+
+
+    def deleteInDatabase(self, fileData={}):
+        if (not fileData) or not (type(fileData) is dict):
+            raise TypeError("Bad or empty value given.")
+
+        self.fileDatabase.remove(fileData)
+        self.cleanTg(fileData['fileID'])
 
 
     def _upload(self, fileData, sFile):
@@ -176,7 +193,6 @@ class SessionsHandler:
         if self.tHandler[sFile].should_stop:
             raise ValueError("Transfer already cancelled.")
 
-        self.resumeData[sFile] = self.transferInfo[sFile]
         self.resumeData[sFile]['handled'] = 0
 
         self.tHandler[sFile].stop(1)

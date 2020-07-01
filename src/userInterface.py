@@ -13,6 +13,7 @@ class UserInterface:
             realChannelID = int(self.cfg['telegram']['channel_id'])
         except ValueError:
             realChannelID = self.cfg['telegram']['channel_id']
+
         self.sHandler = SessionsHandler(
                 realChannelID, self.cfg['telegram']['api_id'],
                 self.cfg['telegram']['api_hash'], self.cfg['paths']['data_path'],
@@ -63,7 +64,7 @@ class UserInterface:
         scrPad = curses.newpad(promptCount+10, MAX_PAD_X) # Y, X max size
         selected = showX = showY = 0
         inputKey = None
-        didQuit = False
+        action = {'quit' : False, 'delete' : False}
 
         while inputKey != ord('\n'): # Enter
             scrPad.addstr(0, 0, title, curses.A_STANDOUT)
@@ -113,18 +114,23 @@ class UserInterface:
                 if showX < 0:
                     showX = 0
 
+            elif inputKey in [ord('d'), ord('D')]:
+                action['delete'] = True
+                break
+
             elif inputKey in [ord('q'), ord('Q')]:
-                didQuit = True
+                action['quit'] = True
                 break
 
         self.scr.nodelay(True)
         self.scr.timeout(5000)
         self.scr.erase()
 
-        if didQuit:
+        if action['quit']:
             return None
         else:
-            return prompts[selected]
+            return {'selected' : prompts[selected],
+                    'action' : 'delete' if action['delete'] else 'download'}
 
 
     def resumeHandler(self):
@@ -223,10 +229,22 @@ class UserInterface:
                                       ), prompts)
 
         if inData:
-            self.sHandler.transferInThread({'rPath'   : inData['rPath'],
-                                            'fileID'  : inData['fileID'],
+            if (
+                    inData['action'] == 'delete' and
+                    self._getInputs("Delete file {}?".format('/'.join(inData['selected']['rPath'])),
+                                    {'selected' : "Type 'yes' if you are sure:"})['selected'] == 'yes'
+               ):
+                tmpData = {'rPath'  : inData['selected']['rPath'],
+                           'fileID' : inData['selected']['fileID'],
+                           'size'   : inData['selected']['size']}
+                self.sHandler.deleteInDatabase(tmpData)
+                return
+
+            # else download
+            self.sHandler.transferInThread({'rPath'   : inData['selected']['rPath'],
+                                            'fileID'  : inData['selected']['fileID'],
                                             'IDindex' : 0,
-                                            'size'    : inData['size'],
+                                            'size'    : inData['selected']['size'],
                                             'type'    : 2})
 
 
@@ -270,7 +288,7 @@ class UserInterface:
                         continue
 
                     self.scr.addstr(i, 2, T_STR[info['type']-1])
-                    self.scr.addstr(i+1, 2, "/".join(info['rPath']))
+                    self.scr.addstr(i+1, 2, '/'.join(info['rPath']))
                     self.scr.addstr(i+2, 2, "{}% - {}".format(info['progress'], misc.bytesConvert(info['size'])))
                     i+=4
 
