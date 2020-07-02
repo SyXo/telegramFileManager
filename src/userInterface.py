@@ -246,8 +246,8 @@ class UserInterface:
                 return
 
             if inData['action'] == 'rename':
-                name = self._getInputs("Rename file",
-                                       {'rPath' : "{}:".format('/'.join(inData['selected']['rPath'])}))['rPath'].split('/')
+                tmpName = "{}:".format('/'.join(inData['selected']['rPath']))
+                name = self._getInputs("Rename file", {'rPath' : tmpName})['rPath'].split('/')
 
                 if not name:
                     return
