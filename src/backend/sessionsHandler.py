@@ -117,7 +117,7 @@ class SessionsHandler:
     def renameInDatabase(self, fileData={}, newName=[]):
         if (
                 (not fileData) or not (type(fileData) is dict) or
-                (not newName) or not (type(fileData) is list)
+                (not newName) or not (type(newName) is list)
            ):
             raise TypeError("Bad or empty value given.")
 
