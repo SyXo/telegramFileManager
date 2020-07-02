@@ -131,7 +131,7 @@ class UserInterface:
         self.scr.timeout(5000)
         self.scr.erase()
 
-        if action = 'quit':
+        if action == 'quit':
             return None
         else:
             return {'selected' : prompts[selected],
