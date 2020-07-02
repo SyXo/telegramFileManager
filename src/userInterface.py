@@ -9,6 +9,7 @@ class UserInterface:
         self.selected = 0
 
         self.cfg = misc.loadConfig()
+
         try:
             realChannelID = int(self.cfg['telegram']['channel_id'])
         except ValueError:
@@ -64,7 +65,7 @@ class UserInterface:
         scrPad = curses.newpad(promptCount+10, MAX_PAD_X) # Y, X max size
         selected = showX = showY = 0
         inputKey = None
-        action = {'quit' : False, 'delete' : False}
+        action = 'download'
 
         while inputKey != ord('\n'): # Enter
             scrPad.addstr(0, 0, title, curses.A_STANDOUT)
@@ -115,11 +116,15 @@ class UserInterface:
                     showX = 0
 
             elif inputKey in [ord('d'), ord('D')]:
-                action['delete'] = True
+                action = 'delete'
+                break
+
+            elif inputKey in [ord('r'), ord('R')]:
+                action = 'rename'
                 break
 
             elif inputKey in [ord('q'), ord('Q')]:
-                action['quit'] = True
+                action = 'quit'
                 break
 
         self.scr.nodelay(True)
@@ -130,7 +135,7 @@ class UserInterface:
             return None
         else:
             return {'selected' : prompts[selected],
-                    'action' : 'delete' if action['delete'] else 'download'}
+                    'action' : action}
 
 
     def resumeHandler(self):
@@ -224,11 +229,11 @@ class UserInterface:
                             'fileID' : i['fileID'],
                             'size'   : i['size']})
 
-        inData = self._selectFromList("Select file to download - {} Total".format(
+        inData = self._selectFromList("Enter to download, d to delete, r to rename - {} Total".format(
                                           misc.bytesConvert(totalSize)
                                       ), prompts)
 
-        if inData:
+        if inData: # not cancelled
             if (
                     inData['action'] == 'delete' and
                     self._getInputs("Delete file {}?".format('/'.join(inData['selected']['rPath'])),
@@ -238,6 +243,20 @@ class UserInterface:
                            'fileID' : inData['selected']['fileID'],
                            'size'   : inData['selected']['size']}
                 self.sHandler.deleteInDatabase(tmpData)
+                return
+
+            if inData['action'] == 'rename':
+                name = self._getInputs("Rename file",
+                                       {'rPath' : "{}:".format('/'.join(inData['selected']['rPath'])}))['rPath'].split('/')
+
+                if not name:
+                    return
+
+                tmpData = {'rPath'  : inData['selected']['rPath'],
+                           'fileID' : inData['selected']['fileID'],
+                           'size'   : inData['selected']['size']}
+
+                self.sHandler.renameInDatabase(tmpData, name)
                 return
 
             # else download

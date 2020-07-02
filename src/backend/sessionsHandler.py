@@ -111,6 +111,18 @@ class SessionsHandler:
 
         self.fileDatabase.remove(fileData)
         self.cleanTg(fileData['fileID'])
+        self.fileIO.updateDatabase(self.fileDatabase)
+
+
+    def renameInDatabase(self, fileData={}, newName=[]):
+        if (
+                (not fileData) or not (type(fileData) is dict) or
+                (not newName) or not (type(fileData) is list)
+           ):
+            raise TypeError("Bad or empty value given.")
+
+        self.fileDatabase[self.fileDatabase.index(fileData)]['rPath'] = newName
+        self.fileIO.updateDatabase(self.fileDatabase)
 
 
     def _upload(self, fileData, sFile):
