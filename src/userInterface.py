@@ -234,11 +234,11 @@ class UserInterface:
                                       ), prompts)
 
         if inData: # not cancelled
-            if (
-                    inData['action'] == 'delete' and
-                    self._getInputs("Delete file {}?".format('/'.join(inData['selected']['rPath'])),
-                                    {'selected' : "Type 'yes' if you are sure:"})['selected'] == 'yes'
-               ):
+            if inData['action'] == 'delete':
+                if self._getInputs("Delete file {}?".format('/'.join(inData['selected']['rPath'])),
+                                    {'selected' : "Type 'yes' if you are sure:"})['selected'] != 'yes':
+                    return
+
                 tmpData = {'rPath'  : inData['selected']['rPath'],
                            'fileID' : inData['selected']['fileID'],
                            'size'   : inData['selected']['size']}
