@@ -58,7 +58,7 @@ class TransferHandler:
         if (not fileData) or not (type(fileData) is dict):
             raise TypeError("Bad or empty value given.")
 
-        if fileData['size'] <= 1572864000: # less than 1500M don't split file
+        if fileData['size'] <= 2000*1024*1024: # less than 2000M don't split file
             # Single chunk upload doesn't call data_fun
             copied_file_path = path.join(self.tmp_path, "tfilemgr",
                 "{}_{}".format(self.s_file, fileData['index']))
