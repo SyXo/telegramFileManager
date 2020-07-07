@@ -89,7 +89,7 @@ class TransferHandler:
                     'index'    : fileData['index']+1}
 
         # else file should be split
-        tot_chunks = (fileData['size'] // 1572864000) + 1 # used by progress fun
+        tot_chunks = (fileData['size'] // 2000*1024*1024) + 1 # used by progress fun
 
         self.now_transmitting = 2
         while True: # not end of file
@@ -100,7 +100,7 @@ class TransferHandler:
                 fileData['chunkIndex'],
                 fileData['path'].encode('ascii'),
                 copied_file_path.encode('ascii'),
-                1572864, 1000
+                2000*1024, 1024
             )
 
             msg_obj = self.telegram.send_document(
