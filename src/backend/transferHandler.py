@@ -89,7 +89,7 @@ class TransferHandler:
                     'index'    : fileData['index']+1}
 
         # else file should be split
-        tot_chunks = (fileData['size'] // 2000*1024*1024) + 1 # used by progress fun
+        tot_chunks = (fileData['size'] // (2000*1024*1024)) + 1 # used by progress fun
 
         self.now_transmitting = 2
         while True: # not end of file
