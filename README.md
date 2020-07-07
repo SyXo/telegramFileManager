@@ -2,11 +2,11 @@
 File Manager using [pyrogram](https://github.com/pyrogram/pyrogram) library that
 uses Telegram servers for storing
 files. This program has an advanced ncurses interface, ability to transfer files
-larger than 1.5G and more!
+larger than 2G and more!
 
 ## Features
 * Ability to show downloading and uploading progress
-* Ability to transfer files larger than 1.5G (telegram's limit)
+* Ability to transfer files larger than 2G (telegram's limit)
 * Intuitive and fast scrolling when selecting uploaded files
 * Fast downloading and uploading of files (10Mbit UP | 15Mbit DOWN)
 * Ability to upload/download multiple files at once (after 4 there if no speed
