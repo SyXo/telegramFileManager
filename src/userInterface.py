@@ -173,7 +173,7 @@ class UserInterface:
                 continue
             i += 1
             if i == self.selected:
-                if info['size'] <= 1572864000: # no chunks
+                if info['size'] <= 2000*1024*1024: # no chunks
                     self.notifBuf = "Can't cancel single chunk transfers"
                     return
 
