@@ -29,7 +29,8 @@ class TransferHandler:
     def __init__(self, telegram_channel_id, api_id, api_hash, data_path,
                  tmp_path, s_file, progress_fun, data_fun, local_library=True):
 
-        self.extern = CDLL("transferHandler_extern.so" if local_library else "../transferHandler_extern.so")
+        libPath = "{}transferHandler_extern.{}".format('' if local_library else '../', 'dll' if sys.platform == 'win32' else 'so')
+        self.extern = CDLL(libPath)
         self.extern.splitFile.restype = c_size_t
         self.extern.splitFile.argtypes = [c_size_t, c_char_p, c_char_p,
                                           c_size_t, c_size_t]
