@@ -9,7 +9,7 @@ import sys
 import config as cfg
 
 data_path = ".."
-tmp_path = path.expanduser("~/.tmp")
+tmp_path = path.join(path.expanduser('~'), '.tmp')
 telegram_channel_id = "me"
 resumeTest = 0
 toResume = True
