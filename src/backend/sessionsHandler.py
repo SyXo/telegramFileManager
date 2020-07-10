@@ -2,8 +2,8 @@
 Extends transferHandler by managing the database and implementing multithreading
 '''
 
-from backend.transferHandler import TransferHandler
-from backend.fileIO import FileIO
+from .transferHandler import TransferHandler
+from .fileIO import FileIO
 import threading
 from operator import itemgetter
 

@@ -10,7 +10,7 @@ transferHandler_extern: src/backend/transferHandler_extern.c
 	$(CC) -std=c99 -fPIC -shared -o $@.so $?
 
 clean:
-	rm -rf src/__pycache__ src/backend/__pycache__ transferHandler_extern.so userInterface.spec build dist
+	rm -rf src/__pycache__ src/backend/__pycache__ transferHandler_extern.so cli.spec build dist
 
 test: clean transferHandler_extern
 	echo "Just a heads up this will take around an hour"
@@ -36,6 +36,6 @@ test: clean transferHandler_extern
 install: clean transferHandler_extern
 	pyinstaller src/cli.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary transferHandler_extern.so:. --onefile
 
-	cp dist/userInterface $(install_path)/tgFileManager
+	cp dist/cli $(install_path)/tgFileManager
 
 .SILENT: test
