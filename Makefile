@@ -34,7 +34,7 @@ test: clean transferHandler_extern
 	rm $(tmp_path)/tfilemgr/rand downloads/tfilemk_rand
 
 install: clean transferHandler_extern
-	pyinstaller src/userInterface.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary transferHandler_extern.so:. --onefile
+	pyinstaller src/cli.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary transferHandler_extern.so:. --onefile
 
 	cp dist/userInterface $(install_path)/tgFileManager
 
