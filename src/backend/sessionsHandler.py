@@ -143,6 +143,7 @@ class SessionsHandler:
         if finalData: # Finished uploading
             if len(finalData['fileData']['fileID']) > 1: # not single chunk
                 self.fileIO.delResumeData(sFile)
+                self.resumeData[sFile] = {}
 
             self.fileIO.saveIndexData(sFile, finalData['index'])
 
@@ -175,6 +176,7 @@ class SessionsHandler:
         if finalData: # finished downloading
             if len(fileData['fileID']) > 1:
                 self.fileIO.delResumeData(sFile)
+                self.resumeData[sFile] = {}
 
         else:
             self.resumeData[sFile]['handled'] = 0
