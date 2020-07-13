@@ -4,7 +4,7 @@ import os
 import configparser
 
 class FileIO:
-    def __init__(self, data_path, tmp_path, max_sessions):
+    def __init__(self, data_path: str, tmp_path: str, max_sessions: int):
         self.data_path = data_path
         self.max_sessions = max_sessions
 
@@ -14,13 +14,13 @@ class FileIO:
                 os.mkdir(i)
 
 
-    def updateDatabase(self, fileDatabase):
+    def updateDatabase(self, fileDatabase: list):
         # This should be called after finishing an upload
         with open(os.path.join(self.data_path, "fileData"), 'wb') as f:
             pickle.dump(fileDatabase, f)
 
 
-    def loadDatabase(self):
+    def loadDatabase(self) -> list:
         fileDatabase = []
 
         if os.path.isfile(os.path.join(self.data_path, "fileData")):
@@ -30,12 +30,12 @@ class FileIO:
         return fileDatabase
 
 
-    def saveResumeData(self, fileData, sFile):
+    def saveResumeData(self, fileData: dict, sFile: str):
         with open(os.path.join(self.data_path, "resume_{}".format(sFile)), 'wb') as f:
             pickle.dump(fileData, f)
 
 
-    def loadResumeData(self):
+    def loadResumeData(self) -> dict:
         resumeData = {}
 
         for i in range(1, self.max_sessions+1):
@@ -50,11 +50,11 @@ class FileIO:
         return resumeData
 
 
-    def delResumeData(self, sFile):
+    def delResumeData(self, sFile: str):
         os.remove(os.path.join(self.data_path, "resume_{}".format(sFile)))
 
 
-    def loadIndexData(self, sFile):
+    def loadIndexData(self, sFile: str) -> int:
         indexData = 1
 
         if os.path.isfile(os.path.join(self.data_path, "index_{}".format(sFile))):
@@ -64,6 +64,6 @@ class FileIO:
         return indexData
 
 
-    def saveIndexData(self, sFile, index):
+    def saveIndexData(self, sFile: str, index: int):
         with open(os.path.join(self.data_path, "index_{}".format(sFile)), 'wb') as f:
             pickle.dump(index, f)

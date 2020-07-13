@@ -25,10 +25,19 @@ from pyrogram import Client
 from shutil import copyfile
 from os import remove, path
 import sys
+from typing import Union
 
 class TransferHandler:
-    def __init__(self, telegram_channel_id, api_id, api_hash, data_path,
-                 tmp_path, s_file, progress_fun, data_fun, local_library=True):
+    def __init__(self,
+                 telegram_channel_id: Union[int, str],
+                 api_id: int,
+                 api_hash: str,
+                 data_path: str,
+                 tmp_path: str,
+                 s_file: str,
+                 progress_fun: callable, # Pointer to progress function
+                 data_fun: callable, # Called for multi chunk transfers
+                 local_library: bool = True): # Where to search for library
 
         libPath = "{}transferHandler_extern.{}".format('' if local_library else '../', 'dll' if sys.platform == 'win32' else 'so')
         self.extern = CDLL(libPath)
@@ -56,10 +65,7 @@ class TransferHandler:
         self.should_stop = 0
 
 
-    def uploadFiles(self, fileData={}):
-        if (not fileData) or not (type(fileData) is dict):
-            raise TypeError("Bad or empty value given.")
-
+    def uploadFiles(self, fileData: dict):
         if fileData['size'] <= 2000*1024*1024: # less than 2000M don't split file
             # Single chunk upload doesn't call data_fun
             copied_file_path = path.join(self.tmp_path, "tfilemgr",
@@ -140,10 +146,7 @@ class TransferHandler:
             # return file information
 
 
-    def downloadFiles(self, fileData={}):
-        if (not fileData) or not (type(fileData) is dict):
-            raise TypeError("Bad or empty value given.")
-
+    def downloadFiles(self, fileData: dict):
         if len(fileData['fileID']) == 1: # no chunks
             # Single chunk download doesn't call data_fun
             copied_file_path = path.join(self.data_path, "downloads",
@@ -216,12 +219,9 @@ class TransferHandler:
         return 1
 
 
-    def deleteUseless(self, IDList=[], mode=1):
+    def deleteUseless(self, IDList: list, mode: int = 1):
         # mode is 1 for enerything except IDList,
         #         2 for only IDList
-        if (not IDList) or not (type(IDList) is list):
-            raise TypeError("Bad or empty value given.")
-
         deletedList = []
 
         if mode == 1:
@@ -238,12 +238,10 @@ class TransferHandler:
 
         return deletedList
 
-    def stop(self, stop_type=0):
+    def stop(self, stop_type: int):
         #Values of stop_type:
         #1 - Wait until the current chunk download ended and appended
         #2 - Cancel downloading, will still wait for appending to finish
-        if (not stop_type) or not (type(stop_type) is int):
-            raise TypeError("Bad or empty value given.")
         if not stop_type in [1, 2]:
             raise IndexError("stop_type should be 1 or 2.")
         if self.now_transmitting == 1 and stop_type == 1:

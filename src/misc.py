@@ -1,7 +1,7 @@
 import configparser
 import os
 
-def bytesConvert(rawBytes):
+def bytesConvert(rawBytes: int) -> str:
     if   rawBytes >= 16**10:
         return "{} TiB".format(round(rawBytes/16**10, 2))
     elif rawBytes >= 8**10:

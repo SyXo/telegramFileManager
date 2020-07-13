@@ -6,10 +6,16 @@ from .transferHandler import TransferHandler
 from .fileIO import FileIO
 import threading
 from operator import itemgetter
+from typing import Union
 
 class SessionsHandler:
-    def __init__(self, telegram_channel_id, api_id, api_hash,
-                 data_path, tmp_path, max_sessions):
+    def __init__(self,
+                 telegram_channel_id: Union[int, str],
+                 api_id: int,
+                 api_hash: str,
+                 data_path: str,
+                 tmp_path: str,
+                 max_sessions: int):
 
         self.api_id = api_id
         self.api_hash = api_hash
@@ -36,7 +42,7 @@ class SessionsHandler:
             ) # initialize all sessions that will be used
 
 
-    def __useSession(self, sFile=''): # Gets the first available session or the given one
+    def __useSession(self, sFile: str = None): # Gets the first available session or the given one
         if not self.freeSessions:
             raise IndexError("No free sessions.")
 
@@ -49,7 +55,7 @@ class SessionsHandler:
         return retSession
 
 
-    def __freeSession(self, sFile=''):
+    def __freeSession(self, sFile: str):
         if not int(sFile) in range(1, self.max_sessions+1):
             raise IndexError("sFile should be between 1 and {}.".format(self.max_sessions))
         if sFile in self.freeSessions:
@@ -63,12 +69,12 @@ class SessionsHandler:
         self.transferInfo[sFile]['progress'] = prg
 
 
-    def __saveResumeData(self, fileData, sFile):
+    def __saveResumeData(self, fileData: list, sFile: str):
         self.resumeData[sFile] = fileData
         self.fileIO.saveResumeData(fileData, sFile)
 
 
-    def resumeHandler(self, sFile='', selected=0):
+    def resumeHandler(self, sFile: str, selected: int = 0):
         if not int(sFile) in range(1, self.max_sessions+1):
             raise IndexError("sFile should be between 1 and {}.".format(self.max_sessions))
 
@@ -91,7 +97,7 @@ class SessionsHandler:
             self.cleanTg(rmIDs)
 
 
-    def cleanTg(self, IDList=[]):
+    def cleanTg(self, IDList: list = None):
         sFile = self.__useSession()
         mode = 2
 
@@ -105,27 +111,18 @@ class SessionsHandler:
         self.__freeSession(sFile)
 
 
-    def deleteInDatabase(self, fileData={}):
-        if (not fileData) or not (type(fileData) is dict):
-            raise TypeError("Bad or empty value given.")
-
+    def deleteInDatabase(self, fileData: dict):
         self.fileDatabase.remove(fileData)
         self.cleanTg(fileData['fileID'])
         self.fileIO.updateDatabase(self.fileDatabase)
 
 
-    def renameInDatabase(self, fileData={}, newName=[]):
-        if (
-                (not fileData) or not (type(fileData) is dict) or
-                (not newName) or not (type(newName) is list)
-           ):
-            raise TypeError("Bad or empty value given.")
-
+    def renameInDatabase(self, fileData: dict, newName: list):
         self.fileDatabase[self.fileDatabase.index(fileData)]['rPath'] = newName
         self.fileIO.updateDatabase(self.fileDatabase)
 
 
-    def _upload(self, fileData, sFile):
+    def _upload(self, fileData: dict, sFile: str = None):
         sFile = self.__useSession(sFile) # Use a free session
         if self.resumeData[sFile] and self.resumeData[sFile]['handled'] in [0, 2]:
             raise ValueError("Resume sessions not handled, refusing to transfer.")
@@ -161,7 +158,7 @@ class SessionsHandler:
         self.__freeSession(sFile)
 
 
-    def _download(self, fileData, sFile):
+    def _download(self, fileData: dict, sFile: str = None):
         sFile = self.__useSession(sFile) # Use a free session
         if self.resumeData[sFile] and self.resumeData[sFile]['handled'] in [0, 2]:
             raise ValueError("Resume sessions not handled, refusing to transfer.")
@@ -187,10 +184,7 @@ class SessionsHandler:
         return finalData
 
 
-    def transferInThread(self, fileData={}, sFile=''):
-        if (not fileData) or not (type(fileData) is dict):
-            raise TypeError("Bad or empty value given.")
-
+    def transferInThread(self, fileData: dict, sFile: str = None):
         if fileData['type'] == 1:
             threadTarget = self._upload
         elif fileData['type'] == 2:
@@ -200,7 +194,7 @@ class SessionsHandler:
         transferJob.start()
 
 
-    def cancelTransfer(self, sFile=''):
+    def cancelTransfer(self, sFile: str):
         if not int(sFile) in range(1, self.max_sessions+1):
             raise IndexError("sFile should be between 1 and {}.".format(self.max_sessions))
 
