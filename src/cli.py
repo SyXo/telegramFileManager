@@ -249,7 +249,7 @@ class UserInterface:
                 tmpName = "{}:".format('/'.join(inData['selected']['rPath']))
                 name = self._getInputs("Rename file", {'rPath' : tmpName})['rPath'].split('/')
 
-                if not name:
+                if not name['rPath']:
                     return
 
                 tmpData = {'rPath'  : inData['selected']['rPath'],
