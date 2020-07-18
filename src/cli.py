@@ -247,16 +247,16 @@ class UserInterface:
 
             if inData['action'] == 'rename':
                 tmpName = "{}:".format('/'.join(inData['selected']['rPath']))
-                name = self._getInputs("Rename file", {'rPath' : tmpName})['rPath'].split('/')
+                name = self._getInputs("Rename file", {'rPath' : tmpName})['rPath']
 
-                if not name['rPath']:
+                if not name:
                     return
 
                 tmpData = {'rPath'  : inData['selected']['rPath'],
                            'fileID' : inData['selected']['fileID'],
                            'size'   : inData['selected']['size']}
 
-                self.sHandler.renameInDatabase(tmpData, name)
+                self.sHandler.renameInDatabase(tmpData, name.split('/'))
                 return
 
             # else download
