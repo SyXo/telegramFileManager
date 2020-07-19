@@ -6,8 +6,8 @@ package_path = $(shell python -c "import pyrogram;import os;print(os.path.dirnam
 # this also needs to be modified inside tests.py
 tmp_path = ~/.tmp
 
-transferHandler_extern: src/backend/transferHandler_extern.c
-	$(CC) -std=c99 -fPIC -shared -o $@.so $?
+transferHandler_extern.so: src/backend/transferHandler_extern.c
+	$(CC) -std=c99 -fPIC -shared -o $@ $^
 
 clean:
 	rm -rf src/__pycache__ src/backend/__pycache__ transferHandler_extern.so cli.spec build dist

@@ -45,8 +45,8 @@ def fileDataFun(fileData, sFile):
         progressDownload = fileData.copy()
 
 tg = TransferHandler(telegram_channel_id, cfg.api_id, cfg.api_hash,
-                             data_path,tmp_path,"1",printProgress,fileDataFun,
-                             local_library=False)
+                     data_path, tmp_path, "1", printProgress, fileDataFun,
+                     local_library=False)
 
 print("Starting uploading of file")
 
