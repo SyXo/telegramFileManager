@@ -12,7 +12,7 @@ transferHandler_extern.so: src/backend/transferHandler_extern.c
 clean:
 	rm -rf src/__pycache__ src/backend/__pycache__ transferHandler_extern.so cli.spec build dist
 
-test: clean transferHandler_extern
+test: clean transferHandler_extern.so
 	echo "Just a heads up this will take around an hour"
 	echo "Also it is recommended but not required for any other file up/down"
 	echo "progress to be finished before running this test"
@@ -33,7 +33,7 @@ test: clean transferHandler_extern
 	echo "Deleting temporary files"
 	rm $(tmp_path)/tfilemgr/rand downloads/tfilemk_rand
 
-install: clean transferHandler_extern
+install: clean transferHandler_extern.so
 	pyinstaller src/cli.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary transferHandler_extern.so:. --onefile
 
 	cp dist/cli $(install_path)/tgFileManager

@@ -177,9 +177,11 @@ class UserInterface:
                     self.notifBuf = "Can't cancel single chunk transfers"
                     return
 
-                self.notifBuf = "Transfer {} cancelled".format('/'.join(info['rPath']))
                 try:
-                    self.sHandler.cancelTransfer(sFile)
+                    if self._getInputs("Cancel transfer {}?".format('/'.join(info['rPath'])),
+                            {'selected' : "Type 'yes' if you are sure:"})['selected'] == 'yes':
+                        self.sHandler.cancelTransfer(sFile)
+                        self.notifBuf = "Transfer {} cancelled".format('/'.join(info['rPath']))
                 except ValueError:
                     self.notifBuf = "Transfer already cancelled."
 
