@@ -262,7 +262,16 @@ class UserInterface:
                 return
 
             # else download
+            dPath = self._getInputs("Download file {}".format('/'.join(inData['selected']['rPath'])),
+                                    {'dPath' : "Download path, leave empty for default:"})['dPath']
+
+            # check if folder exists
+            if dPath and not os.path.isdir(dPath):
+                self.notifBuf = "Specified path does not exist."
+                return
+
             self.sHandler.transferInThread({'rPath'   : inData['selected']['rPath'],
+                                            'dPath'   : dPath,
                                             'fileID'  : inData['selected']['fileID'],
                                             'IDindex' : 0,
                                             'size'    : inData['selected']['size'],

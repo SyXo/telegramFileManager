@@ -147,11 +147,15 @@ class TransferHandler:
 
 
     def downloadFiles(self, fileData: dict):
-        if len(fileData['fileID']) == 1: # no chunks
-            # Single chunk download doesn't call data_fun
+        if fileData['dPath']:
+            copied_file_path = path.join(fileData['dPath'],
+                                         fileData['rPath'][-1])
+        else:
             copied_file_path = path.join(self.data_path, "downloads",
                                          fileData['rPath'][-1])
 
+        if len(fileData['fileID']) == 1: # no chunks
+            # Single chunk download doesn't call data_fun
             self.now_transmitting = 1
 
             self.telegram.get_messages(self.telegram_channel_id,
@@ -170,9 +174,6 @@ class TransferHandler:
             return 1
 
         # else has chunks
-        copied_file_path = path.join(self.tmp_path, "tfilemgr",
-                                   "{}_chunk".format(fileData['rPath'][-1]))
-
         self.now_transmitting = 2
         while fileData['IDindex'] < len(fileData['fileID']):
             self.telegram.get_messages(self.telegram_channel_id,
