@@ -52,7 +52,7 @@ class TransferHandler:
                                api_id, api_hash)
         # Connect to telegram servers when starting
         # So that if we are missing any sessions it will prompt for login
-        # Before starting curses
+        # Before starting the UI
         self.telegram.start()
 
         self.telegram_channel_id = telegram_channel_id

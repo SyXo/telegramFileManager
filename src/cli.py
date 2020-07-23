@@ -141,8 +141,11 @@ class UserInterface:
     def resumeHandler(self):
         inDict = {}
         for sFile, info in self.sHandler.resumeData.items():
-            if info and info['handled'] in [0, 2]: # has resume data that wasn't handled
-                inDict[sFile] = "Session {}, '{}' - {}:".format(sFile, '/'.join(info['rPath']), misc.bytesConvert(info['size']))
+            if info and info['handled'] in [0, 2]:
+                # has resume data that wasn't handled
+                inDict[sFile] = "Session {}, '{}' - {}:".format(sFile,
+                    '/'.join(info['rPath']), misc.bytesConvert(info['size'])
+                )
 
         if not inDict:
             self.notifBuf = "No resume information."
@@ -209,7 +212,7 @@ class UserInterface:
                                         'fileID'     : [],
                                         'index'      : 0, # managed by transferHandler
                                         'chunkIndex' : 0,
-                                        'type'       : 1})
+                                        'type'       : 'upload'})
 
 
     def downloadHandler(self):
@@ -275,7 +278,7 @@ class UserInterface:
                                             'fileID'  : inData['selected']['fileID'],
                                             'IDindex' : 0,
                                             'size'    : inData['selected']['size'],
-                                            'type'    : 2})
+                                            'type'    : 'download'})
 
 
     def main(self):

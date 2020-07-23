@@ -185,9 +185,9 @@ class SessionsHandler:
 
 
     def transferInThread(self, fileData: dict, sFile: str = None):
-        if fileData['type'] == 1:
+        if fileData['type'] == 'upload':
             threadTarget = self._upload
-        elif fileData['type'] == 2:
+        elif fileData['type'] == 'download':
             threadTarget = self._download
 
         transferJob = threading.Thread(target=threadTarget, args=(fileData,sFile,), daemon=True)
