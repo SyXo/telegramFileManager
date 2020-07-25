@@ -335,7 +335,7 @@ class UserInterface:
                 elif ch == curses.KEY_DOWN and self.selected < self.sHandler.max_sessions - len(self.sHandler.freeSessions):
                     self.selected += 1
 
-                elif ch == 17: # Ctrl-Q
+                elif ch == ord('q'):
                     break
 
                 for option, info in optionDict.items():
