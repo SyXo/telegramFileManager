@@ -9,6 +9,9 @@ tmp_path = ~/.tmp
 transferHandler_extern.so: src/backend/transferHandler_extern.c
 	$(CC) -std=c99 -fPIC -shared -o $@ $^
 
+bundle: clean transferHandler_extern.so
+	pyinstaller src/cli.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary transferHandler_extern.so:. --onefile
+
 clean:
 	rm -rf src/__pycache__ src/backend/__pycache__ transferHandler_extern.so cli.spec build dist
 
@@ -33,9 +36,7 @@ test: clean transferHandler_extern.so
 	echo "Deleting temporary files"
 	rm $(tmp_path)/tfilemgr/rand downloads/tfilemk_rand
 
-install: clean transferHandler_extern.so
-	pyinstaller src/cli.py --add-data $(package_path)/client/ext/mime.types:pyrogram/client/ext --add-binary transferHandler_extern.so:. --onefile
-
+install: bundle
 	cp dist/cli $(install_path)/tgFileManager
 
 .SILENT: test

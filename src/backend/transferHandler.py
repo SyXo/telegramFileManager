@@ -174,12 +174,15 @@ class TransferHandler:
             return 1
 
         # else has chunks
+        tmp_file_path = path.join(self.tmp_path, "tfilemgr",
+                                  "{}_chunk".format(fileData['rPath'][-1]))
+
         self.now_transmitting = 2
         while fileData['IDindex'] < len(fileData['fileID']):
             self.telegram.get_messages(self.telegram_channel_id,
                                        fileData['fileID'][fileData['IDindex']]
                                        ).download(
-                    file_name=copied_file_path,
+                    file_name=tmp_file_path,
                     progress=self.progress_fun,
                     progress_args=(fileData['IDindex'], len(fileData['fileID']),
                                    self.s_file)
@@ -191,13 +194,12 @@ class TransferHandler:
             fileData['IDindex']+=1
 
             self.extern.concatFiles(
+                tmp_file_path.encode('ascii'),
                 copied_file_path.encode('ascii'),
-                path.join(self.data_path, "downloads",
-                          fileData['rPath'][-1]).encode('ascii'),
                 1000
             )
 
-            remove(copied_file_path)
+            remove(tmp_file_path)
 
             if fileData['IDindex'] == len(fileData['fileID']):
                 # finished or canceled with 1 but it was last chunk

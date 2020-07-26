@@ -283,7 +283,6 @@ class UserInterface:
 
     def main(self):
         NAME = "Telegram File Manager"
-        T_STR = ["Uploading:", "Downloading:"]
         optionDict = {'upload' : {'value' : False, 'keybind' : ord(self.cfg['keybinds']['upload']), 'function' : self.uploadHandler},
                       'download' : {'value' : False, 'keybind' : ord(self.cfg['keybinds']['download']), 'function' : self.downloadHandler},
                       'cancel' : {'value' : False, 'keybind' : ord(self.cfg['keybinds']['cancel']), 'function' : self.cancelHandler},
@@ -320,7 +319,7 @@ class UserInterface:
                     if not info['type']: # empty
                         continue
 
-                    self.scr.addstr(i, 2, T_STR[info['type']-1])
+                    self.scr.addstr(i, 2, "Uploading:" if info['type'] == 'upload' else "Downloading:")
                     self.scr.addstr(i+1, 2, '/'.join(info['rPath']))
                     self.scr.addstr(i+2, 2, "{}% - {}".format(info['progress'], misc.bytesConvert(info['size'])))
                     i+=4

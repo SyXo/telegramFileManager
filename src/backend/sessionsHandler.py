@@ -34,7 +34,7 @@ class SessionsHandler:
             self.transferInfo[str(i)]['rPath'] = ''
             self.transferInfo[str(i)]['progress'] = 0
             self.transferInfo[str(i)]['size'] = 0
-            self.transferInfo[str(i)]['type'] = 0
+            self.transferInfo[str(i)]['type'] = None
 
             self.tHandler[str(i)] = TransferHandler(
                     telegram_channel_id, api_id, api_hash, data_path, tmp_path,
@@ -91,10 +91,11 @@ class SessionsHandler:
             self.freeSessions.remove(sFile)	# prevent using this session for transfer
 
         elif selected == 3: # delete the resume file
-            rmIDs = self.resumeData[sFile]['fileID']
+            if self.resumeData[sFile]['type'] == 'upload':
+                self.cleanTg(self.resumeData[sFile]['fileID'])
+
             self.resumeData[sFile] = {} # not possible to resume later
             self.fileIO.delResumeData(sFile)
-            self.cleanTg(rmIDs)
 
 
     def cleanTg(self, IDList: list = None):
@@ -130,7 +131,7 @@ class SessionsHandler:
         self.transferInfo[sFile]['rPath'] = fileData['rPath']
         self.transferInfo[sFile]['progress'] = 0
         self.transferInfo[sFile]['size'] = fileData['size']
-        self.transferInfo[sFile]['type'] = 1
+        self.transferInfo[sFile]['type'] = 'upload'
 
         if not fileData['index']: # not resuming
             fileData['index'] = self.fileIO.loadIndexData(sFile)
@@ -154,7 +155,7 @@ class SessionsHandler:
         else:
             self.resumeData[sFile]['handled'] = 0
 
-        self.transferInfo[sFile]['type'] = 0 # not transferring anything
+        self.transferInfo[sFile]['type'] = None # not transferring anything
         self.__freeSession(sFile)
 
 
@@ -166,7 +167,7 @@ class SessionsHandler:
         self.transferInfo[sFile]['rPath'] = fileData['rPath']
         self.transferInfo[sFile]['progress'] = 0
         self.transferInfo[sFile]['size'] = fileData['size']
-        self.transferInfo[sFile]['type'] = 2
+        self.transferInfo[sFile]['type'] = 'download'
 
         finalData = self.tHandler[sFile].downloadFiles(fileData)
 
@@ -178,7 +179,7 @@ class SessionsHandler:
         else:
             self.resumeData[sFile]['handled'] = 0
 
-        self.transferInfo[sFile]['type'] = 0
+        self.transferInfo[sFile]['type'] = None
         self.__freeSession(sFile)
 
         return finalData
